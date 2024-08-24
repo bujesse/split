@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"split/models"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -28,12 +29,12 @@ func MakeMigrations() error {
 	db := GetConnection()
 
 	err := db.AutoMigrate(
-		&Category{},
-		&Currency{},
-		&Settlement{},
-		&Expense{},
-		&ExpenseOwed{},
-		&User{},
+		&models.Category{},
+		&models.Currency{},
+		&models.Settlement{},
+		&models.Expense{},
+		&models.ExpenseOwed{},
+		&models.User{},
 	)
 	if err != nil {
 		log.Fatalf("failed to migrate database schema: %v", err)
