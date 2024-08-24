@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"split/config/logger"
 	"split/models"
 
 	"gorm.io/driver/sqlite"
@@ -17,10 +17,10 @@ func GetConnection() *gorm.DB {
 
 	db, err := gorm.Open(sqlite.Open("split.db"), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("🔥 failed to connect to the database: %s", err.Error())
+		logger.Fatal("🔥 failed to connect to the database: %s", err.Error())
 	}
 
-	log.Println("🚀 Connected Successfully to the Database")
+	logger.Debug.Println("🚀 Connected Successfully to the Database")
 
 	return db
 }
@@ -37,7 +37,7 @@ func MakeMigrations() error {
 		&models.User{},
 	)
 	if err != nil {
-		log.Fatalf("failed to migrate database schema: %v", err)
+		logger.Fatal("failed to migrate database schema: %v", err)
 	}
 
 	return nil

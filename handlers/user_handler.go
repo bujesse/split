@@ -3,8 +3,8 @@ package handlers
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"log"
 	"net/http"
+	"split/config/logger"
 	"split/models"
 
 	"gorm.io/gorm"
@@ -23,7 +23,7 @@ func hashPassword(password string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func RequireLogin(handler interface{}) http.HandlerFunc {
+func RequireLogin(handler http.Handler) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		cookie, err := request.Cookie("session_token")
 		if err != nil || cookie.Value == "" {
@@ -31,18 +31,27 @@ func RequireLogin(handler interface{}) http.HandlerFunc {
 			http.Redirect(response, request, "/login", http.StatusSeeOther)
 			return
 		}
+		// If the user is authenticated, proceed to the requested handler
+		handler.ServeHTTP(response, request)
+	}
+}
 
-		switch h := handler.(type) {
-		case http.HandlerFunc:
-			h(response, request)
-		case http.Handler:
-			h.ServeHTTP(response, request)
+func RequireLoginApi(handler http.HandlerFunc) http.HandlerFunc {
+	return func(response http.ResponseWriter, request *http.Request) {
+		cookie, err := request.Cookie("session_token")
+		if err != nil || cookie.Value == "" {
+			// If the session token is missing or empty, return an unauthorized response
+			response.WriteHeader(http.StatusUnauthorized)
+			response.Write([]byte("Unauthorized"))
+			return
 		}
+		// If the user is authenticated, proceed to the requested handler
+		handler(response, request)
 	}
 }
 
 func (h *UserHandler) RegisterUser(response http.ResponseWriter, request *http.Request) {
-	log.Println("Registering user")
+	logger.Info.Println("Registering user")
 	request.ParseForm()
 	email := request.FormValue("email")
 	password := hashPassword(request.FormValue("password"))
@@ -53,7 +62,7 @@ func (h *UserHandler) RegisterUser(response http.ResponseWriter, request *http.R
 		Password: password,
 	}
 	if err := h.db.Create(&user).Error; err != nil {
-		log.Println("Error creating user", err)
+		logger.Info.Println("Error creating user", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		response.Write([]byte("Failed to create user. Try again."))
 		return
@@ -66,14 +75,14 @@ func (h *UserHandler) RegisterUser(response http.ResponseWriter, request *http.R
 }
 
 func (h *UserHandler) LoginUser(response http.ResponseWriter, request *http.Request) {
-	log.Println("Logging in user")
+	logger.Info.Println("Logging in user")
 	request.ParseForm()
 	username := request.FormValue("username")
 	password := hashPassword(request.FormValue("password"))
 
 	var user models.User
 	if err := h.db.Where("username = ? AND password = ?", username, password).First(&user).Error; err != nil {
-		log.Println("Error logging in user", err)
+		logger.Info.Println("Error logging in user", err)
 		response.Write([]byte("Invalid username or password."))
 		return
 	}
@@ -90,7 +99,7 @@ func (h *UserHandler) LoginUser(response http.ResponseWriter, request *http.Requ
 }
 
 func (h *UserHandler) LogoutUser(response http.ResponseWriter, request *http.Request) {
-	log.Println("Logging out user")
+	logger.Info.Println("Logging out user")
 	http.SetCookie(response, &http.Cookie{
 		Name:  "session_token",
 		Value: "",

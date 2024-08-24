@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"split/config/logger"
 	"split/models"
 	"split/services"
 	"strconv"
@@ -17,6 +18,7 @@ func NewExpenseHandler(service services.ExpenseService) *ExpenseHandler {
 }
 
 func (h *ExpenseHandler) CreateExpense(w http.ResponseWriter, request *http.Request) {
+	logger.Info.Println("Creating expense")
 	if request.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return

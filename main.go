@@ -1,8 +1,8 @@
 package main
 
 import (
-	"log"
 	"net/http"
+	"split/config/logger"
 	"split/handlers"
 	"split/repositories"
 	"split/services"
@@ -31,11 +31,14 @@ func main() {
 	expenseService := services.NewExpenseService(expenseRepo)
 	expenseHandler := handlers.NewExpenseHandler(expenseService)
 
-	http.HandleFunc("GET /expenses", handlers.RequireLogin(expenseHandler.GetExpenseByID))
-	http.HandleFunc("POST /expenses", handlers.RequireLogin(expenseHandler.CreateExpense))
-	http.HandleFunc("PUT /expenses", handlers.RequireLogin(expenseHandler.UpdateExpense))
+	http.HandleFunc("GET /expenses", handlers.RequireLoginApi(expenseHandler.GetExpenseByID))
+	http.HandleFunc("POST /expenses", handlers.RequireLoginApi(expenseHandler.CreateExpense))
+	http.HandleFunc("PUT /expenses", handlers.RequireLoginApi(expenseHandler.UpdateExpense))
 
-	log.Println("🚀 Starting up on port 8080")
+	logger.Info.Println("🚀 Starting up on port 8080")
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		logger.Fatal("🔥 failed to start the server: %s", err.Error())
+	}
 }
