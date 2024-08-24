@@ -1,19 +1,20 @@
 package main
 
 import (
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-var db *sql.DB
+var db *gorm.DB
 
-func GetConnection() *sql.DB {
+func GetConnection() *gorm.DB {
 	if db != nil {
 		return db
 	}
 
-	db, err := sql.Open("sqlite3", "split.sqlite")
+	db, err := gorm.Open(sqlite.Open("split.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("🔥 failed to connect to the database: %s", err.Error())
 	}
@@ -26,22 +27,17 @@ func GetConnection() *sql.DB {
 func MakeMigrations() error {
 	db := GetConnection()
 
-	stmt := `CREATE TABLE IF NOT EXISTS notes (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		title VARCHAR(64) UNIQUE CHECK(title IS NULL OR length(title) <= 64),
-		description VARCHAR(255) NULL,
-		completed BOOLEAN DEFAULT(FALSE),
-		created_at TIMESTAMP DEFAULT DATETIME
-	  );`
-
-	_, err := db.Exec(stmt)
+	err := db.AutoMigrate(
+		&Category{},
+		&Currency{},
+		&Settlement{},
+		&Expense{},
+		&ExpenseOwed{},
+		&User{},
+	)
 	if err != nil {
-		return err
+		log.Fatalf("failed to migrate database schema: %v", err)
 	}
 
 	return nil
 }
-
-/*
-https://noties.io/blog/2019/08/19/sqlite-toggle-boolean/index.html
-*/

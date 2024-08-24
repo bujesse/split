@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/a-h/templ"
 	"log"
 	"net/http"
 	"split/views"
+
+	"github.com/a-h/templ"
 )
 
 func init() {
