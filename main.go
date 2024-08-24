@@ -1,7 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"github.com/a-h/templ"
+	"log"
+	"net/http"
+	"split/views"
+)
+
+func init() {
+	MakeMigrations()
+}
 
 func main() {
-	fmt.Println("Hello, World!")
+
+	http.Handle("/", templ.Handler(views.Index()))
+
+	log.Println("🚀 Starting up on port 8080")
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
