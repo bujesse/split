@@ -19,6 +19,7 @@ type User struct {
 	BaseModel
 	Username string `gorm:"size:100;unique"`
 	Email    string `gorm:"size:255;unique"`
+	Password string
 }
 
 // Category model

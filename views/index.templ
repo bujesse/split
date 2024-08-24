@@ -14,22 +14,17 @@ templ Index() {
 					<h3 class="text-base lg:text-lg font-medium text-center">
 						Split
 					</h3>
+					<div class="ml-auto">
+						<a href="/logout" class="text-base lg:text-lg font-medium text-blue-600 hover:underline">
+							Logout
+						</a>
+					</div>
 				</nav>
 				<div class="mt-6 w-full flex justify-center items-center flex-col">
-					Hello World
-					<button hx-post="/clicked" hx-swap="outerHTML">
-						Click Me
-					</button>
+					@components.Modal(components.ExpenseForm())
 				</div>
 			</main>
 		</body>
 		@components.Footer()
 	</html>
-	<script>
-        function reloadPage() {
-                setTimeout(function() {
-            window.location.reload();
-        }, 2000);
-        }
-    </script>
 }

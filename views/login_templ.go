@@ -12,7 +12,7 @@ import (
 	"split/views/components"
 )
 
-func Index() templ.Component {
+func LoginPage() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -38,15 +38,7 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<body><main class=\"min-h-screen w-full\"><nav class=\"flex w-full border border-b-zinc-200 px-4 py-4\"><h3 class=\"text-base lg:text-lg font-medium text-center\">Split</h3><div class=\"ml-auto\"><a href=\"/logout\" class=\"text-base lg:text-lg font-medium text-blue-600 hover:underline\">Logout</a></div></nav><div class=\"mt-6 w-full flex justify-center items-center flex-col\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = components.Modal(components.ExpenseForm()).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></main></body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<body class=\"flex h-screen\"><div id=\"login-form\" class=\"m-auto w-full max-w-md bg-white rounded-lg shadow-md p-8\"><form hx-post=\"/login\" hx-target=\"#error-div\" hx-swap=\"innerHTML\"><!-- Username field --><div class=\"mb-4\"><label class=\"block text-gray-700 text-sm font-bold mb-2\" for=\"username\">Username</label> <input type=\"text\" name=\"username\" id=\"username\" class=\"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline\" placeholder=\"Username\" required></div><!-- Password field --><div class=\"mb-6\"><label class=\"block text-gray-700 text-sm font-bold mb-2\" for=\"password\">Password</label> <input type=\"password\" name=\"password\" id=\"password\" class=\"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline\" placeholder=\"Password\" required></div><!-- Error message div --><div id=\"error-div\" class=\"text-red-500 mb-4\"></div><!-- Submit button --><div class=\"flex items-center justify-between\"><button type=\"submit\" class=\"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline\">Login</button></div></form></div></body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

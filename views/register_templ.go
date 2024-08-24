@@ -12,7 +12,7 @@ import (
 	"split/views/components"
 )
 
-func Index() templ.Component {
+func RegisterPage() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -38,15 +38,7 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<body><main class=\"min-h-screen w-full\"><nav class=\"flex w-full border border-b-zinc-200 px-4 py-4\"><h3 class=\"text-base lg:text-lg font-medium text-center\">Split</h3><div class=\"ml-auto\"><a href=\"/logout\" class=\"text-base lg:text-lg font-medium text-blue-600 hover:underline\">Logout</a></div></nav><div class=\"mt-6 w-full flex justify-center items-center flex-col\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = components.Modal(components.ExpenseForm()).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></main></body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<body><div id=\"registration-form\"><form hx-post=\"/register\" hx-target=\"#error-text\" hx-swap=\"innerHTML\"><input type=\"email\" name=\"email\" placeholder=\"Email\" required> <input type=\"password\" name=\"password\" placeholder=\"Password\" required><div id=\"error-text\" class=\"error\"></div><button type=\"submit\">Register</button></form></div></body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
