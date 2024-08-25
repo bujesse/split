@@ -1,0 +1,31 @@
+package components
+
+import "split/models"
+import "fmt"
+
+templ ExpensesTable(expenses []models.Expense) {
+	<table>
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Notes</th>
+				<th>Amount</th>
+				<th>Currency</th>
+				<th>Who Paid</th>
+				<th>When</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, expense := range expenses {
+				<tr>
+					<td>{ expense.Title }</td>
+					<td>{ expense.Notes }</td>
+					<td>{ fmt.Sprintf("%.2f", expense.Amount) }</td>
+					<td>{ expense.Currency.Code }</td>
+					<td>{ expense.CreatedBy.Username }</td>
+					<td>{ expense.CreatedAt.Format("2006-01-02 15:04:05") }</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

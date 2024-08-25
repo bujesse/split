@@ -8,6 +8,7 @@ import (
 type ExpenseService interface {
 	CreateExpense(expense *models.Expense) error
 	GetExpenseByID(id uint) (*models.Expense, error)
+	GetAllExpenses() ([]models.Expense, error)
 	UpdateExpense(expense *models.Expense) error
 }
 
@@ -17,6 +18,10 @@ type expenseService struct {
 
 func NewExpenseService(repo repositories.ExpenseRepository) ExpenseService {
 	return &expenseService{repo}
+}
+
+func (s *expenseService) GetAllExpenses() ([]models.Expense, error) {
+	return s.repo.GetAll()
 }
 
 func (s *expenseService) CreateExpense(expense *models.Expense) error {

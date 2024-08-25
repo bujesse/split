@@ -67,9 +67,6 @@ func (h *UserHandler) RegisterUser(response http.ResponseWriter, request *http.R
 		response.Write([]byte("Failed to create user. Try again."))
 		return
 	}
-	// response.Write(
-	// 	[]byte("<div class='success'>Registration successful! <a href='/login'>Login</a></div>"),
-	// )
 	http.Redirect(response, request, "/login", http.StatusSeeOther)
 	return
 }
@@ -93,7 +90,6 @@ func (h *UserHandler) LoginUser(response http.ResponseWriter, request *http.Requ
 		Path:  "/",
 	})
 
-	// http.Redirect(response, request, "/", http.StatusSeeOther)
 	response.Header().Set("HX-Redirect", "/")
 	return
 }

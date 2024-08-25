@@ -31,7 +31,8 @@ func main() {
 	expenseService := services.NewExpenseService(expenseRepo)
 	expenseHandler := handlers.NewExpenseHandler(expenseService)
 
-	http.HandleFunc("GET /expenses", handlers.RequireLoginApi(expenseHandler.GetExpenseByID))
+	http.HandleFunc("GET /expenses", handlers.RequireLoginApi(expenseHandler.GetAllExpenses))
+	http.HandleFunc("GET /expenses/{id}", handlers.RequireLoginApi(expenseHandler.GetExpenseByID))
 	http.HandleFunc("POST /expenses", handlers.RequireLoginApi(expenseHandler.CreateExpense))
 	http.HandleFunc("PUT /expenses", handlers.RequireLoginApi(expenseHandler.UpdateExpense))
 

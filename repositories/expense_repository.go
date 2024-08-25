@@ -10,6 +10,7 @@ type ExpenseRepository interface {
 	Create(expense *models.Expense) error
 	GetByID(id uint) (*models.Expense, error)
 	Update(expense *models.Expense) error
+	GetAll() ([]models.Expense, error)
 }
 
 type expenseRepository struct {
@@ -18,6 +19,15 @@ type expenseRepository struct {
 
 func NewExpenseRepository(db *gorm.DB) ExpenseRepository {
 	return &expenseRepository{db}
+}
+
+func (r *expenseRepository) GetAll() ([]models.Expense, error) {
+	var expenses []models.Expense
+	result := r.db.Find(&expenses)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return expenses, nil
 }
 
 func (r *expenseRepository) Create(expense *models.Expense) error {

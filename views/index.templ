@@ -21,8 +21,9 @@ templ Index() {
 					</div>
 				</nav>
 				<div class="mt-6 w-full flex justify-center items-center flex-col">
-					@components.Modal(components.ExpenseForm())
+					@components.Modal(components.ExpenseForm(), "Add Expense")
 				</div>
+				<div id="expenses-table" hx-get="/expenses" hx-trigger="load, newExpense from:body"></div>
 			</main>
 		</body>
 		@components.Footer()

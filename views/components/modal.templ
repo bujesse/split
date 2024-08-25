@@ -1,19 +1,18 @@
 package components
 
-templ Modal(content templ.Component) {
+templ Modal(content templ.Component, buttonLabel string) {
 	<div x-data="{ showModal: false }">
 		<button
 			@click="showModal = true"
 			class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
 		>
-			Open Expense Form
+			{ buttonLabel }
 		</button>
 		<!-- Modal -->
 		<div
 			x-show="showModal"
 			x-transition
 			x-cloak
-			@click.away="showModal = false"
 			class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
 		>
 			<div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl relative">
@@ -22,7 +21,12 @@ templ Modal(content templ.Component) {
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
 					</svg>
 				</button>
-				<div id="modal-content" class="overflow-y-auto" style="height: 90vh">
+				<div
+					id="modal-content"
+					class="overflow-y-auto"
+					style="height: 90vh"
+					@click.away="showModal = false"
+				>
 					@content
 				</div>
 			</div>

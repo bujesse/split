@@ -42,11 +42,11 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.Modal(components.ExpenseForm()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.Modal(components.ExpenseForm(), "Add Expense").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></main></body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"expenses-table\" hx-get=\"/expenses\" hx-trigger=\"load, newExpense from:body\"></div></main></body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
