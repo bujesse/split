@@ -10,7 +10,6 @@ templ ExpensesTable(expenses []models.Expense) {
 			<thead class="bg-gray-50">
 				<tr>
 					<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-					<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
 					<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
 					<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Who Paid</th>
 					<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">When</th>
@@ -20,7 +19,6 @@ templ ExpensesTable(expenses []models.Expense) {
 				for _, expense := range expenses {
 					<tr x-data={ templ.JSONString(expense) }>
 						<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{ expense.Title }</td>
-						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ expense.Notes }</td>
 						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="formatAsCurrency($data.Currency.Code, $data.Amount)"></td>
 						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ expense.CreatedBy.Username }</td>
 						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ expense.CreatedAt.Format("2006-01-02 15:04:05") }</td>

@@ -3,12 +3,22 @@ package handlers
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"split/config/logger"
 	"split/models"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 )
+
+var jwtKey = []byte("my_secret_key") // TODO: Replace with your secret key
+
+type Claims struct {
+	UserID int `json:"user_id"`
+	jwt.RegisteredClaims
+}
 
 type UserHandler struct {
 	db *gorm.DB
@@ -23,51 +33,70 @@ func hashPassword(password string) string {
 	return hex.EncodeToString(hash[:])
 }
 
+func validateJWT(r *http.Request) error {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		return err
+	}
+
+	tokenString := cookie.Value
+	claims := &Claims{}
+
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		claims,
+		func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		},
+	)
+	if err != nil || !token.Valid {
+		return err
+	}
+
+	return nil
+}
+
 func RequireLogin(handler http.Handler) http.HandlerFunc {
-	return func(response http.ResponseWriter, request *http.Request) {
-		cookie, err := request.Cookie("session_token")
-		if err != nil || cookie.Value == "" {
-			// If the session token is missing or empty, redirect to login page
-			http.Redirect(response, request, "/login", http.StatusSeeOther)
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := validateJWT(r)
+		if err != nil {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
-		// If the user is authenticated, proceed to the requested handler
-		handler.ServeHTTP(response, request)
+		handler.ServeHTTP(w, r)
 	}
 }
 
 func RequireLoginApi(handler http.HandlerFunc) http.HandlerFunc {
-	return func(response http.ResponseWriter, request *http.Request) {
-		cookie, err := request.Cookie("session_token")
-		if err != nil || cookie.Value == "" {
-			// If the session token is missing or empty, return an unauthorized response
-			response.WriteHeader(http.StatusUnauthorized)
-			response.Write([]byte("Unauthorized"))
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := validateJWT(r)
+		if err != nil {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 		// If the user is authenticated, proceed to the requested handler
-		handler(response, request)
+		handler(w, r)
 	}
 }
 
 func (h *UserHandler) RegisterUser(response http.ResponseWriter, request *http.Request) {
 	logger.Info.Println("Registering user")
 	request.ParseForm()
+	username := request.FormValue("username")
 	email := request.FormValue("email")
 	password := hashPassword(request.FormValue("password"))
 
 	user := models.User{
-		Username: email,
+		Username: username,
 		Email:    email,
 		Password: password,
 	}
 	if err := h.db.Create(&user).Error; err != nil {
 		logger.Info.Println("Error creating user", err)
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Failed to create user. Try again."))
+		response.Write([]byte(fmt.Sprintf("Failed to create user: %s", err.Error())))
 		return
 	}
-	http.Redirect(response, request, "/login", http.StatusSeeOther)
+	response.Header().Set("HX-Redirect", "/")
 	return
 }
 
@@ -84,10 +113,24 @@ func (h *UserHandler) LoginUser(response http.ResponseWriter, request *http.Requ
 		return
 	}
 
+	// Create JWT token
+	expirationTime := time.Now().Add(24 * time.Hour)
+	claims := &Claims{
+		UserID: int(user.ID),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, _ := token.SignedString(jwtKey)
+
 	http.SetCookie(response, &http.Cookie{
-		Name:  "session_token",
-		Value: username,
-		Path:  "/",
+		Name:     "token",
+		Value:    tokenString,
+		Expires:  expirationTime,
+		HttpOnly: true,
+		Secure:   false, // TODO: Set to true in production with HTTPS
 	})
 
 	response.Header().Set("HX-Redirect", "/")
@@ -97,8 +140,12 @@ func (h *UserHandler) LoginUser(response http.ResponseWriter, request *http.Requ
 func (h *UserHandler) LogoutUser(response http.ResponseWriter, request *http.Request) {
 	logger.Info.Println("Logging out user")
 	http.SetCookie(response, &http.Cookie{
-		Name:  "session_token",
-		Value: "",
+		Name:     "token",
+		Value:    "",
+		Expires:  time.Now().Add(-1 * time.Hour), // Expire the cookie immediately
+		HttpOnly: true,
+		Secure:   false, // Set to true in production with HTTPS
+		Path:     "/",
 	})
 
 	http.Redirect(response, request, "/login", http.StatusSeeOther)

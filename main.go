@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"split/config"
 	"split/config/logger"
 	"split/handlers"
 	"split/repositories"
@@ -16,6 +17,8 @@ func init() {
 }
 
 func main() {
+
+	config.LoadEnv()
 
 	db := GetConnection()
 	userHandler := handlers.NewUserHandler(db)
