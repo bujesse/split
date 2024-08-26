@@ -6,17 +6,17 @@ import (
 	"net/http"
 	"split/config/logger"
 	"split/models"
-	"split/services"
+	"split/repositories"
 	"split/views/components"
 	"strconv"
 )
 
 type ExpenseHandler struct {
-	Service services.ExpenseService
+	repo repositories.ExpenseRepository
 }
 
-func NewExpenseHandler(service services.ExpenseService) *ExpenseHandler {
-	return &ExpenseHandler{Service: service}
+func NewExpenseHandler(repo repositories.ExpenseRepository) *ExpenseHandler {
+	return &ExpenseHandler{repo}
 }
 
 func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, request *http.Request) {
@@ -35,7 +35,7 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, request *ht
 		Amount: amount,
 	}
 
-	if err := h.Service.CreateExpense(&expense); err != nil {
+	if err := h.repo.Create(&expense); err != nil {
 		http.Error(response, "Failed to save expense", http.StatusInternalServerError)
 		return
 	}
@@ -51,7 +51,7 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, request *ht
 }
 
 func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *http.Request) {
-	expenses, err := h.Service.GetAllExpenses()
+	expenses, err := h.repo.GetAll()
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
@@ -67,7 +67,7 @@ func (h *ExpenseHandler) GetExpenseByID(w http.ResponseWriter, request *http.Req
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
-	expense, err := h.Service.GetExpenseByID(uint(id))
+	expense, err := h.repo.GetByID(uint(id))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -82,7 +82,7 @@ func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, request *http.Requ
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := h.Service.UpdateExpense(&expense); err != nil {
+	if err := h.repo.Update(&expense); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

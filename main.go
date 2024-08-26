@@ -6,7 +6,6 @@ import (
 	"split/config/logger"
 	"split/handlers"
 	"split/repositories"
-	"split/services"
 	"split/views"
 
 	"github.com/a-h/templ"
@@ -31,8 +30,7 @@ func main() {
 	http.Handle("/", handlers.RequireLogin(templ.Handler(views.Index())))
 
 	expenseRepo := repositories.NewExpenseRepository(db)
-	expenseService := services.NewExpenseService(expenseRepo)
-	expenseHandler := handlers.NewExpenseHandler(expenseService)
+	expenseHandler := handlers.NewExpenseHandler(expenseRepo)
 
 	http.HandleFunc("GET /expenses", handlers.RequireLoginApi(expenseHandler.GetAllExpenses))
 	http.HandleFunc("GET /expenses/{id}", handlers.RequireLoginApi(expenseHandler.GetExpenseByID))
