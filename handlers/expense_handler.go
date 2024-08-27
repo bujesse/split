@@ -30,9 +30,13 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, request *ht
 		return
 	}
 
+	claims, _ := getCurrentUserClaims(request)
+	userID := uint(claims.UserID)
+
 	expense := models.Expense{
-		Title:  title,
-		Amount: amount,
+		Title:       title,
+		Amount:      amount,
+		CreatedByID: userID,
 	}
 
 	if err := h.repo.Create(&expense); err != nil {

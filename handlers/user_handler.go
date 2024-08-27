@@ -33,10 +33,10 @@ func hashPassword(password string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func validateJWT(r *http.Request) error {
+func getCurrentUserClaims(r *http.Request) (*Claims, error) {
 	cookie, err := r.Cookie("token")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tokenString := cookie.Value
@@ -50,15 +50,15 @@ func validateJWT(r *http.Request) error {
 		},
 	)
 	if err != nil || !token.Valid {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return claims, nil
 }
 
 func RequireLogin(handler http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := validateJWT(r)
+		_, err := getCurrentUserClaims(r)
 		if err != nil {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
@@ -69,7 +69,7 @@ func RequireLogin(handler http.Handler) http.HandlerFunc {
 
 func RequireLoginApi(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := validateJWT(r)
+		_, err := getCurrentUserClaims(r)
 		if err != nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
