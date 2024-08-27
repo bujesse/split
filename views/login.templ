@@ -1,15 +1,9 @@
 package views
 
-import (
-	"split/views/components"
-)
-
 templ LoginPage() {
-	<!DOCTYPE html>
-	<html lang="en">
-		@components.Header()
-		<body class="flex h-screen">
-			<div id="login-form" class="m-auto w-full max-w-md bg-white rounded-lg shadow-md p-8">
+	@Base() {
+		<div class="flex items-center justify-center min-h-[50vh]">
+			<div id="login-form" class="m-auto w-full max-w-md bg-white rounded-lg shadow-md p-8 mx-5">
 				<form
 					hx-post="/login"
 					hx-target="#error-div"
@@ -51,10 +45,12 @@ templ LoginPage() {
 						>
 							Login
 						</button>
+						<a href="/register" class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+							Register
+						</a>
 					</div>
 				</form>
 			</div>
-		</body>
-		@components.Footer()
-	</html>
+		</div>
+	}
 }

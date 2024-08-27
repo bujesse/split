@@ -1,21 +1,18 @@
 package views
 
-import (
-	"split/views/components"
-)
-
 templ RegisterPage() {
-	<!DOCTYPE html>
-	<html lang="en">
-		@components.Header()
-		<body class="min-h-screen bg-gray-100 flex items-center justify-center">
-			<div id="registration-form" class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+	@Base() {
+		<div class="flex items-center justify-center min-h-[50vh]">
+			<div id="registration-form" class="m-auto w-full max-w-md bg-white rounded-lg shadow-md p-8 mx-5">
 				<form
 					hx-post="/register"
 					hx-target="#error-text"
 					hx-swap="innerHTML"
 				>
 					<div class="mb-4">
+						<label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+							Username
+						</label>
 						<input
 							type="text"
 							name="username"
@@ -25,6 +22,9 @@ templ RegisterPage() {
 						/>
 					</div>
 					<div class="mb-4">
+						<label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+							Email
+						</label>
 						<input
 							type="email"
 							name="email"
@@ -34,6 +34,9 @@ templ RegisterPage() {
 						/>
 					</div>
 					<div class="mb-6">
+						<label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+							Password
+						</label>
 						<input
 							type="password"
 							name="password"
@@ -50,10 +53,12 @@ templ RegisterPage() {
 						>
 							Register
 						</button>
+						<a href="/login" class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+							Login
+						</a>
 					</div>
 				</form>
 			</div>
-		</body>
-		@components.Footer()
-	</html>
+		</div>
+	}
 }
