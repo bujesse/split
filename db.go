@@ -35,6 +35,7 @@ func MakeMigrations() error {
 		&models.Expense{},
 		&models.ExpenseOwed{},
 		&models.User{},
+		&models.FxRate{},
 	)
 	if err != nil {
 		logger.Fatal("failed to migrate database schema: %v", err)
