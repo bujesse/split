@@ -56,6 +56,11 @@ func getCurrentUserClaims(r *http.Request) (*Claims, error) {
 	return claims, nil
 }
 
+func IsAuthenticated(r *http.Request) bool {
+	_, err := getCurrentUserClaims(r)
+	return err == nil
+}
+
 func RequireLogin(handler http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, err := getCurrentUserClaims(r)

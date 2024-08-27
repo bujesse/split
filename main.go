@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"split/config"
 	"split/config/logger"
@@ -15,23 +16,41 @@ func init() {
 	MakeMigrations()
 }
 
+func NewTemplHandler(component templ.Component) TemplHandler {
+	return TemplHandler{Component: component}
+}
+
+type TemplHandler struct {
+	Component templ.Component
+}
+
+func (h TemplHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	isAuthenticated := handlers.IsAuthenticated(r)
+	ctx := context.WithValue(r.Context(), "isAuthenticated", isAuthenticated)
+	h.Component.Render(ctx, w)
+}
+
+
 func main() {
 
 	config.LoadEnv()
 
 	db := GetConnection()
 	userHandler := handlers.NewUserHandler(db)
-	http.Handle("GET /register", templ.Handler(views.RegisterPage()))
-	http.HandleFunc("POST /register", userHandler.RegisterUser)
-	http.Handle("GET /login", templ.Handler(views.LoginPage()))
-	http.HandleFunc("POST /login", userHandler.LoginUser)
-	http.HandleFunc("/logout", userHandler.LogoutUser)
-
-	http.Handle("/", handlers.RequireLogin(templ.Handler(views.Index())))
-
 	expenseRepo := repositories.NewExpenseRepository(db)
 	expenseHandler := handlers.NewExpenseHandler(expenseRepo)
 
+	// Templates
+	http.Handle("/", handlers.RequireLogin(NewTemplHandler(views.Index())))
+	http.Handle("GET /register", NewTemplHandler(views.RegisterPage()))
+	http.Handle("GET /login", NewTemplHandler(views.LoginPage()))
+
+	// User
+	http.HandleFunc("POST /register", userHandler.RegisterUser)
+	http.HandleFunc("POST /login", userHandler.LoginUser)
+	http.HandleFunc("/logout", userHandler.LogoutUser)
+
+	// Expenses
 	http.HandleFunc("GET /expenses", handlers.RequireLoginApi(expenseHandler.GetAllExpenses))
 	http.HandleFunc("GET /expenses/{id}", handlers.RequireLoginApi(expenseHandler.GetExpenseByID))
 	http.HandleFunc("POST /expenses", handlers.RequireLoginApi(expenseHandler.CreateExpense))

@@ -38,7 +38,17 @@ func Base() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!-- <body class=\"min-h-screen bg-gray-100 flex items-center justify-center\"> --><body class=\"flex h-screen\"><main class=\"min-h-screen w-full\"><nav class=\"flex w-full border border-b-zinc-200 px-4 py-4\"><h3 class=\"text-base lg:text-lg font-medium text-center\">Split</h3><div class=\"ml-auto\"><a href=\"/logout\" class=\"text-base lg:text-lg font-medium text-blue-600 hover:underline\">Logout</a></div></nav><main>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!-- <body class=\"min-h-screen bg-gray-100 flex items-center justify-center\"> --><body class=\"flex h-screen\"><main class=\"min-h-screen w-full\"><nav class=\"flex w-full border border-b-zinc-200 px-4 py-4\"><h3 class=\"text-base lg:text-lg font-medium text-center\">Split</h3>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if ctx.Value("isAuthenticated").(bool) {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"ml-auto\"><a href=\"/logout\" class=\"text-base lg:text-lg font-medium text-blue-600 hover:underline\">Logout</a></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</nav><main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
