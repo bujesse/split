@@ -26,7 +26,55 @@ func ExpenseForm() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full max-w-2xl bg-white p-8\"><h2 class=\"text-2xl font-bold mb-6\">Expense Form</h2><form hx-post=\"/expenses\" @htmx:after-request=\"showModal = false\" hx-swap=\"none\"><div class=\"mb-4\"><label for=\"title\" class=\"block text-sm font-medium text-gray-700\">Title</label> <input type=\"text\" id=\"title\" name=\"title\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div><div class=\"mb-4\"><label for=\"amount\" class=\"block text-sm font-medium text-gray-700\">Amount</label> <input type=\"number\" id=\"amount\" name=\"amount\" step=\"0.01\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div><div class=\"mb-4\"><label for=\"currency_id\" class=\"block text-sm font-medium text-gray-700\">Currency</label> <select id=\"currency_id\" name=\"currency_id\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"><option value=\"\">Select Currency</option><!-- Example options --><option value=\"USD\">USD</option> <option value=\"EUR\">EUR</option></select></div><div class=\"mb-4\"><label for=\"notes\" class=\"block text-sm font-medium text-gray-700\">Notes</label> <textarea id=\"notes\" name=\"notes\" rows=\"3\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"></textarea></div><div class=\"mb-4\"><label for=\"category_id\" class=\"block text-sm font-medium text-gray-700\">Category</label> <select id=\"category_id\" name=\"category_id\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"><option value=\"\">Select Category</option><!-- Example options --><option value=\"1\">Category 1</option> <option value=\"2\">Category 2</option></select></div><div class=\"flex justify-end space-x-4\"><button @click=\"hide\" type=\"button\" class=\"inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500\">Cancel</button> <button type=\"submit\" class=\"inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500\">Submit</button></div></form></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full max-w-2xl bg-white p-8\"><h2 class=\"text-2xl font-bold mb-6\">Expense Form</h2><form hx-post=\"/expenses\" @htmx:after-request=\"showModal = false\" hx-swap=\"none\"><div class=\"mb-4\"><label for=\"title\" class=\"block text-sm font-medium text-gray-700\">Title</label> <input type=\"text\" id=\"title\" name=\"title\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div><div class=\"mb-4\"><label for=\"amount\" class=\"block text-sm font-medium text-gray-700\">Amount</label> <input type=\"number\" id=\"amount\" name=\"amount\" step=\"0.01\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div><div class=\"mb-4\"><label for=\"currency_id\" class=\"block text-sm font-medium text-gray-700\">Currency</label> <select id=\"currency_id\" name=\"currency_id\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"><option value=\"\">Select Currency</option><!-- Example options --><option value=\"USD\">USD</option> <option value=\"EUR\">EUR</option></select></div><div class=\"mb-4\"><label for=\"notes\" class=\"block text-sm font-medium text-gray-700\">Notes</label> <textarea id=\"notes\" name=\"notes\" rows=\"3\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"></textarea></div><div class=\"mb-4\"><label for=\"category_id\" class=\"block text-sm font-medium text-gray-700\">Category</label> <select id=\"category_id\" name=\"category_id\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"><option value=\"\">Select Category</option><!-- Example options --><option value=\"1\">Category 1</option> <option value=\"2\">Category 2</option></select></div><div class=\"flex justify-end space-x-4\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Cancel")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return templ_7745c5c3_Err
+		})
+		templ_7745c5c3_Err = Button("gray", templ.Attributes{"@click": "showModal = false", "type": "button"}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var3 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Submit")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return templ_7745c5c3_Err
+		})
+		templ_7745c5c3_Err = Button("indigo", templ.Attributes{"type": "submit"}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

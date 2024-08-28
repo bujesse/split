@@ -1,5 +1,7 @@
 package views
 
+import "split/views/components"
+
 templ LoginPage() {
 	@Base() {
 		<div class="flex items-center justify-center min-h-[50vh]">
@@ -39,15 +41,12 @@ templ LoginPage() {
 					</div>
 					<div id="error-div" class="text-red-500 mb-4"></div>
 					<div class="flex items-center justify-between">
-						<button
-							type="submit"
-							class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-						>
+						@components.Button("blue", templ.Attributes{"type": "submit"}) {
 							Login
-						</button>
-						<a href="/register" class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+						}
+						@components.AnchorButton("/register", "red", templ.Attributes{}) {
 							Register
-						</a>
+						}
 					</div>
 				</form>
 			</div>
