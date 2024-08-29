@@ -2,6 +2,7 @@ package components
 
 import "split/models"
 import "fmt"
+import "context"
 
 func getExpensePostTarget(expense *models.Expense) string {
 	if expense == nil {
@@ -10,8 +11,17 @@ func getExpensePostTarget(expense *models.Expense) string {
 	return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
 }
 
+func getContextUserID(ctx context.Context) string {
+	if username, ok := ctx.Value("currentUserID").(string); ok {
+		return username
+	}
+	return ""
+}
+
 templ ExpenseForm(expense *models.Expense, categories []models.Category, currencies []models.Currency, users []models.User) {
 	<div class="w-full max-w-2xl bg-white p-8">
+		@templ.JSONScript("expense", expense)
+		<span id="user-id" class="hidden">{ getContextUserID(ctx) }</span>
 		<h2 class="text-2xl font-bold mb-6">
 			if expense == nil {
 				Add New Expense
@@ -20,7 +30,6 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			}
 		</h2>
 		<form hx-post={ getExpensePostTarget(expense) } @htmx:after-request="$el.reset(); showModal = false" hx-swap="none" x-data="init">
-			@templ.JSONScript("expense", expense)
 			<div class="mb-4">
 				<label for="title" class="block text-sm font-medium text-gray-700">Title</label>
 				<input x-model="Title" autofocus type="text" id="title" name="title" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
@@ -72,13 +81,14 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 		<script>
 			Alpine.data('init', () => {
 				const data = JSON.parse(document.getElementById('expense').textContent)
+				const userID = document.getElementById('user-id').innerText
 				return {
 					Title: null,
 					Amount: 0,
 					Notes: null,
 					CurrencyCode: 'USD',
 					CategoryID: null,
-					PaidBy: null,
+					PaidBy: userID,
 					...data,
 				}
 			})

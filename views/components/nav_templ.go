@@ -8,6 +8,15 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "context"
+
+func getContextIsAuthenticated(ctx context.Context) bool {
+	if isAuthenticated, ok := ctx.Value("isAuthenticated").(bool); ok {
+		return isAuthenticated
+	}
+	return false
+}
+
 func Nav() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -26,12 +35,12 @@ func Nav() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"flex w-full border border-b-zinc-200 px-4 py-4 items-center\"><h3 class=\"text-base lg:text-lg font-medium text-center\"><a href=\"/\">Split</a></h3>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"flex w-full border border-b-zinc-200 px-4 py-4 items-center\"><h3 class=\"text-base lg:text-lg font-medium text-center\"><a hx-get=\"/partials/index\" hx-target=\"#main-content\" hx-replace-url=\"/\" class=\"cursor-pointer\">Split</a></h3>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if ctx.Value("isAuthenticated").(bool) {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline\">Home</a> <a href=\"/categories\" class=\"ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline\">Categories</a><div class=\"ml-auto\"><a href=\"/logout\" class=\"text-base lg:text-lg font-medium text-blue-600 hover:underline\">Logout</a></div>")
+		if getContextIsAuthenticated(ctx) {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a hx-get=\"/partials/index\" hx-target=\"#main-content\" hx-replace-url=\"/\" class=\"ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer\">Home</a> <a hx-get=\"/partials/categories\" hx-target=\"#main-content\" hx-replace-url=\"/categories\" class=\"ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer\">Categories</a><div class=\"ml-auto\"><a href=\"/logout\" class=\"text-base lg:text-lg font-medium text-blue-600 hover:underline\">Logout</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

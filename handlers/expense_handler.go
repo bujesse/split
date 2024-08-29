@@ -47,7 +47,7 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 		parsedCatID = &parsedID
 	}
 
-	claims, _ := getCurrentUserClaims(r)
+	claims, _ := GetCurrentUserClaims(r)
 	userID := uint(claims.UserID)
 
 	expense := models.Expense{
@@ -94,7 +94,7 @@ func (h *ExpenseHandler) CreateNewExpense(w http.ResponseWriter, request *http.R
 		categories,
 		currencies,
 		users,
-	)).Render(context.Background(), w)
+	)).Render(request.Context(), w)
 }
 
 func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Request) {

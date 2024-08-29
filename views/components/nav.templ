@@ -1,15 +1,26 @@
 package components
 
+import "context"
+
+func getContextIsAuthenticated(ctx context.Context) bool {
+	if isAuthenticated, ok := ctx.Value("isAuthenticated").(bool); ok {
+		return isAuthenticated
+	}
+	return false
+}
+
 templ Nav() {
 	<nav class="flex w-full border border-b-zinc-200 px-4 py-4 items-center">
 		<h3 class="text-base lg:text-lg font-medium text-center">
-			<a href="/">Split</a>
+			<a hx-get="/partials/index" hx-target="#main-content" hx-replace-url="/" class="cursor-pointer">
+				Split
+			</a>
 		</h3>
-		if ctx.Value("isAuthenticated").(bool) {
-			<a href="/" class="ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline">
+		if getContextIsAuthenticated(ctx) {
+			<a hx-get="/partials/index" hx-target="#main-content" hx-replace-url="/" class="ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
 				Home
 			</a>
-			<a href="/categories" class="ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline">
+			<a hx-get="/partials/categories" hx-target="#main-content" hx-replace-url="/categories" class="ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
 				Categories
 			</a>
 			<div class="ml-auto">

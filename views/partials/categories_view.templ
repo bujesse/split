@@ -1,0 +1,12 @@
+package partials
+
+import "split/views/components"
+
+templ Categories() {
+	<div class="mt-6 w-full flex justify-center items-center flex-col">
+		@components.Button("indigo", templ.Attributes{"hx-get": "/partials/categories/new", "hx-trigger": "click", "hx-target": "#modal-container"}) {
+			Add Category
+		}
+	</div>
+	<div id="categories-table" hx-get="/api/categories" hx-trigger="load, reloadCategories from:body"></div>
+}

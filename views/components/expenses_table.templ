@@ -22,10 +22,9 @@ templ ExpensesTable(expenses []models.Expense) {
 					<tr x-data={ templ.JSONString(expense) }>
 						<td
 							class="px-6 py-4 font-medium ml-4 text-sm lg:text-base text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-							hx-get={ "/api/expenses/edit/" + strconv.Itoa(int(expense.ID)) }
+							hx-get={ "/partials/expenses/edit/" + strconv.Itoa(int(expense.ID)) }
 							hx-trigger="click"
 							hx-target="#modal-container"
-							hx-swap="innerHTML"
 						>
 							{ expense.Title }
 						</td>

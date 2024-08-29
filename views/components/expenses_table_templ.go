@@ -54,22 +54,22 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("/api/expenses/edit/" + strconv.Itoa(int(expense.ID)))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("/partials/expenses/edit/" + strconv.Itoa(int(expense.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 25, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 25, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#modal-container\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(expense.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 30, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 29, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -82,7 +82,7 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(expense.Category.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 33, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 32, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -95,7 +95,7 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(expense.CreatedBy.Username)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 34, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 33, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -108,7 +108,7 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(expense.CreatedAt.Format("2006-01-02 15:04:05"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 35, Col: 117}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 34, Col: 117}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {

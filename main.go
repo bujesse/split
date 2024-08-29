@@ -9,6 +9,8 @@ import (
 	"split/repositories"
 	"split/views"
 	"split/views/components"
+	"split/views/partials"
+	"strconv"
 
 	"github.com/a-h/templ"
 )
@@ -17,18 +19,24 @@ func init() {
 	MakeMigrations()
 }
 
-func NewTemplHandler(component templ.Component) TemplHandler {
-	return TemplHandler{Component: component}
+type Middleware struct {
+	handler http.Handler
 }
 
-type TemplHandler struct {
-	Component templ.Component
+func NewMiddleware(handlerToWrap http.Handler) *Middleware {
+	return &Middleware{handlerToWrap}
 }
 
-func (h TemplHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	isAuthenticated := handlers.IsAuthenticated(r)
 	ctx := context.WithValue(r.Context(), "isAuthenticated", isAuthenticated)
-	h.Component.Render(ctx, w)
+
+	if isAuthenticated {
+		currentUserClaims, _ := handlers.GetCurrentUserClaims(r)
+		userID := strconv.Itoa(currentUserClaims.UserID)
+		ctx = context.WithValue(ctx, "currentUserID", userID)
+	}
+	h.handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
 func main() {
@@ -43,16 +51,22 @@ func main() {
 	currencyRepo := repositories.NewCurrencyRepository(db)
 	userRepo := repositories.NewUserRepository(db)
 
+	mux := http.NewServeMux()
+
 	// Views
-	http.Handle("/", handlers.RequireLogin(NewTemplHandler(views.Index())))
-	http.Handle("GET /register", NewTemplHandler(views.RegisterPage()))
-	http.Handle("GET /login", NewTemplHandler(views.LoginPage()))
-	http.Handle("GET /categories", NewTemplHandler(views.CategoriesView()))
+	mux.Handle("/", handlers.RequireLogin(templ.Handler(views.Index())))
+	mux.Handle("GET /register", templ.Handler(views.RegisterPage()))
+	mux.Handle("GET /login", templ.Handler(views.LoginPage()))
+	mux.Handle("GET /categories", templ.Handler(views.CategoriesView()))
+
+	// Partials
+	mux.Handle("/partials/index", handlers.RequireLogin(templ.Handler(partials.Index())))
+	mux.Handle("/partials/categories", handlers.RequireLogin(templ.Handler(partials.Categories())))
 
 	// User
-	http.HandleFunc("POST /register", userHandler.RegisterUser)
-	http.HandleFunc("POST /login", userHandler.LoginUser)
-	http.HandleFunc("/logout", userHandler.LogoutUser)
+	mux.HandleFunc("POST /register", userHandler.RegisterUser)
+	mux.HandleFunc("POST /login", userHandler.LoginUser)
+	mux.HandleFunc("/logout", userHandler.LogoutUser)
 
 	// Expenses
 	expenseHandler := handlers.NewExpenseHandler(
@@ -62,48 +76,49 @@ func main() {
 		userRepo,
 	)
 
-	http.HandleFunc("GET /api/expenses", handlers.RequireLoginApi(expenseHandler.GetAllExpenses))
-	http.HandleFunc(
-		"GET /api/expenses/new",
+	mux.HandleFunc(
+		"GET /partials/expenses/new",
 		handlers.RequireLoginApi(expenseHandler.CreateNewExpense),
 	)
-	http.HandleFunc(
-		"GET /api/expenses/edit/{id}",
+	mux.HandleFunc(
+		"GET /partials/expenses/edit/{id}",
 		handlers.RequireLoginApi(expenseHandler.EditExpenseByID),
 	)
-	http.HandleFunc(
+	mux.HandleFunc("GET /api/expenses", handlers.RequireLoginApi(expenseHandler.GetAllExpenses))
+	mux.HandleFunc("POST /api/expenses", handlers.RequireLoginApi(expenseHandler.CreateExpense))
+	mux.HandleFunc(
 		"POST /api/expenses/{id}",
 		handlers.RequireLoginApi(expenseHandler.UpdateExpense),
 	)
-	http.HandleFunc("POST /api/expenses", handlers.RequireLoginApi(expenseHandler.CreateExpense))
 
 	// Categories
 	categoryHandler := handlers.NewCategoryHandler(categoryRepo)
 
-	http.HandleFunc(
+	mux.HandleFunc(
+		"GET /partials/categories/new",
+		handlers.RequireLogin(templ.Handler(components.Modal(components.CategoriesForm(nil)))),
+	)
+	mux.HandleFunc(
+		"GET /partials/categories/edit/{id}",
+		handlers.RequireLoginApi(categoryHandler.EditCategoryByID),
+	)
+	mux.HandleFunc(
 		"GET /api/categories",
 		handlers.RequireLoginApi(categoryHandler.GetAllCategories),
 	)
-	http.HandleFunc(
-		"GET /api/categories/new",
-		handlers.RequireLogin(templ.Handler(components.Modal(components.CategoriesForm(nil)))),
-	)
-	http.HandleFunc(
-		"GET /api/categories/edit/{id}",
-		handlers.RequireLoginApi(categoryHandler.EditCategoryByID),
-	)
-	http.HandleFunc(
-		"POST /api/categories/{id}",
-		handlers.RequireLoginApi(categoryHandler.UpdateCategory),
-	)
-	http.HandleFunc(
+	mux.HandleFunc(
 		"POST /api/categories",
 		handlers.RequireLoginApi(categoryHandler.CreateCategory),
 	)
+	mux.HandleFunc(
+		"POST /api/categories/{id}",
+		handlers.RequireLoginApi(categoryHandler.UpdateCategory),
+	)
+	rootMux := NewMiddleware(mux)
 
 	logger.Info.Println("🚀 Starting up on port 8080")
 
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", rootMux)
 	if err != nil {
 		logger.Fatal("🔥 failed to start the server: %s", err.Error())
 	}

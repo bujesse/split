@@ -1,14 +1,9 @@
 package views
 
-import "split/views/components"
+import "split/views/partials"
 
 templ CategoriesView() {
 	@Base() {
-		<div class="mt-6 w-full flex justify-center items-center flex-col">
-			@components.Button("indigo", templ.Attributes{"hx-get": "/api/categories/new", "hx-trigger": "click", "hx-target": "#modal-container", "hx-swap": "innerHTML"}) {
-				Add Category
-			}
-		</div>
-		<div id="categories-table" hx-get="/api/categories" hx-trigger="load, reloadCategories from:body"></div>
+		@partials.Categories()
 	}
 }

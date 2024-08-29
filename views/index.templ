@@ -1,16 +1,11 @@
 package views
 
 import (
-	"split/views/components"
+	"split/views/partials"
 )
 
 templ Index() {
 	@Base() {
-		<div class="mt-6 w-full flex justify-center items-center flex-col">
-			@components.Button("indigo", templ.Attributes{"hx-get": "/api/expenses/new", "hx-trigger": "click", "hx-target": "#modal-container", "hx-swap": "innerHTML"}) {
-				Add Expense
-			}
-		</div>
-		<div id="expenses-table" hx-get="/api/expenses" hx-trigger="load, reloadExpenses from:body"></div>
+		@partials.Index()
 	}
 }

@@ -33,7 +33,7 @@ func hashPassword(password string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func getCurrentUserClaims(r *http.Request) (*Claims, error) {
+func GetCurrentUserClaims(r *http.Request) (*Claims, error) {
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		return nil, err
@@ -57,13 +57,13 @@ func getCurrentUserClaims(r *http.Request) (*Claims, error) {
 }
 
 func IsAuthenticated(r *http.Request) bool {
-	_, err := getCurrentUserClaims(r)
+	_, err := GetCurrentUserClaims(r)
 	return err == nil
 }
 
 func RequireLogin(handler http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, err := getCurrentUserClaims(r)
+		_, err := GetCurrentUserClaims(r)
 		if err != nil {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
@@ -74,7 +74,7 @@ func RequireLogin(handler http.Handler) http.HandlerFunc {
 
 func RequireLoginApi(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, err := getCurrentUserClaims(r)
+		_, err := GetCurrentUserClaims(r)
 		if err != nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
