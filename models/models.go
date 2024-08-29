@@ -25,6 +25,7 @@ type Category struct {
 	Name        string   `gorm:"size:100"`
 	Icon        string   `gorm:"size:255"` // Assuming this is a URL or file path
 	Description string   `gorm:"size:255"`
+	Type        string   `gorm:"size:255"`
 	Tags        []string `gorm:"type:text"` // Tags as a comma-separated string
 }
 

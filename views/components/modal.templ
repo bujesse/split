@@ -1,10 +1,7 @@
 package components
 
-templ Modal(content templ.Component, buttonLabel string) {
-	<div x-data="{ showModal: false }">
-		@Button("indigo", templ.Attributes{"@click": "showModal = true"}) {
-			{ buttonLabel }
-		}
+templ Modal(content templ.Component) {
+	<div x-data="{ showModal: true }">
 		<div
 			x-show="showModal"
 			x-transition
@@ -20,8 +17,9 @@ templ Modal(content templ.Component, buttonLabel string) {
 				<div
 					id="modal-content"
 					class="overflow-y-auto"
-					style="height: 90vh"
+					style="height: 80vh"
 					@click.away="showModal = false"
+					@keyup.escape.window="showModal = false"
 				>
 					@content
 				</div>

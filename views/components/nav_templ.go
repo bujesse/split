@@ -26,12 +26,12 @@ func Nav() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"flex w-full border border-b-zinc-200 px-4 py-4 items-center\"><h3 class=\"text-base lg:text-lg font-medium text-center\">Split</h3>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"flex w-full border border-b-zinc-200 px-4 py-4 items-center\"><h3 class=\"text-base lg:text-lg font-medium text-center\"><a href=\"/\">Split</a></h3>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if ctx.Value("isAuthenticated").(bool) {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/categories\" class=\"ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200 ease-in-out\">Categories</a><div class=\"ml-auto\"><a href=\"/logout\" class=\"text-base lg:text-lg font-medium text-blue-600 hover:underline\">Logout</a></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline\">Home</a> <a href=\"/categories\" class=\"ml-4 text-sm lg:text-base font-medium text-blue-600 hover:text-blue-800 hover:underline\">Categories</a><div class=\"ml-auto\"><a href=\"/logout\" class=\"text-base lg:text-lg font-medium text-blue-600 hover:underline\">Logout</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

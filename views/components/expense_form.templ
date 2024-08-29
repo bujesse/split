@@ -1,12 +1,14 @@
 package components
 
-templ ExpenseForm() {
+import "split/models"
+
+templ ExpenseForm(expense *models.Expense) {
 	<div class="w-full max-w-2xl bg-white p-8">
 		<h2 class="text-2xl font-bold mb-6">Expense Form</h2>
-		<form hx-post="/expenses" @htmx:after-request="showModal = false" hx-swap="none">
+		<form hx-post="/api/expenses" @htmx:after-request="$el.reset(); showModal = false" hx-swap="none">
 			<div class="mb-4">
 				<label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-				<input type="text" id="title" name="title" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
+				<input autofocus type="text" id="title" name="title" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
 			</div>
 			<div class="mb-4">
 				<label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>

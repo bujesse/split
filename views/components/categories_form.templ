@@ -1,0 +1,52 @@
+package components
+
+import "split/models"
+import "fmt"
+
+func getPostTarget(category *models.Category) string {
+	if category == nil {
+		return "/api/categories/new"
+	}
+	return "/api/categories/" + fmt.Sprintf("%d", category.ID)
+}
+
+templ CategoriesForm(category *models.Category) {
+	<div class="w-full max-w-2xl bg-white p-8">
+		<h2 class="text-2xl font-bold mb-6">
+			if category == nil {
+				Add New Category
+			} else {
+				Edit Category: "{ category.Name }"
+			}
+		</h2>
+		<form hx-post={ getPostTarget(category) } @htmx:after-request="$el.reset(); showModal = false" hx-swap="none" x-data="category">
+			@templ.JSONScript("category", category)
+			<div class="mb-4">
+				<label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+				<input x-model="Name" autofocus required type="text" id="name" name="name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
+			</div>
+			<div class="mb-4">
+				<label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+				<input x-model="Type" required type="text" id="type" name="type" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+			</div>
+			<div class="mb-4">
+				<label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+				<textarea x-model="Description" id="description" name="description" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+			</div>
+			<div class="flex justify-end space-x-4">
+				@Button("gray", templ.Attributes{"@click": "showModal = false", "type": "button"}) {
+					Cancel
+				}
+				@Button("indigo", templ.Attributes{"type": "submit"}) {
+					Submit
+				}
+			</div>
+		</form>
+		<script>
+			Alpine.data('category', () => {
+				const data = JSON.parse(document.getElementById('category').textContent)
+				return {Name: null, Type: null, Description: null, ...data}
+			})
+		</script>
+	</div>
+}

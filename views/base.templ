@@ -15,7 +15,13 @@ templ Base() {
 					{ children... }
 				</main>
 			</main>
+			<div id="modal-container"></div>
 		</body>
 		@components.Footer()
+		<style>
+			#modal-container {
+				transition: all ease-in 1s ;
+			}
+		</style>
 	</html>
 }

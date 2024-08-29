@@ -7,8 +7,10 @@ import (
 templ Index() {
 	@Base() {
 		<div class="mt-6 w-full flex justify-center items-center flex-col">
-			@components.Modal(components.ExpenseForm(), "Add Expense")
+			@components.Button("indigo", templ.Attributes{"hx-get": "/api/expenses/new", "hx-trigger": "click", "hx-target": "#modal-container", "hx-swap": "innerHTML"}) {
+				Add Expense
+			}
 		</div>
-		<div id="expenses-table" hx-get="/expenses" hx-trigger="load, newExpense from:body"></div>
+		<div id="expenses-table" hx-get="/api/expenses" hx-trigger="load, newExpense from:body"></div>
 	}
 }
