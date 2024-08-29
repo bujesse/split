@@ -3,9 +3,9 @@ package components
 import "split/models"
 import "fmt"
 
-func getPostTarget(category *models.Category) string {
+func getCategoriesPostTarget(category *models.Category) string {
 	if category == nil {
-		return "/api/categories/new"
+		return "/api/categories"
 	}
 	return "/api/categories/" + fmt.Sprintf("%d", category.ID)
 }
@@ -19,7 +19,7 @@ templ CategoriesForm(category *models.Category) {
 				Edit Category: "{ category.Name }"
 			}
 		</h2>
-		<form hx-post={ getPostTarget(category) } @htmx:after-request="$el.reset(); showModal = false" hx-swap="none" x-data="category">
+		<form hx-post={ getCategoriesPostTarget(category) } @htmx:after-request="$el.reset(); showModal = false" hx-swap="none" x-data="init">
 			@templ.JSONScript("category", category)
 			<div class="mb-4">
 				<label for="name" class="block text-sm font-medium text-gray-700">Name</label>
@@ -43,9 +43,14 @@ templ CategoriesForm(category *models.Category) {
 			</div>
 		</form>
 		<script>
-			Alpine.data('category', () => {
+			Alpine.data('init', () => {
 				const data = JSON.parse(document.getElementById('category').textContent)
-				return {Name: null, Type: null, Description: null, ...data}
+				return {
+					Name: null,
+					Type: null,
+					Description: null,
+					...data,
+				}
 			})
 		</script>
 	</div>

@@ -23,10 +23,10 @@ type User struct {
 type Category struct {
 	BaseModel
 	Name        string   `gorm:"size:100"`
-	Icon        string   `gorm:"size:255"` // Assuming this is a URL or file path
+	Icon        string   `gorm:"size:255"`
 	Description string   `gorm:"size:255"`
 	Type        string   `gorm:"size:255"`
-	Tags        []string `gorm:"type:text"` // Tags as a comma-separated string
+	Tags        []string `gorm:"type:text"`
 }
 
 type Currency struct {
@@ -39,7 +39,7 @@ type Currency struct {
 
 type Settlement struct {
 	BaseModel
-	SettledByID    *uint     `gorm:"index"` // Foreign key for User
+	SettledByID    *uint     `gorm:"index"`
 	SettledBy      User      `gorm:"foreignKey:SettledByID"`
 	SettlementDate time.Time `gorm:"autoCreateTime"`
 	Notes          string    `gorm:"size:255"`
@@ -51,29 +51,31 @@ type Expense struct {
 	Description   string     `gorm:"size:255"`
 	Amount        float64    `gorm:"type:decimal(10,2);not null"`
 	CurrencyCode  string     `gorm:"size:3;not null;default:'USD'"`
-	Currency      Currency   `gorm:"foreignKey:Code"`
+	Currency      Currency   `gorm:"foreignKey:CurrencyCode;references:Code"`
 	Notes         string     `gorm:"size:255"`
-	CategoryID    *uint      `gorm:"index"` // Foreign key for Category
+	CategoryID    *uint      `gorm:"index"`
 	Category      Category   `gorm:"foreignKey:CategoryID"`
-	SettlementID  *uint      `gorm:"index"` // Foreign key for Settlement
+	SettlementID  *uint      `gorm:"index"`
 	Settlement    Settlement `gorm:"foreignKey:SettlementID"`
+	PaidByID      uint       `gorm:"index;not null"`
+	PaidBy        User       `gorm:"foreignKey:PaidByID"`
 	CreatedByTask bool       `gorm:"default:false"`
-	CreatedByID   uint       `gorm:"index;not null"` // Foreign key for User
+	CreatedByID   uint       `gorm:"index;not null"`
 	CreatedBy     User       `gorm:"foreignKey:CreatedByID"`
-	UpdatedByID   *uint      `gorm:"index"` // Foreign key for User
+	UpdatedByID   *uint      `gorm:"index"`
 	UpdatedBy     User       `gorm:"foreignKey:UpdatedByID"`
 }
 
 type ExpenseOwed struct {
 	BaseModel
-	ExpenseID  uint     `gorm:"index"` // Foreign key for Expense
+	ExpenseID  uint     `gorm:"index"`
 	Expense    Expense  `gorm:"foreignKey:ExpenseID"`
-	UserID     uint     `gorm:"index"` // Foreign key for User
+	UserID     uint     `gorm:"index"`
 	User       User     `gorm:"foreignKey:UserID"`
-	SplitType  string   `gorm:"size:20"` // Use enum values: "PCT" or "AMT"
+	SplitType  string   `gorm:"size:20"`
 	Amount     float64  `gorm:"type:decimal(10,2);not null"`
 	Percentage float64  `gorm:"type:decimal(5,2);not null"`
-	CurrencyID string   `gorm:"index"` // Foreign key for Currency
+	CurrencyID string   `gorm:"index"`
 	Currency   Currency `gorm:"foreignKey:CurrencyID"`
 }
 

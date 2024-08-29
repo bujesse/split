@@ -18,7 +18,7 @@ templ Modal(content templ.Component) {
 					id="modal-content"
 					class="overflow-y-auto"
 					style="height: 80vh"
-					@click.away="showModal = false"
+					@mousedown.away="showModal = false"
 					@keyup.escape.window="showModal = false"
 				>
 					@content

@@ -24,7 +24,7 @@ func NewExpenseRepository(db *gorm.DB) ExpenseRepository {
 
 func (r *expenseRepository) GetAll() ([]models.Expense, error) {
 	var expenses []models.Expense
-	result := r.db.Preload(clause.Associations).Find(&expenses)
+	result := r.db.Preload(clause.Associations).Order("created_at desc").Find(&expenses)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -37,7 +37,7 @@ func (r *expenseRepository) Create(expense *models.Expense) error {
 
 func (r *expenseRepository) GetByID(id uint) (*models.Expense, error) {
 	var expense models.Expense
-	result := r.db.Preload(clause.Associations).First(&expense, id)
+	result := r.db.First(&expense, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}

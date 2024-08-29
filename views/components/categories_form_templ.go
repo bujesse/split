@@ -11,9 +11,9 @@ import templruntime "github.com/a-h/templ/runtime"
 import "split/models"
 import "fmt"
 
-func getPostTarget(category *models.Category) string {
+func getCategoriesPostTarget(category *models.Category) string {
 	if category == nil {
-		return "/api/categories/new"
+		return "/api/categories"
 	}
 	return "/api/categories/" + fmt.Sprintf("%d", category.ID)
 }
@@ -69,15 +69,15 @@ func CategoriesForm(category *models.Category) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(getPostTarget(category))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(getCategoriesPostTarget(category))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/categories_form.templ`, Line: 22, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/categories_form.templ`, Line: 22, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"$el.reset(); showModal = false\" hx-swap=\"none\" x-data=\"category\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"$el.reset(); showModal = false\" hx-swap=\"none\" x-data=\"init\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -133,7 +133,7 @@ func CategoriesForm(category *models.Category) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></form><script>\n\t\t\tAlpine.data('category', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('category').textContent)\n\t\t\t\treturn {Name: null, Type: null, Description: null, ...data}\n\t\t\t})\n\t\t</script></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></form><script>\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('category').textContent)\n\t\t\t\treturn {\n\t\t\t\t\tName: null,\n\t\t\t\t\tType: null,\n\t\t\t\t\tDescription: null,\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

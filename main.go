@@ -38,6 +38,11 @@ func main() {
 	db := GetConnection()
 	userHandler := handlers.NewUserHandler(db)
 
+	expenseRepo := repositories.NewExpenseRepository(db)
+	categoryRepo := repositories.NewCategoryRepository(db)
+	currencyRepo := repositories.NewCurrencyRepository(db)
+	userRepo := repositories.NewUserRepository(db)
+
 	// Views
 	http.Handle("/", handlers.RequireLogin(NewTemplHandler(views.Index())))
 	http.Handle("GET /register", NewTemplHandler(views.RegisterPage()))
@@ -50,23 +55,29 @@ func main() {
 	http.HandleFunc("/logout", userHandler.LogoutUser)
 
 	// Expenses
-	expenseRepo := repositories.NewExpenseRepository(db)
-	expenseHandler := handlers.NewExpenseHandler(expenseRepo)
-
-	http.HandleFunc(
-		"GET /api/expenses/new",
-		handlers.RequireLogin(NewTemplHandler(components.Modal(components.ExpenseForm(nil)))),
+	expenseHandler := handlers.NewExpenseHandler(
+		expenseRepo,
+		categoryRepo,
+		currencyRepo,
+		userRepo,
 	)
+
 	http.HandleFunc("GET /api/expenses", handlers.RequireLoginApi(expenseHandler.GetAllExpenses))
 	http.HandleFunc(
-		"GET /api/expenses/{id}",
-		handlers.RequireLoginApi(expenseHandler.GetExpenseByID),
+		"GET /api/expenses/new",
+		handlers.RequireLoginApi(expenseHandler.CreateNewExpense),
+	)
+	http.HandleFunc(
+		"GET /api/expenses/edit/{id}",
+		handlers.RequireLoginApi(expenseHandler.EditExpenseByID),
+	)
+	http.HandleFunc(
+		"POST /api/expenses/{id}",
+		handlers.RequireLoginApi(expenseHandler.UpdateExpense),
 	)
 	http.HandleFunc("POST /api/expenses", handlers.RequireLoginApi(expenseHandler.CreateExpense))
-	http.HandleFunc("PUT /api/expenses", handlers.RequireLoginApi(expenseHandler.UpdateExpense))
 
 	// Categories
-	categoryRepo := repositories.NewCategoryRepository(db)
 	categoryHandler := handlers.NewCategoryHandler(categoryRepo)
 
 	http.HandleFunc(

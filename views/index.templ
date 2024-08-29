@@ -11,6 +11,6 @@ templ Index() {
 				Add Expense
 			}
 		</div>
-		<div id="expenses-table" hx-get="/api/expenses" hx-trigger="load, newExpense from:body"></div>
+		<div id="expenses-table" hx-get="/api/expenses" hx-trigger="load, reloadExpenses from:body"></div>
 	}
 }

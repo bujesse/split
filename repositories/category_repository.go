@@ -25,7 +25,7 @@ func NewCategoryRepository(db *gorm.DB) CategoryRepository {
 
 func (r *categoryRepository) GetAll() ([]models.Category, error) {
 	var categories []models.Category
-	result := r.db.Preload(clause.Associations).Find(&categories)
+	result := r.db.Preload(clause.Associations).Order("Name asc").Find(&categories)
 	if result.Error != nil {
 		return nil, result.Error
 	}

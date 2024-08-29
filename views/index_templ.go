@@ -68,7 +68,7 @@ func Index() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"expenses-table\" hx-get=\"/api/expenses\" hx-trigger=\"load, newExpense from:body\"></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"expenses-table\" hx-get=\"/api/expenses\" hx-trigger=\"load, reloadExpenses from:body\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
