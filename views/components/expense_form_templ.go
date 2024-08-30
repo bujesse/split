@@ -106,19 +106,19 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"$el.reset(); showModal = false\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label for=\"title\" class=\"block text-sm font-medium text-gray-700\">Title</label> <input x-model=\"Title\" autofocus type=\"text\" id=\"title\" name=\"title\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div><div class=\"mb-4\"><label for=\"amount\" class=\"block text-sm font-medium text-gray-700\">Amount</label> <input x-model=\"Amount\" type=\"number\" id=\"amount\" name=\"amount\" step=\"0.01\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div><div class=\"mb-4\"><label for=\"currencyCode\" class=\"block text-sm font-medium text-gray-700\">Currency</label> <select x-model=\"CurrencyCode\" id=\"currencyCode\" name=\"currencyCode\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"><option value=\"\">Select Currency</option> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"$el.reset(); showModal = false\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label for=\"title\" class=\"block text-sm font-medium text-gray-700\">Title</label> <input x-model=\"Title\" autofocus type=\"text\" id=\"title\" name=\"title\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div><div class=\"mb-4\"><label for=\"amount\" class=\"block text-sm font-medium text-gray-700\">Amount</label><div class=\"flex rounded-md shadow-sm\"><span class=\"inline-flex items-center px-5 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm\"><button type=\"button\" x-text=\"CurrencyCode\" class=\"focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700\"></button></span> <input x-model=\"Amount\" type=\"number\" id=\"amount\" name=\"amount\" step=\"0.01\" class=\"flex-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div></div><div class=\"mb-4\"><label for=\"PaidBy\" class=\"block text-sm font-medium text-gray-700\">Paid by</label> <select x-model=\"PaidBy\" id=\"PaidBy\" name=\"PaidBy\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"><option value=\"\">Select User</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, currency := range currencies {
+		for _, user := range users {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<option value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Code)
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", user.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 46, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 51, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -129,9 +129,9 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Name)
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(user.Username)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 46, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 51, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -142,7 +142,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mb-4\"><label for=\"notes\" class=\"block text-sm font-medium text-gray-700\">Notes</label> <textarea x-model=\"Notes\" id=\"notes\" name=\"notes\" rows=\"3\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"></textarea></div><div class=\"mb-4\"><label for=\"categoryID\" class=\"block text-sm font-medium text-gray-700\">Category</label> <select x-model=\"CategoryID\" id=\"categoryID\" name=\"categoryID\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"><option value=\"\">Select Category</option> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mb-4\"><label for=\"splitValue\" class=\"block text-sm font-medium text-gray-700\">Split Value</label><div class=\"flex rounded-md shadow-sm\"><span class=\"inline-flex items-center rounded-l-md overflow-hidden border border-r-0 border-gray-300 bg-gray-50 text-sm w-24\"><button type=\"button\" :class=\"SplitType === &#39;pct&#39; ? &#39;bg-indigo-600 text-white&#39; : &#39;bg-gray-50 text-gray-700&#39;\" @click=\"SplitType = &#39;pct&#39;\" class=\"h-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 flex-1 py-2 text-center rounded-l-md\">%</button> <button type=\"button\" :class=\"SplitType === &#39;amt&#39; ? &#39;bg-indigo-600 text-white&#39; : &#39;bg-gray-50 text-gray-700&#39;\" @click=\"SplitType = &#39;amt&#39;\" class=\"h-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 flex-1 py-2 text-center\">$</button></span> <input x-model=\"SplitType\" type=\"hidden\" name=\"SplitType\"> <input x-model=\"SplitValue\" type=\"number\" id=\"splitValue\" name=\"SplitValue\" step=\"0.01\" class=\"flex-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div><div class=\"mt-2 flex\"><span class=\"text-sm text-gray-700\">Equivalent to: $<span x-text=\"calculateEquivalentAmount($data)\"></span></span></div></div><div class=\"mb-4\"><label for=\"categoryID\" class=\"block text-sm font-medium text-gray-700\">Category</label> <select x-model=\"CategoryID\" id=\"categoryID\" name=\"categoryID\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"><option value=\"\">Select Category</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -154,7 +154,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", category.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 59, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 88, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -167,7 +167,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(category.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 59, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 88, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -178,47 +178,11 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mb-4\"><label for=\"PaidBy\" class=\"block text-sm font-medium text-gray-700\">Paid by</label> <select x-model=\"PaidBy\" id=\"PaidBy\" name=\"PaidBy\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"><option value=\"\">Select User</option> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mb-4\"><label for=\"notes\" class=\"block text-sm font-medium text-gray-700\">Notes</label> <textarea x-model=\"Notes\" id=\"notes\" name=\"notes\" rows=\"3\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"></textarea></div><div class=\"flex justify-end space-x-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, user := range users {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<option value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", user.ID))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 68, Col: 48}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(user.Username)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 68, Col: 66}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"flex justify-end space-x-4\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var11 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var9 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -236,11 +200,11 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = Button("gray", templ.Attributes{"@click": "showModal = false", "type": "button"}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var11), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Button("gray", templ.Attributes{"@click": "showModal = false", "type": "button"}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var12 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var10 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -258,11 +222,11 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = Button("indigo", templ.Attributes{"type": "submit"}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var12), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Button("indigo", templ.Attributes{"type": "submit"}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var10), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></form><script>\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('expense').textContent)\n\t\t\t\tconst userID = document.getElementById('user-id').innerText\n\t\t\t\treturn {\n\t\t\t\t\tTitle: null,\n\t\t\t\t\tAmount: 0,\n\t\t\t\t\tNotes: null,\n\t\t\t\t\tCurrencyCode: 'USD',\n\t\t\t\t\tCategoryID: null,\n\t\t\t\t\tPaidBy: userID,\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></form><script>\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('expense').textContent)\n\t\t\t\tconst userID = document.getElementById('user-id').innerText\n\t\t\t\tconst expenseSplit = data?.ExpenseSplits.length ? data.ExpenseSplits[0] : {\n\t\t\t\t\tSplitType: 'pct',\n\t\t\t\t\tSplitValue: 50,\n\t\t\t\t}\n\t\t\t\treturn {\n\t\t\t\t\tTitle: null,\n\t\t\t\t\tAmount: null,\n\t\t\t\t\tNotes: null,\n\t\t\t\t\tCurrencyCode: 'USD',\n\t\t\t\t\tCategoryID: null,\n\t\t\t\t\tPaidBy: userID,\n\t\t\t\t\tSplitType: expenseSplit.SplitType,\n\t\t\t\t\tSplitValue: expenseSplit.SplitValue,\n\t\t\t\t\tcalculateEquivalentAmount($data) {\n\t\t\t\t\t\tif ($data.SplitType === 'pct') {\n\t\t\t\t\t\t\treturn (($data.SplitValue / 100) * $data.Amount).toFixed(2)\n\t\t\t\t\t\t}\n\t\t\t\t\t\treturn $data.SplitValue.toFixed(2)\n\t\t\t\t\t},\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

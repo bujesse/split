@@ -51,7 +51,7 @@ func MakeMigrations() error {
 		&models.Currency{},
 		&models.Settlement{},
 		&models.Expense{},
-		&models.ExpenseOwed{},
+		&models.ExpenseSplit{},
 		&models.User{},
 		&models.FxRate{},
 	)

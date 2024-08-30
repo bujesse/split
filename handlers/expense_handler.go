@@ -38,6 +38,9 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 	title := r.FormValue("title")
 	amountStr := r.FormValue("amount")
 	amount, _ := strconv.ParseFloat(amountStr, 64)
+	SplitType := r.FormValue("SplitType")
+	SplitValueStr := r.FormValue("SplitValue")
+	SplitValue, _ := strconv.ParseFloat(SplitValueStr, 64)
 	notes := r.FormValue("notes")
 	currencyCode := r.FormValue("currencyCode")
 	categoryID := r.FormValue("categoryID")
@@ -48,18 +51,26 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 	}
 
 	claims, _ := GetCurrentUserClaims(r)
-	userID := uint(claims.UserID)
+	currentUserID := uint(claims.UserID)
 
 	expense := models.Expense{
 		Title:        title,
 		Amount:       amount,
-		CreatedByID:  userID,
+		CreatedByID:  currentUserID,
 		Notes:        notes,
 		CurrencyCode: currencyCode,
 		CategoryID:   parsedCatID,
+		ExpenseSplits: []models.ExpenseSplit{
+			{
+				UserID:       currentUserID, // FIXME: use other user
+				SplitType:    models.SplitType(SplitType),
+				SplitValue:   SplitValue,
+				CurrencyCode: currencyCode,
+			},
+		},
 	}
 
-	if err := h.expenseRepo.Create(&expense); err != nil {
+	if err := h.expenseRepo.CreateExpense(&expense); err != nil {
 		http.Error(response, "Failed to save expense", http.StatusInternalServerError)
 		return
 	}
@@ -104,7 +115,7 @@ func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Re
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
-	expense, err := h.expenseRepo.GetByID(uint(id))
+	expense, err := h.expenseRepo.GetByID(uint(id), "ExpenseSplits")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -135,8 +146,10 @@ func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
 	notes := r.FormValue("notes")
 	currencyCode := r.FormValue("currencyCode")
 	categoryID := r.FormValue("categoryID")
+	SplitType := r.FormValue("SplitType")
+	SplitValue := r.FormValue("SplitValue")
 
-	expense, err := h.expenseRepo.GetByID(uint(id))
+	expense, err := h.expenseRepo.GetByID(uint(id), "ExpenseSplits")
 
 	expense.Title = title
 	expense.Amount, _ = strconv.ParseFloat(amount, 64)
@@ -149,7 +162,14 @@ func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
 		expense.CategoryID = nil
 	}
 
-	if err := h.expenseRepo.Update(expense); err != nil {
+	// TODO: Make this work for multiple splits (currently only works for one split)
+	for i := range expense.ExpenseSplits {
+		expense.ExpenseSplits[i].SplitType = models.SplitType(SplitType)
+		expense.ExpenseSplits[i].SplitValue, _ = strconv.ParseFloat(SplitValue, 64)
+		expense.ExpenseSplits[i].CurrencyCode = currencyCode
+	}
+
+	if err := h.expenseRepo.UpdateExpense(expense); err != nil {
 		http.Error(w, "Failed to update expense: "+err.Error(), http.StatusInternalServerError)
 		return
 	}

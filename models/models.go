@@ -47,36 +47,43 @@ type Settlement struct {
 
 type Expense struct {
 	BaseModel
-	Title         string     `gorm:"size:200"`
-	Description   string     `gorm:"size:255"`
-	Amount        float64    `gorm:"type:decimal(10,2);not null"`
-	CurrencyCode  string     `gorm:"size:3;not null;default:'USD'"`
-	Currency      Currency   `gorm:"foreignKey:CurrencyCode;references:Code"`
-	Notes         string     `gorm:"size:255"`
-	CategoryID    *uint      `gorm:"index"`
-	Category      Category   `gorm:"foreignKey:CategoryID"`
-	SettlementID  *uint      `gorm:"index"`
-	Settlement    Settlement `gorm:"foreignKey:SettlementID"`
-	PaidByID      uint       `gorm:"index;not null"`
-	PaidBy        User       `gorm:"foreignKey:PaidByID"`
-	CreatedByTask bool       `gorm:"default:false"`
-	CreatedByID   uint       `gorm:"index;not null"`
-	CreatedBy     User       `gorm:"foreignKey:CreatedByID"`
-	UpdatedByID   *uint      `gorm:"index"`
-	UpdatedBy     User       `gorm:"foreignKey:UpdatedByID"`
+	Title         string         `gorm:"size:200"`
+	Description   string         `gorm:"size:255"`
+	Amount        float64        `gorm:"type:decimal(10,2);not null"`
+	CurrencyCode  string         `gorm:"size:3;not null;default:'USD'"`
+	Currency      Currency       `gorm:"foreignKey:CurrencyCode;references:Code"`
+	Notes         string         `gorm:"size:255"`
+	CategoryID    *uint          `gorm:"index"`
+	Category      Category       `gorm:"foreignKey:CategoryID"`
+	SettlementID  *uint          `gorm:"index"`
+	Settlement    Settlement     `gorm:"foreignKey:SettlementID"`
+	PaidByID      uint           `gorm:"index;not null"`
+	PaidBy        User           `gorm:"foreignKey:PaidByID"`
+	CreatedByTask bool           `gorm:"default:false"`
+	CreatedByID   uint           `gorm:"index;not null"`
+	CreatedBy     User           `gorm:"foreignKey:CreatedByID"`
+	UpdatedByID   *uint          `gorm:"index"`
+	UpdatedBy     User           `gorm:"foreignKey:UpdatedByID"`
+	ExpenseSplits []ExpenseSplit `gorm:"foreignKey:ExpenseID"` // One-to-many relationship
 }
 
-type ExpenseOwed struct {
+type SplitType string
+
+const (
+	Pct SplitType = "pct"
+	Amt SplitType = "amt"
+)
+
+type ExpenseSplit struct {
 	BaseModel
-	ExpenseID  uint     `gorm:"index"`
-	Expense    Expense  `gorm:"foreignKey:ExpenseID"`
-	UserID     uint     `gorm:"index"`
-	User       User     `gorm:"foreignKey:UserID"`
-	SplitType  string   `gorm:"size:20"`
-	Amount     float64  `gorm:"type:decimal(10,2);not null"`
-	Percentage float64  `gorm:"type:decimal(5,2);not null"`
-	CurrencyID string   `gorm:"index"`
-	Currency   Currency `gorm:"foreignKey:CurrencyID"`
+	ExpenseID    uint      `gorm:"index"`
+	Expense      Expense   `gorm:"foreignKey:ExpenseID"`
+	UserID       uint      `gorm:"index"`
+	User         User      `gorm:"foreignKey:UserID"`
+	SplitType    SplitType `gorm:"size:3"`
+	SplitValue   float64   `gorm:"type:decimal(10,2);not null"`
+	CurrencyCode string    `gorm:"index"`
+	Currency     Currency  `gorm:"foreignKey:CurrencyCode;references:Code"`
 }
 
 type FxRate struct {

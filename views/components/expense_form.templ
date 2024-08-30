@@ -36,20 +36,49 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			</div>
 			<div class="mb-4">
 				<label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
-				<input x-model="Amount" type="number" id="amount" name="amount" step="0.01" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
+				<div class="flex rounded-md shadow-sm">
+					<span class="inline-flex items-center px-5 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+						<button type="button" x-text="CurrencyCode" class="focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"></button>
+					</span>
+					<input x-model="Amount" type="number" id="amount" name="amount" step="0.01" class="flex-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
+				</div>
 			</div>
 			<div class="mb-4">
-				<label for="currencyCode" class="block text-sm font-medium text-gray-700">Currency</label>
-				<select x-model="CurrencyCode" id="currencyCode" name="currencyCode" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-					<option value="">Select Currency</option>
-					for _, currency := range currencies {
-						<option value={ currency.Code }>{ currency.Name }</option>
+				<label for="PaidBy" class="block text-sm font-medium text-gray-700">Paid by</label>
+				<select x-model="PaidBy" id="PaidBy" name="PaidBy" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+					<option value="">Select User</option>
+					for _, user := range users {
+						<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
 					}
 				</select>
 			</div>
 			<div class="mb-4">
-				<label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-				<textarea x-model="Notes" id="notes" name="notes" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+				<label for="splitValue" class="block text-sm font-medium text-gray-700">Split Value</label>
+				<div class="flex rounded-md shadow-sm">
+					<span class="inline-flex items-center rounded-l-md overflow-hidden border border-r-0 border-gray-300 bg-gray-50 text-sm w-24">
+						<button
+							type="button"
+							:class="SplitType === 'pct' ? 'bg-indigo-600 text-white' : 'bg-gray-50 text-gray-700'"
+							@click="SplitType = 'pct'"
+							class="h-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 flex-1 py-2 text-center rounded-l-md"
+						>
+							%
+						</button>
+						<button
+							type="button"
+							:class="SplitType === 'amt' ? 'bg-indigo-600 text-white' : 'bg-gray-50 text-gray-700'"
+							@click="SplitType = 'amt'"
+							class="h-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 flex-1 py-2 text-center"
+						>
+							$
+						</button>
+					</span>
+					<input x-model="SplitType" type="hidden" name="SplitType"/>
+					<input x-model="SplitValue" type="number" id="splitValue" name="SplitValue" step="0.01" class="flex-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
+				</div>
+				<div class="mt-2 flex">
+					<span class="text-sm text-gray-700">Equivalent to: $<span x-text="calculateEquivalentAmount($data)"></span></span>
+				</div>
 			</div>
 			<div class="mb-4">
 				<label for="categoryID" class="block text-sm font-medium text-gray-700">Category</label>
@@ -61,13 +90,8 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 				</select>
 			</div>
 			<div class="mb-4">
-				<label for="PaidBy" class="block text-sm font-medium text-gray-700">Paid by</label>
-				<select x-model="PaidBy" id="PaidBy" name="PaidBy" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-					<option value="">Select User</option>
-					for _, user := range users {
-						<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
-					}
-				</select>
+				<label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+				<textarea x-model="Notes" id="notes" name="notes" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
 			</div>
 			<div class="flex justify-end space-x-4">
 				@Button("gray", templ.Attributes{"@click": "showModal = false", "type": "button"}) {
@@ -82,13 +106,25 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			Alpine.data('init', () => {
 				const data = JSON.parse(document.getElementById('expense').textContent)
 				const userID = document.getElementById('user-id').innerText
+				const expenseSplit = data?.ExpenseSplits.length ? data.ExpenseSplits[0] : {
+					SplitType: 'pct',
+					SplitValue: 50,
+				}
 				return {
 					Title: null,
-					Amount: 0,
+					Amount: null,
 					Notes: null,
 					CurrencyCode: 'USD',
 					CategoryID: null,
 					PaidBy: userID,
+					SplitType: expenseSplit.SplitType,
+					SplitValue: expenseSplit.SplitValue,
+					calculateEquivalentAmount($data) {
+						if ($data.SplitType === 'pct') {
+							return (($data.SplitValue / 100) * $data.Amount).toFixed(2)
+						}
+						return $data.SplitValue.toFixed(2)
+					},
 					...data,
 				}
 			})
