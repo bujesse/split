@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"split/config/logger"
+	"split/helpers"
 	"split/models"
 	"split/repositories"
 	"split/views/components"
@@ -43,12 +44,12 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 	SplitValue, _ := strconv.ParseFloat(SplitValueStr, 64)
 	notes := r.FormValue("notes")
 	currencyCode := r.FormValue("currencyCode")
+	paidByID := r.FormValue("paidByID")
+	parsedPaidByID, _ := helpers.StringToUint(paidByID)
+	splitBy := r.FormValue("splitByID")
+	parsedSplitByID, _ := helpers.StringToUint(splitBy)
 	categoryID := r.FormValue("categoryID")
-	var parsedCatID *uint
-	if catID, err := strconv.ParseUint(categoryID, 10, 64); err == nil && categoryID != "" {
-		parsedID := uint(catID)
-		parsedCatID = &parsedID
-	}
+	parsedCatID, _ := helpers.StringToUintPointer(categoryID)
 
 	claims, _ := GetCurrentUserClaims(r)
 	currentUserID := uint(claims.UserID)
@@ -60,9 +61,10 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 		Notes:        notes,
 		CurrencyCode: currencyCode,
 		CategoryID:   parsedCatID,
+		PaidByID:     parsedPaidByID,
 		ExpenseSplits: []models.ExpenseSplit{
 			{
-				UserID:       currentUserID, // FIXME: use other user
+				UserID:       parsedSplitByID,
 				SplitType:    models.SplitType(SplitType),
 				SplitValue:   SplitValue,
 				CurrencyCode: currencyCode,
@@ -148,6 +150,10 @@ func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
 	categoryID := r.FormValue("categoryID")
 	SplitType := r.FormValue("SplitType")
 	SplitValue := r.FormValue("SplitValue")
+	paidByID := r.FormValue("paidByID")
+	parsedPaidByID, _ := helpers.StringToUint(paidByID)
+	splitBy := r.FormValue("splitByID")
+	parsedSplitByID, _ := helpers.StringToUint(splitBy)
 
 	expense, err := h.expenseRepo.GetByID(uint(id), "ExpenseSplits")
 
@@ -155,15 +161,16 @@ func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
 	expense.Amount, _ = strconv.ParseFloat(amount, 64)
 	expense.Notes = notes
 	expense.CurrencyCode = currencyCode
-	if catID, err := strconv.ParseUint(categoryID, 10, 64); err == nil && categoryID != "" {
-		parsedCatID := uint(catID)
-		expense.CategoryID = &parsedCatID
+	expense.PaidByID = parsedPaidByID
+	if catID, err := helpers.StringToUintPointer(categoryID); err == nil && categoryID != "" {
+		expense.CategoryID = catID
 	} else {
 		expense.CategoryID = nil
 	}
 
 	// TODO: Make this work for multiple splits (currently only works for one split)
 	for i := range expense.ExpenseSplits {
+		expense.ExpenseSplits[i].UserID = parsedSplitByID
 		expense.ExpenseSplits[i].SplitType = models.SplitType(SplitType)
 		expense.ExpenseSplits[i].SplitValue, _ = strconv.ParseFloat(SplitValue, 64)
 		expense.ExpenseSplits[i].CurrencyCode = currencyCode

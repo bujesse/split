@@ -93,9 +93,9 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(expense.CreatedBy.Username)
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(expense.PaidBy.Username)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 33, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expenses_table.templ`, Line: 33, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

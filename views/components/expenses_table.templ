@@ -30,7 +30,7 @@ templ ExpensesTable(expenses []models.Expense) {
 						</td>
 						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="formatAsCurrency($data.Currency.Code, $data.Amount)"></td>
 						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ expense.Category.Name }</td>
-						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ expense.CreatedBy.Username }</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ expense.PaidBy.Username }</td>
 						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ expense.CreatedAt.Format("2006-01-02 15:04:05") }</td>
 					</tr>
 				}

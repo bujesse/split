@@ -21,7 +21,7 @@ func getContextUserID(ctx context.Context) string {
 templ ExpenseForm(expense *models.Expense, categories []models.Category, currencies []models.Currency, users []models.User) {
 	<div class="w-full max-w-2xl bg-white p-8">
 		@templ.JSONScript("expense", expense)
-		<span id="user-id" class="hidden">{ getContextUserID(ctx) }</span>
+		<span id="current-user-id" class="hidden">{ getContextUserID(ctx) }</span>
 		<h2 class="text-2xl font-bold mb-6">
 			if expense == nil {
 				Add New Expense
@@ -43,14 +43,35 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					<input x-model="Amount" type="number" id="amount" name="amount" step="0.01" class="flex-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
 				</div>
 			</div>
-			<div class="mb-4">
-				<label for="PaidBy" class="block text-sm font-medium text-gray-700">Paid by</label>
-				<select x-model="PaidBy" id="PaidBy" name="PaidBy" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-					<option value="">Select User</option>
-					for _, user := range users {
-						<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
-					}
-				</select>
+			<div class="mb-4 flex space-x-4">
+				<div class="w-1/2">
+					<label for="paidByID" class="block text-sm font-medium text-gray-700">Paid by</label>
+					<select
+						x-model="paidByID"
+						id="paidByID"
+						name="paidByID"
+						@change="splitByID = selectNextOption(document.getElementById('splitByID'), paidByID)"
+						class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+					>
+						for _, user := range users {
+							<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
+						}
+					</select>
+				</div>
+				<div class="w-1/2">
+					<label for="splitByID" class="block text-sm font-medium text-gray-700">Split by</label>
+					<select
+						x-model="splitByID"
+						id="splitByID"
+						name="splitByID"
+						@change="paidByID = selectNextOption(document.getElementById('paidByID'), splitByID)"
+						class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+					>
+						for _, user := range users {
+							<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
+						}
+					</select>
+				</div>
 			</div>
 			<div class="mb-4">
 				<label for="splitValue" class="block text-sm font-medium text-gray-700">Split Value</label>
@@ -103,10 +124,30 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			</div>
 		</form>
 		<script>
+			function selectNextOption(selectElement, targetValue) {
+				const options = selectElement.options;
+				let foundTarget = false;
+
+				for (let i = 0; i < options.length; i++) {
+					if (foundTarget) {
+						selectElement.selectedIndex = i;
+						return options[i].value;
+					}
+
+					if (options[i].value === targetValue) {
+						foundTarget = true;
+					}
+				}
+
+				return null; // if the target value is the last option or not found
+			}
 			Alpine.data('init', () => {
 				const data = JSON.parse(document.getElementById('expense').textContent)
-				const userID = document.getElementById('user-id').innerText
+				const currentUserID = document.getElementById('current-user-id').innerText
+				const defaultPaidByID = data?.PaidByID || currentUserID
+				const otherUserID = selectNextOption(document.getElementById('paidByID'), currentUserID)
 				const expenseSplit = data?.ExpenseSplits.length ? data.ExpenseSplits[0] : {
+					UserID: otherUserID,
 					SplitType: 'pct',
 					SplitValue: 50,
 				}
@@ -116,7 +157,8 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					Notes: null,
 					CurrencyCode: 'USD',
 					CategoryID: null,
-					PaidBy: userID,
+					paidByID: defaultPaidByID,
+					splitByID: expenseSplit.UserID,
 					SplitType: expenseSplit.SplitType,
 					SplitValue: expenseSplit.SplitValue,
 					calculateEquivalentAmount($data) {
