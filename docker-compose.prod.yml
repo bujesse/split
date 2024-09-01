@@ -1,0 +1,27 @@
+networks:
+  homelab-public:
+    external: true
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: split
+    ports:
+      - "8090:8080"
+    restart: unless-stopped
+    environment:
+      - SPLIT_FX_RATES_API_TOKEN=${SPLIT_FX_RATES_API_TOKEN}
+      - SPLIT_DATABASE_URL=./data/split.db
+    volumes:
+      - ${SPLIT_DB_PATH}/split.db:/app/data/split.db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.split.entrypoints=https"
+      - "traefik.http.routers.split.rule=Host(`split.jessebu.com`)"
+      - "traefik.http.routers.split.tls=true"
+      - "traefik.http.routers.split.tls.certresolver=production"
+      - "traefik.http.routers.split.middlewares=authelia@docker"
+    networks:
+      - homelab-public

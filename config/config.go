@@ -11,7 +11,7 @@ import (
 func LoadEnv() error {
 	err := godotenv.Load()
 	if err != nil {
-		logger.Fatal("Error loading .env file")
+		logger.Warning.Println("No .env file found")
 	}
 
 	fxRatesApiToken := os.Getenv("SPLIT_FX_RATES_API_TOKEN")

@@ -1,0 +1,45 @@
+name: Deploy to Homelab
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the Docker image
+        run: |
+          docker compose -f docker-compose.prod.yml build
+        env:
+          SPLIT_DB_PATH: ${{ secrets.SPLIT_DB_PATH }}
+          SPLIT_FX_RATES_API_TOKEN: ${{ secrets.SPLIT_FX_RATES_API_TOKEN }}
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Stop and remove the old container (if exists)
+        run: |
+          docker compose -f docker-compose.prod.yml down
+        env:
+          SPLIT_DB_PATH: ${{ secrets.SPLIT_DB_PATH }}
+          SPLIT_FX_RATES_API_TOKEN: ${{ secrets.SPLIT_FX_RATES_API_TOKEN }}
+
+      - name: Deploy the new container
+        run: |
+          docker compose -f docker-compose.prod.yml up -d
+        env:
+          SPLIT_DB_PATH: ${{ secrets.SPLIT_DB_PATH }}
+          SPLIT_FX_RATES_API_TOKEN: ${{ secrets.SPLIT_FX_RATES_API_TOKEN }}
