@@ -31,14 +31,15 @@ func GetConnection() *gorm.DB {
 		},
 	)
 
-	db, err := gorm.Open(sqlite.Open("split.db"), &gorm.Config{
+	dbURL := os.Getenv("SPLIT_DATABASE_URL")
+	db, err := gorm.Open(sqlite.Open(dbURL), &gorm.Config{
 		Logger: newLogger,
 	})
 	if err != nil {
 		logger.Fatal("🔥 failed to connect to the database: %s", err.Error())
+	} else {
+		logger.Debug.Println("🚀 Connected Successfully to the Database")
 	}
-
-	logger.Debug.Println("🚀 Connected Successfully to the Database")
 
 	return db
 }

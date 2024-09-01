@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 	"split/config/logger"
 
@@ -13,13 +14,14 @@ func LoadEnv() error {
 		logger.Fatal("Error loading .env file")
 	}
 
-	fxRatesApiToken := GetFxRatesApiToken()
+	fxRatesApiToken := os.Getenv("SPLIT_FX_RATES_API_TOKEN")
 	if fxRatesApiToken == "" {
 		logger.Fatal("SPLIT_FX_RATES_API_TOKEN environment variable not set")
 	}
-	return err
-}
 
-func GetFxRatesApiToken() string {
-	return os.Getenv("SPLIT_FX_RATES_API_TOKEN")
+	dbURL := os.Getenv("SPLIT_DATABASE_URL")
+	if dbURL == "" {
+		log.Fatal("SPLIT_DATABASE_URL is not set")
+	}
+	return err
 }
