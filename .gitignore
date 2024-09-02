@@ -2,3 +2,4 @@ tmp
 split.db
 vendor
 .env
+node_modules

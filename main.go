@@ -54,6 +54,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	// Views
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	mux.Handle("/", handlers.RequireLogin(templ.Handler(views.Index())))
 	mux.Handle("GET /register", templ.Handler(views.RegisterPage()))
 	mux.Handle("GET /login", templ.Handler(views.LoginPage()))

@@ -15,6 +15,9 @@ WORKDIR /app
 
 COPY . .
 
+RUN apk add --no-cache npm
+RUN npm install && npm run build:css
+
 RUN go mod download
 RUN go mod verify
 
