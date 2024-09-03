@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: split
+    ports:
+      - "8090:8080"
+    restart: unless-stopped
+    env_file: ".env"
+    volumes:
+      - ./split.db:/app/data/split.db

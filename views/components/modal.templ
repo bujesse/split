@@ -6,10 +6,10 @@ templ Modal(content templ.Component) {
 			x-show="showModal"
 			x-transition
 			x-cloak
-			class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+			class="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-75"
 		>
-			<div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl relative" @mousedown.away="showModal = false" @keyup.escape.window="showModal = false">
-				<button @click="showModal = false" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+			<div class="relative w-full max-w-2xl rounded-lg bg-white p-8 shadow-md" @mousedown.away="showModal = false" @keyup.escape.window="showModal = false">
+				<button @click="showModal = false" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
 					</svg>

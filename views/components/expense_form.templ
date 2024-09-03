@@ -22,7 +22,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 	<div class="w-full max-w-2xl bg-white p-8">
 		@templ.JSONScript("expense", expense)
 		<span id="current-user-id" class="hidden">{ getContextUserID(ctx) }</span>
-		<h2 class="text-2xl font-bold mb-6">
+		<h2 class="mb-6 text-2xl font-bold">
 			if expense == nil {
 				Add New Expense
 			} else {
@@ -32,15 +32,15 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 		<form hx-post={ getExpensePostTarget(expense) } @htmx:after-request="$el.reset(); showModal = false" hx-swap="none" x-data="init">
 			<div class="mb-4">
 				<label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-				<input x-model="Title" autofocus type="text" id="title" name="title" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
+				<input x-model="Title" autofocus type="text" id="title" name="title" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm" required/>
 			</div>
 			<div class="mb-4">
 				<label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
 				<div class="flex rounded-md shadow-sm">
-					<span class="inline-flex items-center px-5 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-						<button type="button" x-text="CurrencyCode" class="focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"></button>
+					<span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-5 text-sm text-gray-500">
+						<button type="button" x-text="CurrencyCode" class="text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"></button>
 					</span>
-					<input x-model="Amount" type="number" id="amount" name="amount" step="0.01" class="flex-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
+					<input x-model="Amount" type="number" id="amount" name="amount" step="0.01" class="block w-full min-w-0 flex-1 rounded-r-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required/>
 				</div>
 			</div>
 			<div class="mb-4 flex space-x-4">
@@ -51,7 +51,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 						id="paidByID"
 						name="paidByID"
 						@change="splitByID = selectNextOption(document.getElementById('splitByID'), paidByID)"
-						class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
 					>
 						for _, user := range users {
 							<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
@@ -65,7 +65,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 						id="splitByID"
 						name="splitByID"
 						@change="paidByID = selectNextOption(document.getElementById('paidByID'), splitByID)"
-						class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
 					>
 						for _, user := range users {
 							<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
@@ -76,12 +76,12 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			<div class="mb-4">
 				<label for="splitValue" class="block text-sm font-medium text-gray-700">Split Value</label>
 				<div class="flex rounded-md shadow-sm">
-					<span class="inline-flex items-center rounded-l-md overflow-hidden border border-r-0 border-gray-300 bg-gray-50 text-sm w-24">
+					<span class="inline-flex w-24 items-center overflow-hidden rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-sm">
 						<button
 							type="button"
 							:class="SplitType === 'pct' ? 'bg-indigo-600 text-white' : 'bg-gray-50 text-gray-700'"
 							@click="SplitType = 'pct'"
-							class="h-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 flex-1 py-2 text-center rounded-l-md"
+							class="h-full flex-1 rounded-l-md py-2 text-center focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
 						>
 							%
 						</button>
@@ -89,13 +89,13 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 							type="button"
 							:class="SplitType === 'amt' ? 'bg-indigo-600 text-white' : 'bg-gray-50 text-gray-700'"
 							@click="SplitType = 'amt'"
-							class="h-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 flex-1 py-2 text-center"
+							class="h-full flex-1 py-2 text-center focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
 						>
 							$
 						</button>
 					</span>
 					<input x-model="SplitType" type="hidden" name="SplitType"/>
-					<input x-model="SplitValue" type="number" id="splitValue" name="SplitValue" step="0.01" class="flex-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
+					<input x-model="SplitValue" type="number" id="splitValue" name="SplitValue" step="0.01" class="block w-full min-w-0 flex-1 rounded-r-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required/>
 				</div>
 				<div class="mt-2 flex">
 					<span class="text-sm text-gray-700">Equivalent to: $<span x-text="calculateEquivalentAmount($data)"></span></span>
@@ -103,7 +103,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			</div>
 			<div class="mb-4">
 				<label for="categoryID" class="block text-sm font-medium text-gray-700">Category</label>
-				<select x-model="CategoryID" id="categoryID" name="categoryID" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+				<select x-model="CategoryID" id="categoryID" name="categoryID" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
 					<option value="">Select Category</option>
 					for _, category := range categories {
 						<option value={ fmt.Sprintf("%d", category.ID) }>{ category.Name }</option>
@@ -112,7 +112,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			</div>
 			<div class="mb-4">
 				<label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-				<textarea x-model="Notes" id="notes" name="notes" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+				<textarea x-model="Notes" id="notes" name="notes" rows="3" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"></textarea>
 			</div>
 			<div class="flex justify-end space-x-4">
 				@Button("gray", templ.Attributes{"@click": "showModal = false", "type": "button"}) {
