@@ -97,7 +97,7 @@ func main() {
 
 	mux.HandleFunc(
 		"GET /partials/categories/new",
-		handlers.RequireLogin(templ.Handler(components.Modal(components.CategoriesForm(nil)))),
+		handlers.RequireLogin(templ.Handler(components.CategoriesForm(nil))),
 	)
 	mux.HandleFunc(
 		"GET /partials/categories/edit/{id}",

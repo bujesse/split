@@ -1,22 +1,17 @@
 package components
 
-templ Modal(content templ.Component) {
-	<div x-data="{ showModal: true }">
-		<div
-			x-show="showModal"
-			x-transition
-			x-cloak
-			class="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-75"
-		>
-			<div class="relative w-full max-w-2xl rounded-lg bg-white p-8 shadow-md" @mousedown.away="showModal = false" @keyup.escape.window="showModal = false">
-				<div
-					id="modal-content"
-					class="overflow-y-auto"
-					style="height: 80vh"
-				>
-					@content
-				</div>
+templ Modal() {
+	<dialog id="baseModal" class="modal">
+		<div class="modal-box max-w-2xl">
+			<form method="dialog">
+				<button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+			</form>
+			<div id="modal-container">
+				<span class="loading loading-dots loading-lg"></span>
 			</div>
 		</div>
-	</div>
+		<form method="dialog" class="modal-backdrop">
+			<button>close</button>
+		</form>
+	</dialog>
 }

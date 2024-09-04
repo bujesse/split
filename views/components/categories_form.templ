@@ -11,7 +11,8 @@ func getCategoriesPostTarget(category *models.Category) string {
 }
 
 templ CategoriesForm(category *models.Category) {
-	<div class="w-full max-w-2xl bg-white p-8">
+	<div class="w-full max-w-2xl">
+		@templ.JSONScript("category", category)
 		<h2 class="text-2xl font-bold mb-6">
 			if category == nil {
 				Add New Category
@@ -19,27 +20,38 @@ templ CategoriesForm(category *models.Category) {
 				Edit Category: "{ category.Name }"
 			}
 		</h2>
-		<form hx-post={ getCategoriesPostTarget(category) } @htmx:after-request="$el.reset(); showModal = false" hx-swap="none" x-data="init">
-			@templ.JSONScript("category", category)
+		<form hx-post={ getCategoriesPostTarget(category) } @htmx:after-request="$el.reset(); baseModal.close()" hx-swap="none" x-data="init">
 			<div class="mb-4">
-				<label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-				<input x-model="Name" autofocus required type="text" id="name" name="name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required/>
+				<label class="input input-bordered flex items-center gap-2">
+					Name
+					<input x-model="Name" autofocus required type="text" id="name" name="name" class="grow"/>
+				</label>
 			</div>
 			<div class="mb-4">
-				<label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-				<input x-model="Type" required type="text" id="type" name="type" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+				<label class="input input-bordered flex items-center gap-2">
+					Type
+					<input x-model="Type" required type="text" id="type" name="type" class="grow"/>
+				</label>
 			</div>
 			<div class="mb-4">
-				<label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-				<textarea x-model="Description" id="description" name="description" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+				<textarea x-model="Description" id="description" name="description" class="textarea textarea-bordered w-full" placeholder="Description"></textarea>
 			</div>
-			<div class="flex justify-end space-x-4">
-				@Button("gray", templ.Attributes{"@click": "showModal = false", "type": "button"}) {
-					Cancel
-				}
-				@Button("indigo", templ.Attributes{"type": "submit"}) {
-					Submit
-				}
+			<div class="flex justify-between items-center">
+				<div>
+					if category != nil {
+						<button class="btn btn-warning" type="button">
+							Delete
+						</button>
+					}
+				</div>
+				<div class="flex space-x-2">
+					<button class="btn btn-neutral" type="button" onclick="baseModal.close()">
+						Cancel
+					</button>
+					<button type="submit" class="btn btn-primary">
+						Submit
+					</button>
+				</div>
 			</div>
 		</form>
 		<script>

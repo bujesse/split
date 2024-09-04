@@ -36,7 +36,15 @@ func CategoriesForm(category *models.Category) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full max-w-2xl bg-white p-8\"><h2 class=\"text-2xl font-bold mb-6\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full max-w-2xl\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.JSONScript("category", category).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h2 class=\"text-2xl font-bold mb-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,7 +61,7 @@ func CategoriesForm(category *models.Category) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(category.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/categories_form.templ`, Line: 19, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/categories_form.templ`, Line: 20, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -71,69 +79,23 @@ func CategoriesForm(category *models.Category) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(getCategoriesPostTarget(category))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/categories_form.templ`, Line: 22, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/categories_form.templ`, Line: 23, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"$el.reset(); showModal = false\" hx-swap=\"none\" x-data=\"init\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"$el.reset(); baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Name <input x-model=\"Name\" autofocus required type=\"text\" id=\"name\" name=\"name\" class=\"grow\"></label></div><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Type <input x-model=\"Type\" required type=\"text\" id=\"type\" name=\"type\" class=\"grow\"></label></div><div class=\"mb-4\"><textarea x-model=\"Description\" id=\"description\" name=\"description\" class=\"textarea textarea-bordered w-full\" placeholder=\"Description\"></textarea></div><div class=\"flex justify-between items-center\"><div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.JSONScript("category", category).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mb-4\"><label for=\"name\" class=\"block text-sm font-medium text-gray-700\">Name</label> <input x-model=\"Name\" autofocus required type=\"text\" id=\"name\" name=\"name\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\" required></div><div class=\"mb-4\"><label for=\"type\" class=\"block text-sm font-medium text-gray-700\">Type</label> <input x-model=\"Type\" required type=\"text\" id=\"type\" name=\"type\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"></div><div class=\"mb-4\"><label for=\"description\" class=\"block text-sm font-medium text-gray-700\">Description</label> <textarea x-model=\"Description\" id=\"description\" name=\"description\" rows=\"3\" class=\"mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm\"></textarea></div><div class=\"flex justify-end space-x-4\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var4 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-			if !templ_7745c5c3_IsBuffer {
-				defer func() {
-					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err == nil {
-						templ_7745c5c3_Err = templ_7745c5c3_BufErr
-					}
-				}()
-			}
-			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Cancel")
+		if category != nil {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-warning\" type=\"button\">Delete</button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			return templ_7745c5c3_Err
-		})
-		templ_7745c5c3_Err = Button("gray", templ.Attributes{"@click": "showModal = false", "type": "button"}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var5 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-			if !templ_7745c5c3_IsBuffer {
-				defer func() {
-					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err == nil {
-						templ_7745c5c3_Err = templ_7745c5c3_BufErr
-					}
-				}()
-			}
-			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Submit")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			return templ_7745c5c3_Err
-		})
-		templ_7745c5c3_Err = Button("indigo", templ.Attributes{"type": "submit"}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></form><script>\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('category').textContent)\n\t\t\t\treturn {\n\t\t\t\t\tName: null,\n\t\t\t\t\tType: null,\n\t\t\t\t\tDescription: null,\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex space-x-2\"><button class=\"btn btn-neutral\" type=\"button\" onclick=\"baseModal.close()\">Cancel</button> <button type=\"submit\" class=\"btn btn-primary\">Submit</button></div></div></form><script>\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('category').textContent)\n\t\t\t\treturn {\n\t\t\t\t\tName: null,\n\t\t\t\t\tType: null,\n\t\t\t\t\tDescription: null,\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

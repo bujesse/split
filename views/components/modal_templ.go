@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Modal(content templ.Component) templ.Component {
+func Modal() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -26,15 +26,7 @@ func Modal(content templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div x-data=\"{ showModal: true }\"><div x-show=\"showModal\" x-transition x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-75\"><div class=\"relative w-full max-w-2xl rounded-lg bg-white p-8 shadow-md\" @mousedown.away=\"showModal = false\" @keyup.escape.window=\"showModal = false\"><div id=\"modal-content\" class=\"overflow-y-auto\" style=\"height: 80vh\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = content.Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<dialog id=\"baseModal\" class=\"modal\"><div class=\"modal-box max-w-2xl\"><form method=\"dialog\"><button class=\"btn btn-sm btn-circle btn-ghost absolute right-2 top-2\">✕</button></form><div id=\"modal-container\"><span class=\"loading loading-dots loading-lg\"></span></div></div><form method=\"dialog\" class=\"modal-backdrop\"><button>close</button></form></dialog>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

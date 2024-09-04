@@ -77,7 +77,7 @@ func (h *CategoryHandler) EditCategoryByID(w http.ResponseWriter, request *http.
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	components.Modal(components.CategoriesForm(category)).Render(context.Background(), w)
+	components.CategoriesForm(category).Render(context.Background(), w)
 }
 
 func (h *CategoryHandler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
