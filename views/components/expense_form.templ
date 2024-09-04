@@ -19,7 +19,7 @@ func getContextUserID(ctx context.Context) string {
 }
 
 templ ExpenseForm(expense *models.Expense, categories []models.Category, currencies []models.Currency, users []models.User) {
-	<div class="w-full max-w-2xl bg-white p-8">
+	<div class="w-full max-w-2xl">
 		@templ.JSONScript("expense", expense)
 		<span id="current-user-id" class="hidden">{ getContextUserID(ctx) }</span>
 		<h2 class="mb-6 text-2xl font-bold">
@@ -29,98 +29,120 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 				Edit Expense: "{ expense.Title }"
 			}
 		</h2>
-		<form hx-post={ getExpensePostTarget(expense) } @htmx:after-request="$el.reset(); showModal = false" hx-swap="none" x-data="init">
+		<form hx-post={ getExpensePostTarget(expense) } @htmx:after-request="$el.reset(); baseModal.close()" hx-swap="none" x-data="init">
 			<div class="mb-4">
-				<label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-				<input x-model="Title" autofocus type="text" id="title" name="title" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm" required/>
+				<label class="input input-bordered flex items-center gap-2">
+					Name
+					<input x-model="Title" autofocus type="text" id="title" name="title" class="grow" required/>
+				</label>
 			</div>
 			<div class="mb-4">
-				<label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
-				<div class="flex rounded-md shadow-sm">
-					<span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-5 text-sm text-gray-500">
-						<button type="button" x-text="CurrencyCode" class="text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"></button>
-					</span>
-					<input x-model="Amount" type="number" id="amount" name="amount" step="0.01" class="block w-full min-w-0 flex-1 rounded-r-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required/>
-				</div>
+				<label class="input input-bordered flex items-center gap-2">
+					Amount
+					<input x-model="Amount" type="number" id="amount" name="amount" class="grow" required/>
+					<button type="button" x-text="currencyCode" class="badge badge-neutral"></button>
+				</label>
 			</div>
 			<div class="mb-4 flex space-x-4">
 				<div class="w-1/2">
-					<label for="paidByID" class="block text-sm font-medium text-gray-700">Paid by</label>
-					<select
-						x-model="paidByID"
-						id="paidByID"
-						name="paidByID"
-						@change="splitByID = selectNextOption(document.getElementById('splitByID'), paidByID)"
-						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-					>
-						for _, user := range users {
-							<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
-						}
-					</select>
+					<label class="form-control w-full max-w-xs">
+						<div class="label">
+							<span class="label-text">Paid By</span>
+						</div>
+						<select
+							x-model="paidByID"
+							id="paidByID"
+							name="paidByID"
+							@change="splitByID = selectNextOption(document.getElementById('splitByID'), paidByID)"
+							class="select select-bordered"
+						>
+							for _, user := range users {
+								<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
+							}
+						</select>
+					</label>
 				</div>
 				<div class="w-1/2">
-					<label for="splitByID" class="block text-sm font-medium text-gray-700">Split by</label>
+					<label class="form-control w-full max-w-xs">
+						<div class="label">
+							<span class="label-text">Paid By</span>
+						</div>
+						<select
+							x-model="splitByID"
+							id="splitByID"
+							name="splitByID"
+							@change="paidByID = selectNextOption(document.getElementById('paidByID'), splitByID)"
+							class="select select-bordered"
+						>
+							for _, user := range users {
+								<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
+							}
+						</select>
+					</label>
+				</div>
+			</div>
+			<div class="mb-4">
+				<label class="input input-bordered flex items-center gap-2">
+					Split Value
+					<input x-model="SplitValue" type="number" id="splitValue" name="SplitValue" class="grow" required/>
+					<div class="flex rounded-md shadow-sm">
+						<label class="swap swap-rotate bg-neutral text-neutral-content text-center px-4 rounded-full">
+							<!-- this hidden checkbox controls the state -->
+							<input type="checkbox" x-model="SplitTypeChecked" x-effect="SplitType = SplitTypeChecked ? 'pct' : 'amt'"/>
+							<div
+								class="swap-on"
+								type="button"
+							>
+								%
+							</div>
+							<div
+								class="swap-off"
+								type="button"
+							>
+								$
+							</div>
+						</label>
+						<input x-model="SplitType" type="hidden" name="SplitType"/>
+					</div>
+				</label>
+				<div class="mt-2 flex">
+					<span class="text-sm">Equivalent to: $<span x-text="calculateEquivalentAmount($data)"></span></span>
+				</div>
+			</div>
+			<div class="mb-4">
+				<label class="form-control w-full">
 					<select
-						x-model="splitByID"
-						id="splitByID"
-						name="splitByID"
-						@change="paidByID = selectNextOption(document.getElementById('paidByID'), splitByID)"
-						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+						x-model="CategoryID"
+						id="categoryID"
+						name="categoryID"
+						class="select select-bordered"
 					>
-						for _, user := range users {
-							<option value={ fmt.Sprintf("%d", user.ID) }>{ user.Username }</option>
+						<option value="">Select Category</option>
+						for _, category := range categories {
+							<option value={ fmt.Sprintf("%d", category.ID) }>{ category.Type } > { category.Name }</option>
 						}
 					</select>
-				</div>
+				</label>
 			</div>
 			<div class="mb-4">
-				<label for="splitValue" class="block text-sm font-medium text-gray-700">Split Value</label>
-				<div class="flex rounded-md shadow-sm">
-					<span class="inline-flex w-24 items-center overflow-hidden rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-sm">
-						<button
-							type="button"
-							:class="SplitType === 'pct' ? 'bg-indigo-600 text-white' : 'bg-gray-50 text-gray-700'"
-							@click="SplitType = 'pct'"
-							class="h-full flex-1 rounded-l-md py-2 text-center focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-						>
-							%
-						</button>
-						<button
-							type="button"
-							:class="SplitType === 'amt' ? 'bg-indigo-600 text-white' : 'bg-gray-50 text-gray-700'"
-							@click="SplitType = 'amt'"
-							class="h-full flex-1 py-2 text-center focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-						>
-							$
-						</button>
-					</span>
-					<input x-model="SplitType" type="hidden" name="SplitType"/>
-					<input x-model="SplitValue" type="number" id="splitValue" name="SplitValue" step="0.01" class="block w-full min-w-0 flex-1 rounded-r-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required/>
-				</div>
-				<div class="mt-2 flex">
-					<span class="text-sm text-gray-700">Equivalent to: $<span x-text="calculateEquivalentAmount($data)"></span></span>
-				</div>
+				<textarea x-model="Notes" id="notes" name="notes" class="textarea textarea-bordered w-full" placeholder="Notes"></textarea>
 			</div>
-			<div class="mb-4">
-				<label for="categoryID" class="block text-sm font-medium text-gray-700">Category</label>
-				<select x-model="CategoryID" id="categoryID" name="categoryID" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-					<option value="">Select Category</option>
-					for _, category := range categories {
-						<option value={ fmt.Sprintf("%d", category.ID) }>{ category.Name }</option>
+			<div class="flex justify-between items-center">
+				<div>
+					if expense != nil {
+						<button class="btn btn-warning" type="button">
+							Delete
+						</button>
 					}
-				</select>
-			</div>
-			<div class="mb-4">
-				<label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-				<textarea x-model="Notes" id="notes" name="notes" rows="3" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"></textarea>
-			</div>
-			<div class="flex justify-end space-x-4">
-				@Button("gray", templ.Attributes{"@click": "showModal = false", "type": "button"}) {
-					Cancel
-				}
-				@Button("indigo", templ.Attributes{"type": "submit"}) {
-					Submit
-				}
+				</div>
+				<div class="flex space-x-2">
+					<button class="btn btn-neutral" type="button" onclick="baseModal.close()">
+						Cancel
+					</button>
+					<button type="submit" class="btn btn-primary">
+						Submit
+					</button>
+				</div>
 			</div>
 		</form>
 		<script>
@@ -151,21 +173,23 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					SplitType: 'pct',
 					SplitValue: 50,
 				}
+				const defaultCurrency = data?.Currency.Code || 'USD'
 				return {
 					Title: null,
 					Amount: null,
 					Notes: null,
-					CurrencyCode: 'USD',
+					currencyCode: defaultCurrency,
 					CategoryID: null,
 					paidByID: defaultPaidByID,
 					splitByID: expenseSplit.UserID,
 					SplitType: expenseSplit.SplitType,
 					SplitValue: expenseSplit.SplitValue,
+					SplitTypeChecked: expenseSplit.SplitType === 'pct',
 					calculateEquivalentAmount($data) {
 						if ($data.SplitType === 'pct') {
 							return (($data.SplitValue / 100) * $data.Amount).toFixed(2)
 						}
-						return $data.SplitValue.toFixed(2)
+						return Number($data.SplitValue).toFixed(2)
 					},
 					...data,
 				}

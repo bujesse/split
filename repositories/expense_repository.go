@@ -24,7 +24,10 @@ func NewExpenseRepository(db *gorm.DB) ExpenseRepository {
 
 func (r *expenseRepository) GetAll() ([]models.Expense, error) {
 	var expenses []models.Expense
-	result := r.db.Preload(clause.Associations).Order("created_at desc").Find(&expenses)
+	result := r.db.Preload(clause.Associations).
+		Preload("ExpenseSplits.User").
+		Order("created_at desc").
+		Find(&expenses)
 	if result.Error != nil {
 		return nil, result.Error
 	}

@@ -30,7 +30,7 @@ func getColor(color string) string {
 templ Button(color string, attrs templ.Attributes) {
 	<button
 		{ attrs... }
-		class={ getColor(color), "text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" }
+		class={ color, "btn" }
 	>
 		{ children... }
 	</button>

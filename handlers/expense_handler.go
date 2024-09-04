@@ -102,12 +102,12 @@ func (h *ExpenseHandler) CreateNewExpense(w http.ResponseWriter, request *http.R
 	currencies, _ := h.currencyRepo.GetAll()
 	users, _ := h.userRepo.GetAll()
 
-	components.Modal(components.ExpenseForm(
+	components.ExpenseForm(
 		nil,
 		categories,
 		currencies,
 		users,
-	)).Render(request.Context(), w)
+	).Render(request.Context(), w)
 }
 
 func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Request) {
@@ -117,7 +117,7 @@ func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Re
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
-	expense, err := h.expenseRepo.GetByID(uint(id), "ExpenseSplits")
+	expense, err := h.expenseRepo.GetByID(uint(id), "ExpenseSplits", "Currency")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -127,12 +127,12 @@ func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Re
 	currencies, _ := h.currencyRepo.GetAll()
 	users, _ := h.userRepo.GetAll()
 
-	components.Modal(components.ExpenseForm(
+	components.ExpenseForm(
 		expense,
 		categories,
 		currencies,
 		users,
-	)).Render(context.Background(), w)
+	).Render(context.Background(), w)
 }
 
 func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {

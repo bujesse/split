@@ -53,7 +53,7 @@ func Button(color string, attrs templ.Attributes) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{getColor(color), "text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"}
+		var templ_7745c5c3_Var2 = []any{color, "btn"}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
