@@ -4,7 +4,6 @@ import (
 	"time"
 
 	_ "gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 type BaseModel struct {
@@ -30,7 +29,6 @@ type Category struct {
 }
 
 type Currency struct {
-	gorm.Model
 	Code            string  `gorm:"size:3;primaryKey"`
 	Name            string  `gorm:"size:100"`
 	LatestFxRateUSD float64 `gorm:"default:1.0"`

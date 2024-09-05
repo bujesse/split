@@ -16,6 +16,7 @@ import (
 )
 
 func init() {
+	config.LoadEnv()
 	MakeMigrations()
 }
 
@@ -40,8 +41,6 @@ func (h Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
-	config.LoadEnv()
 
 	db := GetConnection()
 	userHandler := handlers.NewUserHandler(db)
