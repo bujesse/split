@@ -12,6 +12,7 @@ type ExpenseRepository interface {
 	GetByID(id uint, preloads ...string) (*models.Expense, error)
 	UpdateExpense(expense *models.Expense) error
 	GetAll() ([]models.Expense, error)
+	DeleteExpense(expense *models.Expense) error
 }
 
 type expenseRepository struct {
@@ -53,4 +54,8 @@ func (r *expenseRepository) GetByID(id uint, preloads ...string) (*models.Expens
 
 func (r *expenseRepository) UpdateExpense(expense *models.Expense) error {
 	return r.db.Session(&gorm.Session{FullSaveAssociations: true}).Save(expense).Error
+}
+
+func (r *expenseRepository) DeleteExpense(expense *models.Expense) error {
+	return r.db.Select("ExpenseSplits").Delete(&expense).Error
 }

@@ -184,3 +184,22 @@ func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger", "reloadExpenses")
 	w.WriteHeader(http.StatusOK)
 }
+
+func (h *ExpenseHandler) DeleteExpense(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, _ := strconv.Atoi(idStr)
+
+	expense, err := h.expenseRepo.GetByID(uint(id))
+	if err != nil {
+		http.Error(w, "Failed to find expense", http.StatusNotFound)
+		return
+	}
+
+	if err := h.expenseRepo.DeleteExpense(expense); err != nil {
+		http.Error(w, "Failed to delete expense", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Trigger", "reloadExpenses")
+	w.WriteHeader(http.StatusOK)
+}

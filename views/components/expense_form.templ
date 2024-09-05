@@ -130,7 +130,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			<div class="flex justify-between items-center">
 				<div>
 					if expense != nil {
-						<button class="btn btn-warning" type="button">
+						<button class="btn btn-warning" type="button" hx-delete={ "/api/expenses/" + fmt.Sprintf("%d", expense.ID) }>
 							Delete
 						</button>
 					}

@@ -62,9 +62,30 @@ templ Nav() {
 					</div>
 					<ul
 						tabindex="0"
-						class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+						class="menu dropdown-content bg-base-300 text-base-content rounded-box z-[1] mt-3 w-52 p-2 shadow"
 					>
-						<li><a hx-get="/partials/categories" hx-target="#main-content" hx-replace-url="/categories">Categories</a></li>
+						<li>
+							<a
+								hx-get="/partials/index"
+								hx-target="#main-content"
+								hx-replace-url="/"
+								x-data
+								@click="document.activeElement?.blur()"
+							>
+								Expenses
+							</a>
+						</li>
+						<li>
+							<a
+								hx-get="/partials/categories"
+								hx-target="#main-content"
+								hx-replace-url="/categories"
+								x-data
+								@click="document.activeElement?.blur()"
+							>
+								Categories
+							</a>
+						</li>
 					</ul>
 				</div>
 				<div>
@@ -81,7 +102,7 @@ templ Nav() {
 			<div class="navbar-end">
 				<label class="swap swap-rotate mr-6">
 					<!-- this hidden checkbox controls the state -->
-					<input type="checkbox" class="theme-controller" value="retro"/>
+					<input type="checkbox" class="theme-controller" value="cupcake"/>
 					<!-- sun icon -->
 					<svg
 						class="swap-off h-10 w-10 fill-current"

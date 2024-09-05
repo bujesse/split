@@ -19,7 +19,7 @@ templ CategoriesTable(categories []models.Category) {
 				for _, category := range categories {
 					<tr>
 						<td
-							class="flex items-center gap-3 cursor-pointer"
+							class="items-center gap-3 cursor-pointer font-bold"
 							hx-get={ "/partials/categories/edit/" + strconv.Itoa(int(category.ID)) }
 							hx-trigger="click"
 							hx-target="#modal-container"

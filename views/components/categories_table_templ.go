@@ -36,7 +36,7 @@ func CategoriesTable(categories []models.Category) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, category := range categories {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><td class=\"flex items-center gap-3 cursor-pointer\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><td class=\"items-center gap-3 cursor-pointer font-bold\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

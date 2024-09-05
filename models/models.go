@@ -64,7 +64,7 @@ type Expense struct {
 	CreatedBy     User           `gorm:"foreignKey:CreatedByID"`
 	UpdatedByID   *uint          `gorm:"index"`
 	UpdatedBy     User           `gorm:"foreignKey:UpdatedByID"`
-	ExpenseSplits []ExpenseSplit `gorm:"foreignKey:ExpenseID"` // One-to-many relationship
+	ExpenseSplits []ExpenseSplit `gorm:"foreignKey:ExpenseID"`
 }
 
 type SplitType string

@@ -91,6 +91,10 @@ func main() {
 		"POST /api/expenses/{id}",
 		handlers.RequireLoginApi(expenseHandler.UpdateExpense),
 	)
+	mux.HandleFunc(
+		"DELETE /api/expenses/{id}",
+		handlers.RequireLoginApi(expenseHandler.DeleteExpense),
+	)
 
 	// Categories
 	categoryHandler := handlers.NewCategoryHandler(categoryRepo)
