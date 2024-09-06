@@ -45,6 +45,7 @@ func MakeMigrations() error {
 	}
 
 	seedCurrencies(db)
+	seedCategories(db)
 
 	return nil
 }
@@ -97,6 +98,66 @@ func seedCurrencies(db *gorm.DB) {
 
 		for _, currency := range currencies {
 			db.Create(&currency)
+		}
+	}
+}
+
+func seedCategories(db *gorm.DB) {
+	var count int64
+	db.Model(&models.Category{}).Count(&count)
+
+	if count == 0 {
+		categories := []models.Category{
+			// Recreation
+			{Name: "Bars", Type: "Recreation"},
+			{Name: "Breweries", Type: "Recreation"},
+			{Name: "Dining Out", Type: "Recreation"},
+			{Name: "Concerts", Type: "Recreation"},
+			{Name: "Events", Type: "Recreation"},
+			{Name: "Movies", Type: "Recreation"},
+			{Name: "Sports", Type: "Recreation"},
+			{Name: "Other", Type: "Recreation"},
+
+			// Groceries
+			{Name: "Costco", Type: "Groceries"},
+			{Name: "Grocery Store", Type: "Groceries"},
+			{Name: "Liquor Store", Type: "Groceries"},
+			{Name: "Specialty Store", Type: "Groceries"},
+
+			// Bills
+			{Name: "Electric", Type: "Bills"},
+			{Name: "Gas", Type: "Bills"},
+			{Name: "Trash", Type: "Bills"},
+			{Name: "Rent", Type: "Bills"},
+			{Name: "Internet", Type: "Bills"},
+			{Name: "Other", Type: "Bills"},
+
+			// Uncategorized
+			{Name: "General", Type: "Uncategorized"},
+
+			// Travel
+			{Name: "Flights", Type: "Travel"},
+			{Name: "Hotels", Type: "Travel"},
+			{Name: "Parking", Type: "Travel"},
+			{Name: "Gas", Type: "Travel"},
+			{Name: "Taxi", Type: "Travel"},
+			{Name: "Buses/Trains", Type: "Travel"},
+			{Name: "Other", Type: "Travel"},
+
+			// Transportation
+			{Name: "Car", Type: "Transportation"},
+			{Name: "Gas", Type: "Transportation"},
+			{Name: "Taxi", Type: "Transportation"},
+			{Name: "Other", Type: "Transportation"},
+
+			// Shopping
+			{Name: "Clothes", Type: "Shopping"},
+			{Name: "Gifts", Type: "Shopping"},
+			{Name: "Other", Type: "Shopping"},
+		}
+
+		for _, category := range categories {
+			db.Create(&category)
 		}
 	}
 }

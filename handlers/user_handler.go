@@ -72,6 +72,17 @@ func RequireLogin(handler http.Handler) http.HandlerFunc {
 	}
 }
 
+func AlreadyLoggedInMiddleware(handler http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		claims, err := GetCurrentUserClaims(r)
+		if claims != nil && err == nil {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+		handler.ServeHTTP(w, r)
+	}
+}
+
 func RequireLoginApi(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, err := GetCurrentUserClaims(r)

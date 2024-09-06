@@ -55,9 +55,13 @@ func main() {
 	// Views
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	mux.Handle("/", handlers.RequireLogin(templ.Handler(views.Index())))
-	mux.Handle("GET /register", templ.Handler(views.RegisterPage()))
-	mux.Handle("GET /login", templ.Handler(views.LoginPage()))
-	mux.Handle("GET /categories", templ.Handler(views.CategoriesView()))
+	mux.Handle("GET /categories", handlers.RequireLogin(templ.Handler(views.CategoriesView())))
+
+	mux.Handle(
+		"GET /register",
+		handlers.AlreadyLoggedInMiddleware(templ.Handler(views.RegisterPage())),
+	)
+	mux.Handle("GET /login", handlers.AlreadyLoggedInMiddleware(templ.Handler(views.LoginPage())))
 
 	// Partials
 	mux.Handle("/partials/index", handlers.RequireLogin(templ.Handler(partials.Index())))

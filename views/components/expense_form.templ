@@ -110,19 +110,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 				</div>
 			</div>
 			<div class="mb-4">
-				<label class="form-control w-full">
-					<select
-						x-model="CategoryID"
-						id="categoryID"
-						name="categoryID"
-						class="select select-bordered"
-					>
-						<option value="">Select Category</option>
-						for _, category := range categories {
-							<option value={ fmt.Sprintf("%d", category.ID) }>{ category.Type } > { category.Name }</option>
-						}
-					</select>
-				</label>
+				@Typeahead("categoryID", "CategoryID", "Search Categories...", categories)
 			</div>
 			<div class="mb-4">
 				<textarea x-model="Notes" id="notes" name="notes" class="textarea textarea-bordered w-full" placeholder="Notes"></textarea>
@@ -196,4 +184,108 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			})
 		</script>
 	</div>
+}
+
+templ Typeahead[T any](name string, model string, placeholder string, items []T) {
+	<div
+		x-data="typeaheadInit($el)"
+		class="relative"
+		items={ templ.JSONString(items) }
+		model={ model }
+		@keydown.down="focusNextItem()"
+		@keydown.up="focusPrevItem()"
+		@keydown.enter.prevent="selectItem(activeItem)"
+	>
+		<label class="input input-bordered flex items-center gap-2">
+			<input
+				type="text"
+				class="grow"
+				placeholder={ placeholder }
+				x-model="search"
+				@keydown.escape="open = false; activeItem = null"
+				@focus="open = true"
+				@blur="open = false; activeItem = null"
+			/>
+			<input type="hidden" x-model={ model } name={ name }/>
+			<span
+				x-show="search !== ''"
+				@click="search = ''; open = false; activeItem = null"
+				class="badge badge-ghost cursor-pointer"
+			>✕</span>
+		</label>
+		<!-- <label class="form-control w-full"> -->
+		<!-- 	<div class="label"> -->
+		<!-- 		<span class="label-text">What is your name?</span> -->
+		<!-- 	</div> -->
+		<!-- 	<input -->
+		<!-- 		type="text" -->
+		<!-- 		class="input input-bordered w-full" -->
+		<!-- 		placeholder={ placeholder } -->
+		<!-- 		x-model="search" -->
+		<!-- 		@keydown.escape="open = false; activeItem = null" -->
+		<!-- 		@focus="open = true" -->
+		<!-- 		@blur="open = false; activeItem = null" -->
+		<!-- 	/> -->
+		<!-- 	<input type="hidden" x-model={ model } name={ name }/> -->
+		<!-- </label> -->
+		<div x-show="open" class="absolute w-full">
+			<ul tabindex="0" class="menu bg-base-200 rounded-box w-full block max-h-44 overflow-y-scroll">
+				<template x-for="item in filteredItems" :key="item.ID">
+					<li>
+						<a @click="selectItem(item)" x-text="getDisplayName(item)" :class="activeItem === item && 'active'"></a>
+					</li>
+				</template>
+			</ul>
+		</div>
+	</div>
+	<script>
+		function typeaheadInit($el) {
+			const items = JSON.parse($el.getAttribute('items'))
+			const model = $el.getAttribute('model')
+			return {
+				search: '',
+				open: false,
+				items: items,
+				activeItem: null,
+				getDisplayName(item) {
+					return item.Type + ' > ' + item.Name
+				},
+				filteredItems() {
+					return this.items.filter(item => {
+						return this.getDisplayName(item).toLowerCase().includes(this.search.toLowerCase())
+					})
+				},
+				focusItem(item) {
+					this.activeItem = item
+				},
+				focusNextItem() {
+					if (!this.open) this.open = true
+					const items = this.filteredItems()
+					const index = items.indexOf(this.activeItem)
+					if (index === -1) {
+						this.activeItem = items[0]
+					} else if (index < items.length - 1) {
+						this.activeItem = items[index + 1]
+					}
+				},
+				focusPrevItem(item) {
+					if (!this.open) this.open = true
+					const items = this.filteredItems()
+					const index = items.indexOf(this.activeItem)
+					if (index === -1) {
+						this.activeItem = items[items.length - 1]
+					} else if (index > 0) {
+						this.activeItem = items[index - 1]
+					}
+				},
+				selectItem(item) {
+					const value = item.ID
+					this[model] = value
+					this.search = this.getDisplayName(item)
+					this.open = false
+					this.activeItem = null
+				}
+			}
+		}
+	</script>
 }
