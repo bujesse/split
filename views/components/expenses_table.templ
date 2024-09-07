@@ -55,7 +55,7 @@ templ ExpensesTable(expenses []models.Expense) {
 						</td>
 						if len(expense.ExpenseSplits) > 0 {
 							<td class="text-right">
-								{ expense.ExpenseSplits[0].User.Username } owes <span x-text="printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])"></span>
+								{ expense.ExpenseSplits[0].User.Username } owes <span x-html="printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])"></span>
 								<br/>
 								<span class="badge badge-ghost badge-sm">{ expense.Category.Type } > { expense.Category.Name }</span>
 							</td>
@@ -80,9 +80,9 @@ templ ExpensesTable(expenses []models.Expense) {
 			if (expenseSplit.Amount == 0) {
 				return 'nothing'
 			} else if (expenseSplit.SplitType == 'pct') {
-				return `${formatAsCurrency(currency, amount * expenseSplit.SplitValue / 100)} (${expenseSplit.SplitValue}%)`
+				return `<strong>${formatAsCurrency(currency, amount * expenseSplit.SplitValue / 100)}</strong> (${expenseSplit.SplitValue}%)`
 			} else if (expenseSplit.SplitType == 'amt') {
-				return `${formatAsCurrency(currency, expenseSplit.SplitValue)} (${Math.round(expenseSplit.SplitValue / amount * 100)}%)`
+				return `<strong>${formatAsCurrency(currency, expenseSplit.SplitValue)}</strong> (${Math.round(expenseSplit.SplitValue / amount * 100)}%)`
 			}
 		}
 	</script>

@@ -106,7 +106,7 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" owes <span x-text=\"printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])\"></span><br><span class=\"badge badge-ghost badge-sm\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" owes <span x-html=\"printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])\"></span><br><span class=\"badge badge-ghost badge-sm\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -142,7 +142,7 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table></div><script>\n\t\tfunction formatAsCurrency(currency, amount) {\n\t\t\tif (!currency) {\n\t\t\t\tcurrency = 'USD';\n\t\t\t}\n\t\t\tlet formatter = new Intl.NumberFormat('en-US', {\n\t\t\t\tstyle: 'currency',\n\t\t\t\tcurrency: currency,\n\t\t\t});\n\t\t\treturn formatter.format(amount);\n\t\t}\n\t\tfunction printExpenseSplit(currency, amount, expenseSplit) {\n\t\t\tif (expenseSplit.Amount == 0) {\n\t\t\t\treturn 'nothing'\n\t\t\t} else if (expenseSplit.SplitType == 'pct') {\n\t\t\t\treturn `${formatAsCurrency(currency, amount * expenseSplit.SplitValue / 100)} (${expenseSplit.SplitValue}%)`\n\t\t\t} else if (expenseSplit.SplitType == 'amt') {\n\t\t\t\treturn `${formatAsCurrency(currency, expenseSplit.SplitValue)} (${Math.round(expenseSplit.SplitValue / amount * 100)}%)`\n\t\t\t}\n\t\t}\n\t</script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table></div><script>\n\t\tfunction formatAsCurrency(currency, amount) {\n\t\t\tif (!currency) {\n\t\t\t\tcurrency = 'USD';\n\t\t\t}\n\t\t\tlet formatter = new Intl.NumberFormat('en-US', {\n\t\t\t\tstyle: 'currency',\n\t\t\t\tcurrency: currency,\n\t\t\t});\n\t\t\treturn formatter.format(amount);\n\t\t}\n\t\tfunction printExpenseSplit(currency, amount, expenseSplit) {\n\t\t\tif (expenseSplit.Amount == 0) {\n\t\t\t\treturn 'nothing'\n\t\t\t} else if (expenseSplit.SplitType == 'pct') {\n\t\t\t\treturn `<strong>${formatAsCurrency(currency, amount * expenseSplit.SplitValue / 100)}</strong> (${expenseSplit.SplitValue}%)`\n\t\t\t} else if (expenseSplit.SplitType == 'amt') {\n\t\t\t\treturn `<strong>${formatAsCurrency(currency, expenseSplit.SplitValue)}</strong> (${Math.round(expenseSplit.SplitValue / amount * 100)}%)`\n\t\t\t}\n\t\t}\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

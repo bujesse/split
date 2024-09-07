@@ -18,6 +18,16 @@ func getContextUserID(ctx context.Context) string {
 	return ""
 }
 
+func countryCodeToFlag(code string) string {
+	// Generate the flag emoji
+	flag := ""
+	for _, char := range code {
+		flag += string(rune(127397 + char))
+	}
+
+	return flag
+}
+
 templ ExpenseForm(expense *models.Expense, categories []models.Category, currencies []models.Currency, users []models.User) {
 	<div class="w-full max-w-2xl">
 		@templ.JSONScript("expense", expense)
@@ -36,12 +46,16 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					<input x-model="Title" autofocus type="text" id="title" name="title" class="grow" required/>
 				</label>
 			</div>
-			<div class="mb-4">
-				<label class="input input-bordered flex items-center gap-2">
+			<div class="mb-4 join w-full">
+				<label class="input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full">
 					Amount
 					<input x-model="Amount" type="number" id="amount" name="amount" class="grow" required/>
-					<button type="button" x-text="currencyCode" class="badge badge-neutral"></button>
 				</label>
+				<select x-model="currencyCode" name="currencyCode" class="select select-bordered join-item w-5/12 sm:w-auto">
+					for _, currency := range currencies {
+						<option value={ currency.Code }>{ countryCodeToFlag(currency.TwoCharCountryCode) } { currency.Code }</option>
+					}
+				</select>
 			</div>
 			<div class="mb-4 flex space-x-4">
 				<div class="w-1/2">

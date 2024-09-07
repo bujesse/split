@@ -29,10 +29,11 @@ type Category struct {
 }
 
 type Currency struct {
-	Code            string  `gorm:"size:3;primaryKey"`
-	Name            string  `gorm:"size:100"`
-	LatestFxRateUSD float64 `gorm:"default:1.0"`
-	IsBaseCurrency  bool    `gorm:"default:false"`
+	Code               string  `gorm:"size:3;primaryKey"`
+	Name               string  `gorm:"size:100"`
+	LatestFxRateUSD    float64 `gorm:"default:1.0"`
+	IsBaseCurrency     bool    `gorm:"default:false"`
+	TwoCharCountryCode string  `gorm:"size:2"`
 }
 
 type Settlement struct {
@@ -51,7 +52,7 @@ type Expense struct {
 	CurrencyCode  string         `gorm:"size:3;not null;default:'USD'"`
 	Currency      Currency       `gorm:"foreignKey:CurrencyCode;references:Code"`
 	Notes         string         `gorm:"size:255"`
-	CategoryID    *uint          `gorm:"index"`
+	CategoryID    *uint          `gorm:"index";default:19`
 	Category      Category       `gorm:"foreignKey:CategoryID"`
 	SettlementID  *uint          `gorm:"index"`
 	Settlement    Settlement     `gorm:"foreignKey:SettlementID"`

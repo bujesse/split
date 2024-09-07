@@ -57,48 +57,68 @@ func seedCurrencies(db *gorm.DB) {
 	if count == 0 {
 		currencies := []models.Currency{
 			{
-				Code:            "CAD",
-				Name:            "Canadian Dollar",
-				LatestFxRateUSD: 1.3466401488,
-				IsBaseCurrency:  false,
-			},
-			{Code: "EUR", Name: "Euro", LatestFxRateUSD: 0.8986501054, IsBaseCurrency: false},
-			{
-				Code:            "GBP",
-				Name:            "British Pound Sterling",
-				LatestFxRateUSD: 0.7567701029,
-				IsBaseCurrency:  false,
+				Code:               "CAD",
+				Name:               "Canadian Dollar",
+				LatestFxRateUSD:    1.3466401488,
+				IsBaseCurrency:     false,
+				TwoCharCountryCode: "CA",
 			},
 			{
-				Code:            "HKD",
-				Name:            "Hong Kong Dollar",
-				LatestFxRateUSD: 7.7957609828,
-				IsBaseCurrency:  false,
+				Code:               "EUR",
+				Name:               "Euro",
+				LatestFxRateUSD:    0.8986501054,
+				IsBaseCurrency:     false,
+				TwoCharCountryCode: "EU", // No specific ISO 2-char, EU is used informally
 			},
 			{
-				Code:            "JPY",
-				Name:            "Japanese Yen",
-				LatestFxRateUSD: 144.2905964449,
-				IsBaseCurrency:  false,
+				Code:               "GBP",
+				Name:               "British Pound Sterling",
+				LatestFxRateUSD:    0.7567701029,
+				IsBaseCurrency:     false,
+				TwoCharCountryCode: "GB",
 			},
 			{
-				Code:            "MXN",
-				Name:            "Mexican Peso",
-				LatestFxRateUSD: 19.6518136887,
-				IsBaseCurrency:  false,
+				Code:               "HKD",
+				Name:               "Hong Kong Dollar",
+				LatestFxRateUSD:    7.7957609828,
+				IsBaseCurrency:     false,
+				TwoCharCountryCode: "HK",
 			},
 			{
-				Code:            "NZD",
-				Name:            "New Zealand Dollar",
-				LatestFxRateUSD: 1.602150244,
-				IsBaseCurrency:  false,
+				Code:               "JPY",
+				Name:               "Japanese Yen",
+				LatestFxRateUSD:    144.2905964449,
+				IsBaseCurrency:     false,
+				TwoCharCountryCode: "JP",
 			},
-			{Code: "USD", Name: "United States Dollar", LatestFxRateUSD: 1, IsBaseCurrency: true},
+			{
+				Code:               "MXN",
+				Name:               "Mexican Peso",
+				LatestFxRateUSD:    19.6518136887,
+				IsBaseCurrency:     false,
+				TwoCharCountryCode: "MX",
+			},
+			{
+				Code:               "NZD",
+				Name:               "New Zealand Dollar",
+				LatestFxRateUSD:    1.602150244,
+				IsBaseCurrency:     false,
+				TwoCharCountryCode: "NZ",
+			},
+			{
+				Code:               "USD",
+				Name:               "United States Dollar",
+				LatestFxRateUSD:    1,
+				IsBaseCurrency:     true,
+				TwoCharCountryCode: "US",
+			},
 		}
 
 		for _, currency := range currencies {
 			db.Create(&currency)
 		}
+
+		logger.Debug.Println("🌱 Seeded Currencies")
 	}
 }
 
@@ -159,5 +179,8 @@ func seedCategories(db *gorm.DB) {
 		for _, category := range categories {
 			db.Create(&category)
 		}
+
+		logger.Debug.Println("🌱 Seeded Categories")
 	}
+
 }
