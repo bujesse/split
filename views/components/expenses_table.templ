@@ -48,7 +48,7 @@ templ ExpensesTable(expenses []models.Expense) {
 									<div class="font-bold">{ expense.Title }</div>
 									<div class="text-sm opacity-50">
 										{ expense.PaidBy.Username } paid
-										<span x-text="formatAsCurrency($data.Currency.Code, $data.Amount)"></span>
+										<span x-text="FormatAsCurrency($data.Currency.Code, $data.Amount)"></span>
 									</div>
 								</div>
 							</div>
@@ -57,7 +57,7 @@ templ ExpensesTable(expenses []models.Expense) {
 							<td class="text-right">
 								{ expense.ExpenseSplits[0].User.Username } owes <span x-html="printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])"></span>
 								<br/>
-								<span class="badge badge-ghost badge-sm">{ expense.Category.Type } > { expense.Category.Name }</span>
+								<span class="badge badge-ghost badge-sm">{ expense.CreatedAt.Format("Jan 01") }</span>
 							</td>
 						}
 					</tr>
@@ -66,23 +66,13 @@ templ ExpensesTable(expenses []models.Expense) {
 		</table>
 	</div>
 	<script>
-		function formatAsCurrency(currency, amount) {
-			if (!currency) {
-				currency = 'USD';
-			}
-			let formatter = new Intl.NumberFormat('en-US', {
-				style: 'currency',
-				currency: currency,
-			});
-			return formatter.format(amount);
-		}
 		function printExpenseSplit(currency, amount, expenseSplit) {
 			if (expenseSplit.Amount == 0) {
 				return 'nothing'
 			} else if (expenseSplit.SplitType == 'pct') {
-				return `<strong>${formatAsCurrency(currency, amount * expenseSplit.SplitValue / 100)}</strong> (${expenseSplit.SplitValue}%)`
+				return `<strong>${FormatAsCurrency(currency, amount * expenseSplit.SplitValue / 100)}</strong> (${expenseSplit.SplitValue}%)`
 			} else if (expenseSplit.SplitType == 'amt') {
-				return `<strong>${formatAsCurrency(currency, expenseSplit.SplitValue)}</strong> (${Math.round(expenseSplit.SplitValue / amount * 100)}%)`
+				return `<strong>${FormatAsCurrency(currency, expenseSplit.SplitValue)}</strong> (${Math.round(expenseSplit.SplitValue / amount * 100)}%)`
 			}
 		}
 	</script>

@@ -57,6 +57,19 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					}
 				</select>
 			</div>
+			<div class="mb-4">
+				<div class="join w-full">
+					<label class="input input-bordered flex items-center gap-2 join-item w-8/12 sm:w-full">
+						<span>Split Amt</span>
+						<input x-model="SplitValue" type="number" id="splitValue" name="SplitValue" class="grow" required/>
+					</label>
+					<input x-model="SplitType" value="pct" class="join-item btn w-2/12 sm:w-auto" type="radio" name="SplitType" aria-label="%"/>
+					<input x-model="SplitType" value="amt" class="join-item btn w-2/12 sm:w-auto" type="radio" name="SplitType" aria-label="$"/>
+				</div>
+				<div class="mt-2 flex">
+					<span class="text-sm">Equivalent to: <strong x-text="calculateEquivalentAmount($data)"></strong></span>
+				</div>
+			</div>
 			<div class="mb-4 flex space-x-4">
 				<div class="w-1/2">
 					<label class="form-control w-full max-w-xs">
@@ -79,7 +92,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 				<div class="w-1/2">
 					<label class="form-control w-full max-w-xs">
 						<div class="label">
-							<span class="label-text">Paid By</span>
+							<span class="label-text">Split By</span>
 						</div>
 						<select
 							x-model="splitByID"
@@ -93,34 +106,6 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 							}
 						</select>
 					</label>
-				</div>
-			</div>
-			<div class="mb-4">
-				<label class="input input-bordered flex items-center gap-2">
-					Split Value
-					<input x-model="SplitValue" type="number" id="splitValue" name="SplitValue" class="grow" required/>
-					<div class="flex rounded-md shadow-sm">
-						<label class="swap swap-rotate bg-neutral text-neutral-content text-center px-4 rounded-full">
-							<!-- this hidden checkbox controls the state -->
-							<input type="checkbox" x-model="SplitTypeChecked" x-effect="SplitType = SplitTypeChecked ? 'pct' : 'amt'"/>
-							<div
-								class="swap-on"
-								type="button"
-							>
-								%
-							</div>
-							<div
-								class="swap-off"
-								type="button"
-							>
-								$
-							</div>
-						</label>
-						<input x-model="SplitType" type="hidden" name="SplitType"/>
-					</div>
-				</label>
-				<div class="mt-2 flex">
-					<span class="text-sm">Equivalent to: $<span x-text="calculateEquivalentAmount($data)"></span></span>
 				</div>
 			</div>
 			<div class="mb-4">
@@ -189,9 +174,9 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					SplitTypeChecked: expenseSplit.SplitType === 'pct',
 					calculateEquivalentAmount($data) {
 						if ($data.SplitType === 'pct') {
-							return (($data.SplitValue / 100) * $data.Amount).toFixed(2)
+							return FormatAsCurrency($data.currencyCode, (($data.SplitValue / 100) * $data.Amount))
 						}
-						return Number($data.SplitValue).toFixed(2)
+						return FormatAsCurrency($data.currencyCode, Number($data.SplitValue).toFixed(2))
 					},
 					...data,
 				}

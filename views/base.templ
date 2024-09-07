@@ -12,12 +12,27 @@ templ Base() {
 			<div class="flex h-screen">
 				<main class="min-h-screen w-full">
 					@components.Nav()
-					<main id="main-content" class="container mx-auto px-4">
+					<div
+						id="main-content"
+						class="container mx-auto px-4"
+					>
 						{ children... }
-					</main>
+					</div>
 				</main>
 				@components.Modal()
 			</div>
 		</body>
+		<script>
+			function FormatAsCurrency(currency, amount) {
+				if (!currency) {
+					currency = 'USD';
+				}
+				let formatter = new Intl.NumberFormat('en-US', {
+					style: 'currency',
+					currency: currency,
+				});
+				return formatter.format(amount);
+			}
+		</script>
 	</html>
 }

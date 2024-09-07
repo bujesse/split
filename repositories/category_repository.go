@@ -10,6 +10,7 @@ import (
 type CategoryRepository interface {
 	Create(category *models.Category) error
 	GetByID(id uint) (*models.Category, error)
+	GetByName(name string) (*models.Category, error)
 	Update(category *models.Category) error
 	GetAll() ([]models.Category, error)
 	Delete(id uint) error
@@ -39,6 +40,15 @@ func (r *categoryRepository) Create(category *models.Category) error {
 func (r *categoryRepository) GetByID(id uint) (*models.Category, error) {
 	var category models.Category
 	result := r.db.Preload(clause.Associations).First(&category, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &category, nil
+}
+
+func (r *categoryRepository) GetByName(name string) (*models.Category, error) {
+	var category models.Category
+	result := r.db.Preload(clause.Associations).Where("name = ?", name).First(&category)
 	if result.Error != nil {
 		return nil, result.Error
 	}

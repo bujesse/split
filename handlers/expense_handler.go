@@ -72,6 +72,11 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 		},
 	}
 
+	if expense.CategoryID == nil {
+		defaultCategory, _ := h.categoryRepo.GetByName("General")
+		expense.CategoryID = &defaultCategory.ID
+	}
+
 	if err := h.expenseRepo.CreateExpense(&expense); err != nil {
 		http.Error(response, "Failed to save expense", http.StatusInternalServerError)
 		return
@@ -165,7 +170,8 @@ func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
 	if catID, err := helpers.StringToUintPointer(categoryID); err == nil && categoryID != "" {
 		expense.CategoryID = catID
 	} else {
-		expense.CategoryID = nil
+		defaultCategory, _ := h.categoryRepo.GetByName("General")
+		expense.CategoryID = &defaultCategory.ID
 	}
 
 	// TODO: Make this work for multiple splits (currently only works for one split)
