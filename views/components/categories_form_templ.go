@@ -85,17 +85,17 @@ func CategoriesForm(category *models.Category) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"$el.reset(); baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Name <input x-model=\"Name\" autofocus required type=\"text\" id=\"name\" name=\"name\" class=\"grow\"></label></div><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Type <input x-model=\"Type\" required type=\"text\" id=\"type\" name=\"type\" class=\"grow\"></label></div><div class=\"mb-4\"><textarea x-model=\"Description\" id=\"description\" name=\"description\" class=\"textarea textarea-bordered w-full\" placeholder=\"Description\"></textarea></div><div class=\"flex justify-between items-center\"><div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"$el.reset(); baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Name <input x-model=\"Name\" autofocus required type=\"text\" id=\"name\" name=\"name\" class=\"grow\"></label></div><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Type <input x-model=\"Type\" required type=\"text\" id=\"type\" name=\"type\" class=\"grow\"></label></div><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Icon <input x-model=\"Icon\" required type=\"text\" id=\"type\" name=\"icon\" class=\"grow\"></label><div class=\"mt-2 flex\"><span class=\"text-sm\"><a href=\"https://fontawesome.com/search?o=r&amp;m=free\" target=\"_blank\" class=\"link link-primary\">Browse Icons</a></span></div></div><div class=\"mb-4\"><textarea x-model=\"Description\" id=\"description\" name=\"description\" class=\"textarea textarea-bordered w-full\" placeholder=\"Description\"></textarea></div><div class=\"flex justify-between items-center\"><div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if category != nil {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-warning\" type=\"button\">Delete</button>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-error\" type=\"button\">Delete</button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex space-x-2\"><button class=\"btn btn-neutral\" type=\"button\" onclick=\"baseModal.close()\">Cancel</button> <button type=\"submit\" class=\"btn btn-primary\">Submit</button></div></div></form><script>\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('category').textContent)\n\t\t\t\treturn {\n\t\t\t\t\tName: null,\n\t\t\t\t\tType: null,\n\t\t\t\t\tDescription: null,\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex space-x-2\"><button class=\"btn btn-neutral\" type=\"button\" onclick=\"baseModal.close()\">Cancel</button> <button type=\"submit\" class=\"btn btn-primary\">Submit</button></div></div></form><script>\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('category').textContent)\n\t\t\t\treturn {\n\t\t\t\t\tName: null,\n\t\t\t\t\tType: null,\n\t\t\t\t\tIcon: null,\n\t\t\t\t\tDescription: null,\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

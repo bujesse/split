@@ -34,12 +34,21 @@ templ CategoriesForm(category *models.Category) {
 				</label>
 			</div>
 			<div class="mb-4">
+				<label class="input input-bordered flex items-center gap-2">
+					Icon
+					<input x-model="Icon" required type="text" id="type" name="icon" class="grow"/>
+				</label>
+				<div class="mt-2 flex">
+					<span class="text-sm"><a href="https://fontawesome.com/search?o=r&m=free" target="_blank" class="link link-primary">Browse Icons</a></span>
+				</div>
+			</div>
+			<div class="mb-4">
 				<textarea x-model="Description" id="description" name="description" class="textarea textarea-bordered w-full" placeholder="Description"></textarea>
 			</div>
 			<div class="flex justify-between items-center">
 				<div>
 					if category != nil {
-						<button class="btn btn-warning" type="button">
+						<button class="btn btn-error" type="button">
 							Delete
 						</button>
 					}
@@ -60,6 +69,7 @@ templ CategoriesForm(category *models.Category) {
 				return {
 					Name: null,
 					Type: null,
+					Icon: null,
 					Description: null,
 					...data,
 				}

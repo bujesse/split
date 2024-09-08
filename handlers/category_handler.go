@@ -27,6 +27,7 @@ func (h *CategoryHandler) CreateCategory(response http.ResponseWriter, request *
 		Name:        request.FormValue("name"),
 		Description: request.FormValue("description"),
 		Type:        request.FormValue("type"),
+		Icon:        request.FormValue("icon"),
 	}
 
 	if err := h.repo.Create(&category); err != nil {
@@ -96,12 +97,14 @@ func (h *CategoryHandler) UpdateCategory(w http.ResponseWriter, r *http.Request)
 	name := r.FormValue("name")
 	description := r.FormValue("description")
 	categoryType := r.FormValue("type")
+	icon := r.FormValue("icon")
 
 	category, err := h.repo.GetByID(uint(id))
 
 	category.Name = name
 	category.Description = description
 	category.Type = categoryType
+	category.Icon = icon
 
 	if err := h.repo.Update(category); err != nil {
 		http.Error(w, "Failed to update category", http.StatusInternalServerError)

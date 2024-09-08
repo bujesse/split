@@ -129,51 +129,52 @@ func seedCategories(db *gorm.DB) {
 	if count == 0 {
 		categories := []models.Category{
 			// Recreation
-			{Name: "Bars", Type: "Recreation"},
-			{Name: "Breweries", Type: "Recreation"},
-			{Name: "Dining Out", Type: "Recreation"},
-			{Name: "Concerts", Type: "Recreation"},
-			{Name: "Events", Type: "Recreation"},
-			{Name: "Movies", Type: "Recreation"},
-			{Name: "Sports", Type: "Recreation"},
-			{Name: "Other", Type: "Recreation"},
+			{Name: "Bars", Type: "Recreation", Icon: "martini-glass-citrus"},
+			{Name: "Liquor Store", Type: "Recreation", Icon: "martini-glass-citrus"},
+			{Name: "Breweries", Type: "Recreation", Icon: "beer-mug-empty"},
+			{Name: "Dining Out", Type: "Recreation", Icon: "beer-mug-empty"},
+			{Name: "Concerts", Type: "Recreation", Icon: "ticket"},
+			{Name: "Events", Type: "Recreation", Icon: "ticket"},
+			{Name: "Movies", Type: "Recreation", Icon: "film"},
+			{Name: "Sports", Type: "Recreation", Icon: "table-tennis-paddle-ball"},
+			{Name: "Other", Type: "Recreation", Icon: "beer-mug-empty"},
 
 			// Groceries
-			{Name: "Costco", Type: "Groceries"},
-			{Name: "Grocery Store", Type: "Groceries"},
-			{Name: "Liquor Store", Type: "Groceries"},
-			{Name: "Specialty Store", Type: "Groceries"},
+			{Name: "Costco", Type: "Food", Icon: "cart-shopping"},
+			{Name: "Grocery Store", Type: "Food", Icon: "basket-shopping"},
+			{Name: "Ordering Food", Type: "Food", Icon: "bag-shopping"},
 
 			// Bills
-			{Name: "Electric", Type: "Bills"},
-			{Name: "Gas", Type: "Bills"},
-			{Name: "Trash", Type: "Bills"},
-			{Name: "Rent", Type: "Bills"},
-			{Name: "Internet", Type: "Bills"},
-			{Name: "Other", Type: "Bills"},
+			{Name: "Electric", Type: "Bills", Icon: "lightbulb"},
+			{Name: "Gas", Type: "Bills", Icon: "fire-flame-simple"},
+			{Name: "Trash", Type: "Bills", Icon: "trash"},
+			{Name: "Rent", Type: "Bills", Icon: "house"},
+			{Name: "Internet", Type: "Bills", Icon: "wifi"},
+			{Name: "Other", Type: "Bills", Icon: "money-bills"},
 
 			// Uncategorized
-			{Name: "General", Type: "Uncategorized"},
+			{Name: "General", Type: "Uncategorized", Icon: "dollar"},
 
 			// Travel
-			{Name: "Flights", Type: "Travel"},
-			{Name: "Hotels", Type: "Travel"},
-			{Name: "Parking", Type: "Travel"},
-			{Name: "Gas", Type: "Travel"},
-			{Name: "Taxi", Type: "Travel"},
-			{Name: "Buses/Trains", Type: "Travel"},
-			{Name: "Other", Type: "Travel"},
+			{Name: "Flights", Type: "Travel", Icon: "plane"},
+			{Name: "Hotels", Type: "Travel", Icon: "hotel"},
+			{Name: "Parking", Type: "Travel", Icon: "square-parking"},
+			{Name: "Gas", Type: "Travel", Icon: "gas-pump"},
+			{Name: "Taxi", Type: "Travel", Icon: "taxi"},
+			{Name: "Buses/Trains", Type: "Travel", Icon: "train-subway"},
+			{Name: "Other", Type: "Travel", Icon: "suitcase"},
 
 			// Transportation
-			{Name: "Car", Type: "Transportation"},
-			{Name: "Gas", Type: "Transportation"},
-			{Name: "Taxi", Type: "Transportation"},
-			{Name: "Other", Type: "Transportation"},
+			{Name: "Car", Type: "Transportation", Icon: "car-side"},
+			{Name: "Gas", Type: "Transportation", Icon: "gas-pump"},
+			{Name: "Taxi", Type: "Transportation", Icon: "taxi"},
+			{Name: "Other", Type: "Transportation", Icon: "car"},
 
 			// Shopping
-			{Name: "Clothes", Type: "Shopping"},
-			{Name: "Gifts", Type: "Shopping"},
-			{Name: "Other", Type: "Shopping"},
+			{Name: "Clothes", Type: "Shopping", Icon: "shirt"},
+			{Name: "Gifts", Type: "Shopping", Icon: "gift"},
+			{Name: "Online", Type: "Shopping", Icon: "globe"},
+			{Name: "Other", Type: "Shopping", Icon: "store"},
 		}
 
 		for _, category := range categories {

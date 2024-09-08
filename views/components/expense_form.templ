@@ -117,7 +117,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			<div class="flex justify-between items-center">
 				<div>
 					if expense != nil {
-						<button class="btn btn-warning" type="button" hx-delete={ "/api/expenses/" + fmt.Sprintf("%d", expense.ID) }>
+						<button class="btn btn-error" type="button" hx-delete={ "/api/expenses/" + fmt.Sprintf("%d", expense.ID) }>
 							Delete
 						</button>
 					}
@@ -148,7 +148,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					}
 				}
 
-				return null; // if the target value is the last option or not found
+				return null
 			}
 			Alpine.data('init', () => {
 				const data = JSON.parse(document.getElementById('expense').textContent)
@@ -160,12 +160,14 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					SplitType: 'pct',
 					SplitValue: 50,
 				}
+				const defaultCategoryDisplay = data?.Category ? `${data.Category.Type} > ${data.Category.Name}` : null
 				const defaultCurrency = data?.Currency.Code || 'USD'
 				return {
 					Title: null,
 					Amount: null,
 					Notes: null,
 					currencyCode: defaultCurrency,
+					defaultSearchDisplay: defaultCategoryDisplay,
 					CategoryID: null,
 					paidByID: defaultPaidByID,
 					splitByID: expenseSplit.UserID,
@@ -176,7 +178,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 						if ($data.SplitType === 'pct') {
 							return FormatAsCurrency($data.currencyCode, (($data.SplitValue / 100) * $data.Amount))
 						}
-						return FormatAsCurrency($data.currencyCode, Number($data.SplitValue).toFixed(2))
+						return FormatAsCurrency($data.currencyCode, $data.SplitValue)
 					},
 					...data,
 				}

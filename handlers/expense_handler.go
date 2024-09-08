@@ -89,8 +89,6 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 	response.Header().Set("HX-Trigger", "reloadExpenses")
 	json.NewEncoder(response).Encode(expense)
 	response.WriteHeader(http.StatusCreated)
-	// response.Header().Set("Content-Type", "text/html")
-	// components.ExpensesTable(expenses).Render(context.Background(), response)
 }
 
 func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *http.Request) {
@@ -100,7 +98,9 @@ func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *h
 		return
 	}
 	response.Header().Set("Content-Type", "text/html")
-	partials.ExpensesTable(expenses).Render(context.Background(), response)
+
+	categories, _ := h.categoryRepo.GetAll()
+	partials.ExpensesTable(expenses, categories).Render(context.Background(), response)
 }
 
 func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Request) {
@@ -133,7 +133,7 @@ func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Re
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
-	expense, err := h.expenseRepo.GetByID(uint(id), "ExpenseSplits", "Currency")
+	expense, err := h.expenseRepo.GetByID(uint(id), "ExpenseSplits", "Currency", "Category")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

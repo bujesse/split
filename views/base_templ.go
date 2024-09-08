@@ -46,7 +46,7 @@ func Base() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"main-content\" class=\"container mx-auto px-4\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"main-content\" class=\"container mx-auto px-4 pb-24\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -62,7 +62,7 @@ func Base() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></body><script>\n\t\t\tfunction FormatAsCurrency(currency, amount, showCents = true) {\n\t\t\t\tif (!currency) {\n\t\t\t\t\tcurrency = 'USD';\n\t\t\t\t}\n\t\t\t\tlet formatter = new Intl.NumberFormat('en-US', {\n\t\t\t\t\tstyle: 'currency',\n\t\t\t\t\tcurrency: currency,\n\t\t\t\t\tmaximumFractionDigits: showCents ? 2 : 0,\n\t\t\t\t});\n\t\t\t\treturn formatter.format(amount);\n\t\t\t}\n\t\t</script></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></body><script>\n\t\t\tconst MAX_DIGITS = 5\n\n\t\t\tfunction FormatAsCurrency(currency, amount) {\n\t\t\t\tif (!currency) {\n\t\t\t\t\tcurrency = 'USD';\n\t\t\t\t}\n\n\t\t\t\tconst totalDigitsWithCents = amount.toFixed(2).replace('.', '').length\n\n\t\t\t\tlet formatter = new Intl.NumberFormat('en-US', {\n\t\t\t\t\tstyle: 'currency',\n\t\t\t\t\tcurrency: currency,\n\t\t\t\t\tmaximumFractionDigits: totalDigitsWithCents > MAX_DIGITS ? 0 : 2,\n\t\t\t\t});\n\t\t\t\treturn formatter.format(amount);\n\t\t\t}\n\n\t\t\tfunction LocalizeDate(isoString) {\n\t\t\t\treturn new Date(isoString).toLocaleDateString(undefined, {\n\t\t\t\t\tmonth: 'short', // \"Jan\", \"Feb\", etc.\n\t\t\t\t\tday: '2-digit'  // \"01\", \"02\", etc.\n\t\t\t\t});\n\t\t\t}\n\t\t</script></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

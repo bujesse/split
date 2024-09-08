@@ -14,7 +14,7 @@ templ Base() {
 					@components.Nav()
 					<div
 						id="main-content"
-						class="container mx-auto px-4"
+						class="container mx-auto px-4 pb-24"
 					>
 						{ children... }
 					</div>
@@ -23,16 +23,28 @@ templ Base() {
 			</div>
 		</body>
 		<script>
-			function FormatAsCurrency(currency, amount, showCents = true) {
+			const MAX_DIGITS = 5
+
+			function FormatAsCurrency(currency, amount) {
 				if (!currency) {
 					currency = 'USD';
 				}
+
+				const totalDigitsWithCents = amount.toFixed(2).replace('.', '').length
+
 				let formatter = new Intl.NumberFormat('en-US', {
 					style: 'currency',
 					currency: currency,
-					maximumFractionDigits: showCents ? 2 : 0,
+					maximumFractionDigits: totalDigitsWithCents > MAX_DIGITS ? 0 : 2,
 				});
 				return formatter.format(amount);
+			}
+
+			function LocalizeDate(isoString) {
+				return new Date(isoString).toLocaleDateString(undefined, {
+					month: 'short', // "Jan", "Feb", etc.
+					day: '2-digit'  // "01", "02", etc.
+				});
 			}
 		</script>
 	</html>

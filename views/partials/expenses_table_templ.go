@@ -10,10 +10,11 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"split/models"
+	"split/views/components"
 	"strconv"
 )
 
-func ExpensesTable(expenses []models.Expense) templ.Component {
+func ExpensesTable(expenses []models.Expense, categories []models.Category) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -31,6 +32,10 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = components.Icons(categories).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><!-- <th> --><!-- \t<label> --><!-- \t\t<input type=\"checkbox\" class=\"checkbox\"/> --><!-- \t</label> --><!-- </th> --></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -43,7 +48,7 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(expense))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 24, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 26, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -56,20 +61,20 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("/partials/expenses/edit/" + strconv.Itoa(int(expense.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 34, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 36, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#modal-container\" onclick=\"baseModal.showModal()\"><div class=\"avatar\"><div class=\"mask mask-squircle h-12 w-12\"><img src=\"https://img.daisyui.com/images/profile/demo/2@94.webp\" alt=\"Avatar Tailwind CSS Component\"></div></div><div><div class=\"font-bold\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#modal-container\" onclick=\"baseModal.showModal()\"><div class=\"flex justify-center items-center\"><svg class=\"icon\"><use :href=\"&#39;#&#39; + $data.Category.Icon\"></use></svg></div><div><div class=\"font-bold\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(expense.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 48, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 45, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -82,7 +87,7 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(expense.PaidBy.Username)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 50, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 47, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -100,26 +105,13 @@ func ExpensesTable(expenses []models.Expense) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(expense.ExpenseSplits[0].User.Username)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 58, Col: 48}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 55, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" owes <span x-html=\"printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])\"></span><br><span class=\"badge badge-ghost badge-sm\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(expense.CreatedAt.Format("Jan 01"))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/expenses_table.templ`, Line: 60, Col: 85}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></td>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" owes <span x-html=\"printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])\"></span><br><span class=\"badge badge-ghost badge-sm\" x-text=\"LocalizeDate($data.CreatedAt)\"></span></td>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

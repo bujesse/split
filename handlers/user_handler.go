@@ -13,6 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
+const TokenValidityDays = 30
+
 var jwtKey = []byte("my_secret_key") // TODO: Replace with your secret key
 
 type Claims struct {
@@ -130,7 +132,7 @@ func (h *UserHandler) LoginUser(response http.ResponseWriter, request *http.Requ
 	}
 
 	// Create JWT token
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(TokenValidityDays * 24 * time.Hour)
 	claims := &Claims{
 		UserID: int(user.ID),
 		RegisteredClaims: jwt.RegisteredClaims{

@@ -1,0 +1,28 @@
+package components
+
+import "split/models"
+
+func uniqueIcons(categories []models.Category) []string {
+	iconSet := make(map[string]struct{})
+
+	for _, category := range categories {
+		if category.Icon != "" {
+			iconSet[category.Icon] = struct{}{}
+		}
+	}
+
+	var uniqueIcons []string
+	for icon := range iconSet {
+		uniqueIcons = append(uniqueIcons, icon)
+	}
+
+	return uniqueIcons
+}
+
+templ Icons(categories []models.Category) {
+	<div id="icon-list">
+		for _, icon := range uniqueIcons(categories) {
+			<i data-fa-symbol={ icon } class={ "fas fa-fw", "fa-" + icon }></i>
+		}
+	</div>
+}

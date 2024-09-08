@@ -16,7 +16,7 @@ func getTotalSpent(expenses []models.Expense) string {
 	for _, expense := range expenses {
 		total += expense.Amount
 	}
-	return fmt.Sprintf("%.0f", total)
+	return fmt.Sprintf("%.2f", total)
 }
 
 // Function to calculate the person who owes the most and how much they owe
@@ -41,18 +41,29 @@ func calculateOwedDetails(expenses []models.Expense) map[string]interface{} {
 		}
 	}
 
-	var maxOwed float64
+	totalOwed := 0.0
+	for _, amount := range userOwes {
+		totalOwed += amount
+	}
+
+	// Net amount is what the user owes minus their share of the total owed by others
+	netUserOwes := make(map[string]float64)
+	for username, amount := range userOwes {
+		netUserOwes[username] = amount - (totalOwed - amount)
+	}
+
+	var maxAmountOwed float64
 	var usernameWithMax string
 
-	for username, amount := range userOwes {
-		if amount > maxOwed {
-			maxOwed = amount
+	for username, amount := range netUserOwes {
+		if amount > maxAmountOwed {
+			maxAmountOwed = amount
 			usernameWithMax = username
 		}
 	}
 
 	result["whoOwesMost"] = usernameWithMax
-	result["maxOwed"] = maxOwed
+	result["maxAmountOwed"] = maxAmountOwed
 	result["totalSpent"] = totalSpent
 
 	return result
@@ -83,13 +94,13 @@ func Stats(expenses []models.Expense) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(calculateOwedDetails(expenses)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/stats.templ`, Line: 57, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/partials/stats.templ`, Line: 68, Col: 70}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"stat px-3\"><div class=\"stat-title text-primary-content\">Total spent</div><div class=\"stat-value\" x-text=\"FormatAsCurrency(&#39;USD&#39;, owedDetails.totalSpent, false)\"></div><div class=\"stat-actions\"><button class=\"btn btn-sm btn-success\" onclick=\"baseModal.showModal()\" hx-get=\"/partials/expenses/new\" hx-trigger=\"click\" hx-target=\"#modal-container\">New Expense</button></div></div><div class=\"stat px-2 text-right\"><div class=\"stat-title text-primary-content\" x-text=\"owedDetails.whoOwesMost + &#39; owes&#39;\"></div><div class=\"stat-value\" x-text=\"FormatAsCurrency(&#39;USD&#39;, owedDetails.maxOwed, false)\"></div><div class=\"stat-actions\"><button class=\"btn btn-sm\">Settle Up</button></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"stat px-3\"><div class=\"stat-title text-primary-content\">Total spent</div><div class=\"stat-value\" x-text=\"FormatAsCurrency(&#39;USD&#39;, owedDetails.totalSpent)\"></div><div class=\"stat-actions\"><button class=\"btn btn-sm btn-success\" onclick=\"baseModal.showModal()\" hx-get=\"/partials/expenses/new\" hx-trigger=\"click\" hx-target=\"#modal-container\">New Expense</button></div></div><div class=\"stat px-2 text-right\"><div class=\"stat-title text-primary-content\" x-text=\"owedDetails.whoOwesMost ? owedDetails.whoOwesMost + &#39; owes&#39; : &#39;Settled Up! 🎉&#39;\"></div><div class=\"stat-value\" x-text=\"FormatAsCurrency(&#39;USD&#39;, owedDetails.maxAmountOwed)\"></div><div class=\"stat-actions\"><button class=\"btn btn-sm\">Settle Up</button></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

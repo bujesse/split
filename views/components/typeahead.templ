@@ -2,7 +2,7 @@ package components
 
 templ Typeahead[T any](name string, model string, placeholder string, items []T) {
 	<div
-		x-data="typeaheadInit($el)"
+		x-data="typeaheadInit($el, $data)"
 		class="relative"
 		items={ templ.JSONString(items) }
 		model={ model }
@@ -41,11 +41,12 @@ templ Typeahead[T any](name string, model string, placeholder string, items []T)
 		</div>
 	</div>
 	<script>
-		function typeaheadInit($el) {
+		function typeaheadInit($el, $data) {
 			const items = JSON.parse($el.getAttribute('items'))
 			const model = $el.getAttribute('model')
+			const defaultDisplay = $el.getAttribute('defaultDisplay')
 			return {
-				search: '',
+				search: $data.defaultSearchDisplay || '',
 				open: false,
 				items: items,
 				activeItem: null,

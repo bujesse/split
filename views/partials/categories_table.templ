@@ -3,15 +3,18 @@ package partials
 import (
 	"split/models"
 	"strconv"
+	"split/views/components"
 )
 
 templ CategoriesTable(categories []models.Category) {
+	@components.Icons(categories)
 	<div class="overflow-x-auto">
 		<table class="table">
 			<thead>
 				<tr>
 					<th>Title</th>
 					<th>Type</th>
+					<th>Icon</th>
 					<th class="text-right">Description</th>
 				</tr>
 			</thead>
@@ -19,15 +22,19 @@ templ CategoriesTable(categories []models.Category) {
 				for _, category := range categories {
 					<tr>
 						<td
-							class="items-center gap-3 cursor-pointer font-bold"
+							class="flex items-center gap-3 cursor-pointer"
 							hx-get={ "/partials/categories/edit/" + strconv.Itoa(int(category.ID)) }
 							hx-trigger="click"
 							hx-target="#modal-container"
 							onclick="baseModal.showModal()"
 						>
-							{ category.Name }
+							<div class="flex justify-center items-center">
+								<svg class="icon"><use href={ "#" + category.Icon }></use></svg>
+							</div>
+							<div class="font-bold">{ category.Name }</div>
 						</td>
-						<td class="">{ category.Type }</td>
+						<td>{ category.Type }</td>
+						<td>{ category.Icon }</td>
 						<td class="text-right">{ category.Description }</td>
 					</tr>
 				}
