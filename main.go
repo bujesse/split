@@ -89,6 +89,7 @@ func main() {
 		handlers.RequireLoginApi(expenseHandler.EditExpenseByID),
 	)
 	mux.HandleFunc("GET /api/expenses", handlers.RequireLoginApi(expenseHandler.GetAllExpenses))
+	mux.HandleFunc("GET /api/expenses/stats", handlers.RequireLoginApi(expenseHandler.GetStats))
 	mux.HandleFunc("POST /api/expenses", handlers.RequireLoginApi(expenseHandler.CreateExpense))
 	mux.HandleFunc(
 		"POST /api/expenses/{id}",

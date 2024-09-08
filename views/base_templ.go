@@ -62,7 +62,7 @@ func Base() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></body><script>\n\t\t\tfunction FormatAsCurrency(currency, amount) {\n\t\t\t\tif (!currency) {\n\t\t\t\t\tcurrency = 'USD';\n\t\t\t\t}\n\t\t\t\tlet formatter = new Intl.NumberFormat('en-US', {\n\t\t\t\t\tstyle: 'currency',\n\t\t\t\t\tcurrency: currency,\n\t\t\t\t});\n\t\t\t\treturn formatter.format(amount);\n\t\t\t}\n\t\t</script></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></body><script>\n\t\t\tfunction FormatAsCurrency(currency, amount, showCents = true) {\n\t\t\t\tif (!currency) {\n\t\t\t\t\tcurrency = 'USD';\n\t\t\t\t}\n\t\t\t\tlet formatter = new Intl.NumberFormat('en-US', {\n\t\t\t\t\tstyle: 'currency',\n\t\t\t\t\tcurrency: currency,\n\t\t\t\t\tmaximumFractionDigits: showCents ? 2 : 0,\n\t\t\t\t});\n\t\t\t\treturn formatter.format(amount);\n\t\t\t}\n\t\t</script></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

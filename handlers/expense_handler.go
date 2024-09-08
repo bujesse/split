@@ -9,6 +9,7 @@ import (
 	"split/models"
 	"split/repositories"
 	"split/views/components"
+	"split/views/partials"
 	"strconv"
 )
 
@@ -99,7 +100,17 @@ func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *h
 		return
 	}
 	response.Header().Set("Content-Type", "text/html")
-	components.ExpensesTable(expenses).Render(context.Background(), response)
+	partials.ExpensesTable(expenses).Render(context.Background(), response)
+}
+
+func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Request) {
+	expenses, err := h.expenseRepo.GetAll()
+	if err != nil {
+		http.Error(response, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	response.Header().Set("Content-Type", "text/html")
+	partials.Stats(expenses).Render(context.Background(), response)
 }
 
 func (h *ExpenseHandler) CreateNewExpense(w http.ResponseWriter, request *http.Request) {

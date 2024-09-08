@@ -23,13 +23,14 @@ templ Base() {
 			</div>
 		</body>
 		<script>
-			function FormatAsCurrency(currency, amount) {
+			function FormatAsCurrency(currency, amount, showCents = true) {
 				if (!currency) {
 					currency = 'USD';
 				}
 				let formatter = new Intl.NumberFormat('en-US', {
 					style: 'currency',
 					currency: currency,
+					maximumFractionDigits: showCents ? 2 : 0,
 				});
 				return formatter.format(amount);
 			}

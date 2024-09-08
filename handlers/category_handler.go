@@ -8,6 +8,7 @@ import (
 	"split/models"
 	"split/repositories"
 	"split/views/components"
+	"split/views/partials"
 	"strconv"
 )
 
@@ -48,7 +49,7 @@ func (h *CategoryHandler) GetAllCategories(response http.ResponseWriter, request
 		return
 	}
 	response.Header().Set("Content-Type", "text/html")
-	components.CategoriesTable(categories).Render(context.Background(), response)
+	partials.CategoriesTable(categories).Render(context.Background(), response)
 }
 
 func (h *CategoryHandler) DeleteCategory(response http.ResponseWriter, request *http.Request) {
