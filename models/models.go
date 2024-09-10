@@ -38,8 +38,11 @@ type Currency struct {
 
 type Settlement struct {
 	BaseModel
-	SettledByID    *uint     `gorm:"index"`
+	SettledByID    uint      `gorm:"index"`
 	SettledBy      User      `gorm:"foreignKey:SettledByID"`
+	Amount         float64   `gorm:"type:decimal(10,2);not null"`
+	CurrencyCode   string    `gorm:"size:3;not null;default:'USD'"`
+	Currency       Currency  `gorm:"foreignKey:CurrencyCode;references:Code"`
 	SettlementDate time.Time `gorm:"autoCreateTime"`
 	Notes          string    `gorm:"size:255"`
 }
@@ -58,6 +61,7 @@ type Expense struct {
 	Settlement    Settlement     `gorm:"foreignKey:SettlementID"`
 	PaidByID      uint           `gorm:"index;not null"`
 	PaidBy        User           `gorm:"foreignKey:PaidByID"`
+	PaidDate      time.Time      `gorm:"autoCreateTime"`
 	CreatedByTask bool           `gorm:"default:false"`
 	CreatedByID   uint           `gorm:"index;not null"`
 	CreatedBy     User           `gorm:"foreignKey:CreatedByID"`

@@ -6,7 +6,7 @@ import (
 	"split/views/components"
 )
 
-templ ExpensesTable(expenses []models.Expense, categories []models.Category) {
+templ ExpensesTable(entries []interface{}, categories []models.Category) {
 	@components.Icons(categories)
 	<div class="overflow-x-auto">
 		<table class="table">
@@ -20,42 +20,58 @@ templ ExpensesTable(expenses []models.Expense, categories []models.Category) {
 				</tr>
 			</thead>
 			<tbody>
-				for _, expense := range expenses {
+				for _, entry := range entries {
 					<tr
 						class="pb-2 border-b-2 border-base-200"
-						x-data={ templ.JSONString(expense) }
+						x-data={ templ.JSONString(entry) }
 					>
-						<!-- <th> -->
-						<!-- 	<label> -->
-						<!-- 		<input type="checkbox" class="checkbox"/> -->
-						<!-- 	</label> -->
-						<!-- </th> -->
-						<td>
-							<div
-								class="flex items-center gap-3 cursor-pointer"
-								hx-get={ "/partials/expenses/edit/" + strconv.Itoa(int(expense.ID)) }
-								hx-trigger="click"
-								hx-target="#modal-container"
-								onclick="baseModal.showModal()"
-							>
-								<div class="flex justify-center items-center">
-									<svg class="icon"><use :href="'#' + $data.Category.Icon"></use></svg>
-								</div>
-								<div>
-									<div class="font-bold">{ expense.Title }</div>
-									<div class="text-sm opacity-50">
-										{ expense.PaidBy.Username } paid
-										<span x-text="FormatAsCurrency($data.Currency.Code, $data.Amount)"></span>
+						switch entry := entry.(type) {
+							case models.Settlement:
+								<td
+									class="rainbow-text-soft"
+									hx-get={ "/partials/settlements/edit/" + strconv.Itoa(int(entry.ID)) }
+									hx-trigger="click"
+									hx-target="#modal-container"
+									onclick="baseModal.showModal()"
+								>
+									<strong>Settlement 🎉</strong>
+								</td>
+								<td class="text-right">
+									{ entry.SettledBy.Username } paid <strong x-text="FormatAsCurrency($data.CurrencyCode, $data.Amount)"></strong>
+									<br/>
+									<span class="badge badge-ghost badge-sm" x-text="LocalizeDate($data.SettlementDate)"></span>
+								</td>
+							case models.Expense:
+								<!-- <th> -->
+								<!-- 	<label> -->
+								<!-- 		<input type="checkbox" class="checkbox"/> -->
+								<!-- 	</label> -->
+								<!-- </th> -->
+								<td>
+									<div
+										class="flex items-center gap-3 cursor-pointer"
+										hx-get={ "/partials/expenses/edit/" + strconv.Itoa(int(entry.ID)) }
+										hx-trigger="click"
+										hx-target="#modal-container"
+										onclick="baseModal.showModal()"
+									>
+										@components.Icon(entry.Category.Icon)
+										<div>
+											<div class="font-bold">{ entry.Title }</div>
+											<div class="text-sm opacity-50">
+												{ entry.PaidBy.Username } paid
+												<span x-text="FormatAsCurrency($data.Currency.Code, $data.Amount)"></span>
+											</div>
+										</div>
 									</div>
-								</div>
-							</div>
-						</td>
-						if len(expense.ExpenseSplits) > 0 {
-							<td class="text-right">
-								{ expense.ExpenseSplits[0].User.Username } owes <span x-html="printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])"></span>
-								<br/>
-								<span class="badge badge-ghost badge-sm" x-text="LocalizeDate($data.CreatedAt)"></span>
-							</td>
+								</td>
+								if len(entry.ExpenseSplits) > 0 {
+									<td class="text-right">
+										{ entry.ExpenseSplits[0].User.Username } owes <span x-html="printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])"></span>
+										<br/>
+										<span class="badge badge-ghost badge-sm" x-text="LocalizeDate($data.PaidDate)"></span>
+									</td>
+								}
 						}
 					</tr>
 				}

@@ -20,7 +20,7 @@ templ CategoriesForm(category *models.Category) {
 				Edit Category: "{ category.Name }"
 			}
 		</h2>
-		<form hx-post={ getCategoriesPostTarget(category) } @htmx:after-request="$el.reset(); baseModal.close()" hx-swap="none" x-data="init">
+		<form hx-post={ getCategoriesPostTarget(category) } @htmx:after-request="baseModal.close()" hx-swap="none" x-data="init">
 			<div class="mb-4">
 				<label class="input input-bordered flex items-center gap-2">
 					Name

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"sort"
 	"split/config/logger"
 	"split/helpers"
 	"split/models"
@@ -11,13 +12,15 @@ import (
 	"split/views/components"
 	"split/views/partials"
 	"strconv"
+	"time"
 )
 
 type ExpenseHandler struct {
-	expenseRepo  repositories.ExpenseRepository
-	categoryRepo repositories.CategoryRepository
-	currencyRepo repositories.CurrencyRepository
-	userRepo     repositories.UserRepository
+	expenseRepo    repositories.ExpenseRepository
+	categoryRepo   repositories.CategoryRepository
+	currencyRepo   repositories.CurrencyRepository
+	userRepo       repositories.UserRepository
+	settlementRepo repositories.SettlementRepository
 }
 
 func NewExpenseHandler(
@@ -25,12 +28,14 @@ func NewExpenseHandler(
 	categoryRepo repositories.CategoryRepository,
 	currencyRepo repositories.CurrencyRepository,
 	userRepo repositories.UserRepository,
+	settlementRepo repositories.SettlementRepository,
 ) *ExpenseHandler {
 	return &ExpenseHandler{
 		expenseRepo,
 		categoryRepo,
 		currencyRepo,
 		userRepo,
+		settlementRepo,
 	}
 }
 
@@ -91,6 +96,7 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 	response.WriteHeader(http.StatusCreated)
 }
 
+// GetAllExpenses returns all expenses and settlements together, sorted by date descending
 func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *http.Request) {
 	expenses, err := h.expenseRepo.GetAll()
 	if err != nil {
@@ -99,8 +105,38 @@ func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *h
 	}
 	response.Header().Set("Content-Type", "text/html")
 
+	var entries []interface{}
+	for _, expense := range expenses {
+		entries = append(entries, expense)
+	}
+
+	settlements, _ := h.settlementRepo.GetAll()
+	for _, settlement := range settlements {
+		entries = append(entries, settlement)
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		var dateI, dateJ time.Time
+
+		switch v := entries[i].(type) {
+		case models.Expense:
+			dateI = v.PaidDate
+		case models.Settlement:
+			dateI = v.SettlementDate
+		}
+
+		switch v := entries[j].(type) {
+		case models.Expense:
+			dateJ = v.PaidDate
+		case models.Settlement:
+			dateJ = v.SettlementDate
+		}
+
+		return dateI.After(dateJ)
+	})
+
 	categories, _ := h.categoryRepo.GetAll()
-	partials.ExpensesTable(expenses, categories).Render(context.Background(), response)
+	partials.ExpensesTable(entries, categories).Render(context.Background(), response)
 }
 
 func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Request) {
@@ -110,10 +146,11 @@ func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Re
 		return
 	}
 	response.Header().Set("Content-Type", "text/html")
-	partials.Stats(expenses).Render(context.Background(), response)
+	settlements, _ := h.settlementRepo.GetAll()
+	components.Stats(expenses, settlements).Render(context.Background(), response)
 }
 
-func (h *ExpenseHandler) CreateNewExpense(w http.ResponseWriter, request *http.Request) {
+func (h *ExpenseHandler) CreateNewExpensePartial(w http.ResponseWriter, request *http.Request) {
 	categories, _ := h.categoryRepo.GetAll()
 	currencies, _ := h.currencyRepo.GetAll()
 	users, _ := h.userRepo.GetAll()

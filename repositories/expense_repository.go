@@ -27,7 +27,7 @@ func (r *expenseRepository) GetAll() ([]models.Expense, error) {
 	var expenses []models.Expense
 	result := r.db.Preload(clause.Associations).
 		Preload("ExpenseSplits.User").
-		Order("created_at desc").
+		Order("paid_date desc").
 		Find(&expenses)
 	if result.Error != nil {
 		return nil, result.Error

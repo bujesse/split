@@ -48,6 +48,7 @@ func main() {
 	expenseRepo := repositories.NewExpenseRepository(db)
 	categoryRepo := repositories.NewCategoryRepository(db)
 	currencyRepo := repositories.NewCurrencyRepository(db)
+	settlementRepo := repositories.NewSettlementRepository(db)
 	userRepo := repositories.NewUserRepository(db)
 
 	mux := http.NewServeMux()
@@ -78,11 +79,12 @@ func main() {
 		categoryRepo,
 		currencyRepo,
 		userRepo,
+		settlementRepo,
 	)
 
 	mux.HandleFunc(
 		"GET /partials/expenses/new",
-		handlers.RequireLoginApi(expenseHandler.CreateNewExpense),
+		handlers.RequireLoginApi(expenseHandler.CreateNewExpensePartial),
 	)
 	mux.HandleFunc(
 		"GET /partials/expenses/edit/{id}",
@@ -123,6 +125,41 @@ func main() {
 		"POST /api/categories/{id}",
 		handlers.RequireLoginApi(categoryHandler.UpdateCategory),
 	)
+
+	// Settlements
+
+	settlementHandler := handlers.NewSettlementHandler(
+		settlementRepo,
+		currencyRepo,
+		userRepo,
+		expenseRepo,
+	)
+
+	mux.HandleFunc(
+		"GET /partials/settlements/new",
+		handlers.RequireLoginApi(settlementHandler.CreateNewSettlementPartial),
+	)
+	mux.HandleFunc(
+		"GET /partials/settlements/edit/{id}",
+		handlers.RequireLoginApi(settlementHandler.EditSettlementByID),
+	)
+	mux.HandleFunc(
+		"POST /api/settlements",
+		handlers.RequireLoginApi(settlementHandler.CreateSettlement),
+	)
+	mux.HandleFunc(
+		"POST /api/settlements/{id}",
+		handlers.RequireLoginApi(settlementHandler.UpdateSettlement),
+	)
+	mux.HandleFunc(
+		"DELETE /api/settlements/{id}",
+		handlers.RequireLoginApi(settlementHandler.DeleteSettlement),
+	)
+	mux.HandleFunc(
+		"POST /api/settle",
+		handlers.RequireLoginApi(categoryHandler.GetAllCategories),
+	)
+
 	rootMux := NewMiddleware(mux)
 
 	logger.Info.Println("🚀 Starting up on port 8080")

@@ -1,0 +1,51 @@
+package components
+
+import "split/models"
+import "fmt"
+import "split/helpers"
+
+func getTotalSpent(expenses []models.Expense) string {
+	total := 0.0
+	for _, expense := range expenses {
+		total += expense.Amount
+	}
+	return fmt.Sprintf("%.2f", total)
+}
+
+templ Stats(expenses []models.Expense, settlements []models.Settlement) {
+	<div
+		class="flex mt-4 stats bg-primary text-primary-content w-full sm:w-1/4 mx-auto"
+		x-data="{ owedDetails: JSON.parse($el.getAttribute('data-owed-details')) }"
+		data-owed-details={ templ.JSONString(helpers.CalculateOwedDetails(expenses, settlements)) }
+	>
+		<div class="stat px-3">
+			<div class="stat-title text-primary-content">Total spent</div>
+			<div class="stat-value" x-text="FormatAsCurrency('USD', owedDetails.totalSpent)"></div>
+			<div class="stat-actions">
+				<button
+					class="btn btn-sm btn-success"
+					onclick="baseModal.showModal()"
+					hx-get="/partials/expenses/new"
+					hx-trigger="click"
+					hx-target="#modal-container"
+				>New Expense</button>
+			</div>
+		</div>
+		<div class="stat px-2 text-right">
+			<div
+				class="stat-title text-primary-content"
+				x-text="owedDetails.whoOwesMostUsername ? owedDetails.whoOwesMostUsername + ' owes' : 'Settled Up! 🎉'"
+			></div>
+			<div class="stat-value" x-text="FormatAsCurrency('USD', owedDetails.maxAmountOwed)"></div>
+			<div class="stat-actions">
+				<button
+					class="btn btn-sm"
+					onclick="baseModal.showModal()"
+					hx-get="/partials/settlements/new"
+					hx-trigger="click"
+					hx-target="#modal-container"
+				>Settle Up</button>
+			</div>
+		</div>
+	</div>
+}

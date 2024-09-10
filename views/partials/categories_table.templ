@@ -28,9 +28,7 @@ templ CategoriesTable(categories []models.Category) {
 							hx-target="#modal-container"
 							onclick="baseModal.showModal()"
 						>
-							<div class="flex justify-center items-center">
-								<svg class="icon"><use href={ "#" + category.Icon }></use></svg>
-							</div>
+							@components.Icon(category.Icon)
 							<div class="font-bold">{ category.Name }</div>
 						</td>
 						<td>{ category.Type }</td>

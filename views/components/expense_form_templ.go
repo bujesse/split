@@ -19,7 +19,7 @@ func getExpensePostTarget(expense *models.Expense) string {
 	return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
 }
 
-func getContextUserID(ctx context.Context) string {
+func GetContextUserID(ctx context.Context) string {
 	if username, ok := ctx.Value("currentUserID").(string); ok {
 		return username
 	}
@@ -67,7 +67,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(getContextUserID(ctx))
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(GetContextUserID(ctx))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 34, Col: 67}
 		}
@@ -116,7 +116,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"$el.reset(); baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Name <input x-model=\"Title\" autofocus type=\"text\" id=\"title\" name=\"title\" class=\"grow\" required></label></div><div class=\"mb-4 join w-full\"><label class=\"input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full\">Amount <input x-model=\"Amount\" type=\"number\" id=\"amount\" name=\"amount\" class=\"grow\" required></label> <select x-model=\"currencyCode\" name=\"currencyCode\" class=\"select select-bordered join-item w-5/12 sm:w-auto\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Name <input x-model=\"Title\" autofocus type=\"text\" id=\"title\" name=\"title\" class=\"grow\" required></label></div><div class=\"mb-4 join w-full\"><label class=\"input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full\">Amount <input x-model=\"Amount\" type=\"number\" id=\"amount\" name=\"amount\" class=\"grow\" required></label> <select x-model=\"currencyCode\" name=\"currencyCode\" class=\"select select-bordered join-item w-5/12 sm:w-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

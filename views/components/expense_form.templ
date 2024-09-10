@@ -11,7 +11,7 @@ func getExpensePostTarget(expense *models.Expense) string {
 	return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
 }
 
-func getContextUserID(ctx context.Context) string {
+func GetContextUserID(ctx context.Context) string {
 	if username, ok := ctx.Value("currentUserID").(string); ok {
 		return username
 	}
@@ -31,7 +31,7 @@ func countryCodeToFlag(code string) string {
 templ ExpenseForm(expense *models.Expense, categories []models.Category, currencies []models.Currency, users []models.User) {
 	<div class="w-full max-w-2xl">
 		@templ.JSONScript("expense", expense)
-		<span id="current-user-id" class="hidden">{ getContextUserID(ctx) }</span>
+		<span id="current-user-id" class="hidden">{ GetContextUserID(ctx) }</span>
 		<h2 class="mb-6 text-2xl font-bold">
 			if expense == nil {
 				Add New Expense
@@ -39,7 +39,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 				Edit Expense: "{ expense.Title }"
 			}
 		</h2>
-		<form hx-post={ getExpensePostTarget(expense) } @htmx:after-request="$el.reset(); baseModal.close()" hx-swap="none" x-data="init">
+		<form hx-post={ getExpensePostTarget(expense) } @htmx:after-request="baseModal.close()" hx-swap="none" x-data="init">
 			<div class="mb-4">
 				<label class="input input-bordered flex items-center gap-2">
 					Name

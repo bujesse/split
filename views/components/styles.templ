@@ -1,0 +1,26 @@
+package components
+
+templ Styles() {
+	<style type="text/css">
+        [x-cloak] { display: none !important; }
+        .icon {
+            width: 3em;
+            height: 3em;
+            vertical-align: -0.125em;
+        }
+		@keyframes rainbow-text-soft {
+		  0% { color: #ff9999; }  /* Light Red */
+		  14% { color: #ffcc99; } /* Light Orange */
+		  28% { color: #ffff99; } /* Light Yellow */
+		  42% { color: #ccff99; } /* Light Green */
+		  57% { color: #99ccff; } /* Light Blue */
+		  71% { color: #cc99ff; } /* Light Indigo */
+		  85% { color: #ff99cc; } /* Light Violet */
+		  100% { color: #ff9999; } /* Light Red */
+		}
+
+		.rainbow-text-soft {
+		  animation: rainbow-text-soft 3s linear infinite;
+		}
+	</style>
+}
