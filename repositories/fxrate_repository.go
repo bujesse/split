@@ -4,14 +4,11 @@ import (
 	"split/models"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type FxRateRepository interface {
 	Create(fxRate *models.FxRate) error
-	GetByCode(name string) (*models.FxRate, error)
 	Update(fxRate *models.FxRate) error
-	GetAll() ([]models.FxRate, error)
 	Delete(id uint) error
 }
 
@@ -23,26 +20,8 @@ func NewFxRateRepository(db *gorm.DB) FxRateRepository {
 	return &fxRateRepository{db}
 }
 
-func (r *fxRateRepository) GetAll() ([]models.FxRate, error) {
-	var fxRates []models.FxRate
-	result := r.db.Preload(clause.Associations).Order("fxRate_date desc").Find(&fxRates)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return fxRates, nil
-}
-
 func (r *fxRateRepository) Create(fxRate *models.FxRate) error {
 	return r.db.Create(fxRate).Error
-}
-
-func (r *fxRateRepository) GetByCode(code string) (*models.FxRate, error) {
-	var fxRate models.FxRate
-	result := r.db.Preload(clause.Associations).First(&fxRate, code)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return &fxRate, nil
 }
 
 func (r *fxRateRepository) Update(fxRate *models.FxRate) error {

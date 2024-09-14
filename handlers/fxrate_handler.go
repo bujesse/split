@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"split/helpers"
 	"split/models"
 	"split/repositories"
 	"strings"
@@ -87,11 +88,13 @@ func (h *FxRateHandler) FetchAndStoreRates(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
+		date, _ := helpers.ConvertToServerTime(apiResponse.Date)
+
 		fxRate := models.FxRate{
 			FromCurrencyCode: apiResponse.Base,
 			ToCurrencyCode:   currencyCode,
 			Rate:             rate,
-			Date:             apiResponse.Date,
+			Date:             date,
 		}
 
 		if err := h.repo.Create(&fxRate); err != nil {

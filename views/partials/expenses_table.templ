@@ -4,6 +4,8 @@ import (
 	"split/models"
 	"strconv"
 	"split/views/components"
+	"split/repositories"
+	"fmt"
 )
 
 templ ExpensesTable(entries []interface{}, categories []models.Category) {
@@ -37,11 +39,11 @@ templ ExpensesTable(entries []interface{}, categories []models.Category) {
 									<strong>Settlement 🎉</strong>
 								</td>
 								<td class="text-right">
-									{ entry.SettledBy.Username } paid <strong x-text="FormatAsCurrency($data.CurrencyCode, $data.Amount)"></strong>
+									{ entry.SettledBy.Username } paid <strong x-text="FormatAsCurrency(CurrencyCode, Amount)"></strong>
 									<br/>
-									<span class="badge badge-ghost badge-sm" x-text="LocalizeDate($data.SettlementDate)"></span>
+									<span class="badge badge-ghost badge-sm" x-text="LocalizeDate(SettlementDate)"></span>
 								</td>
-							case models.Expense:
+							case repositories.ExpenseWithFxRate:
 								<!-- <th> -->
 								<!-- 	<label> -->
 								<!-- 		<input type="checkbox" class="checkbox"/> -->
@@ -60,16 +62,28 @@ templ ExpensesTable(entries []interface{}, categories []models.Category) {
 											<div class="font-bold">{ entry.Title }</div>
 											<div class="text-sm opacity-50">
 												{ entry.PaidBy.Username } paid
-												<span x-text="FormatAsCurrency($data.Currency.Code, $data.Amount)"></span>
+												<span x-text="FormatAsCurrency(Currency.Code, Amount)"></span>
 											</div>
 										</div>
 									</div>
 								</td>
 								if len(entry.ExpenseSplits) > 0 {
 									<td class="text-right">
-										{ entry.ExpenseSplits[0].User.Username } owes <span x-html="printExpenseSplit($data.Currency.Code, $data.Amount, $data.ExpenseSplits[0])"></span>
+										{ entry.ExpenseSplits[0].User.Username } owes <strong x-html="FormatAsCurrency(Currency.Code, getExpenseSplitAmount(Amount, ExpenseSplits[0]))"></strong>
+										switch entry.ExpenseSplits[0].SplitType {
+											case models.Pct:
+												<span x-show="ExpenseSplits[0].SplitValue !== 50" class="badge badge-neutral badge-sm">{ fmt.Sprintf("%.0f", entry.ExpenseSplits[0].SplitValue) }%</span>
+											case models.Amt:
+												<span class="badge badge-neutral badge-sm" x-text="Math.round(ExpenseSplits[0].SplitValue / Amount * 100) + '%'"></span>
+										}
+										if entry.FxRate != 0 && entry.FxRate != 1 {
+											<span
+												class="badge badge-accent badge-sm"
+												x-text="FormatAsCurrency('USD', getExpenseSplitAmount(Amount, ExpenseSplits[0]) / parseFloat(fx_rate))"
+											></span>
+										}
 										<br/>
-										<span class="badge badge-ghost badge-sm" x-text="LocalizeDate($data.PaidDate)"></span>
+										<span class="badge badge-ghost badge-sm" x-text="LocalizeDate(PaidDate)"></span>
 									</td>
 								}
 						}
@@ -79,13 +93,11 @@ templ ExpensesTable(entries []interface{}, categories []models.Category) {
 		</table>
 	</div>
 	<script>
-		function printExpenseSplit(currency, amount, expenseSplit) {
-			if (expenseSplit.Amount == 0) {
-				return 'nothing'
-			} else if (expenseSplit.SplitType == 'pct') {
-				return `<strong>${FormatAsCurrency(currency, amount * expenseSplit.SplitValue / 100)}</strong> (${expenseSplit.SplitValue}%)`
+		function getExpenseSplitAmount(amount, expenseSplit) {
+			if (expenseSplit.SplitType == 'pct') {
+				return amount * expenseSplit.SplitValue / 100
 			} else if (expenseSplit.SplitType == 'amt') {
-				return `<strong>${FormatAsCurrency(currency, expenseSplit.SplitValue)}</strong> (${Math.round(expenseSplit.SplitValue / amount * 100)}%)`
+				return expenseSplit.SplitValue
 			}
 		}
 	</script>

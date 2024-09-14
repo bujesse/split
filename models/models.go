@@ -91,10 +91,10 @@ type ExpenseSplit struct {
 
 type FxRate struct {
 	BaseModel
-	FromCurrencyCode string   `gorm:"size:3;not null"`
-	ToCurrencyCode   string   `gorm:"size:3;not null"`
-	Rate             float64  `gorm:"not null"`
-	Date             string   `gorm:"not null"`
-	FromCurrency     Currency `gorm:"foreignKey:FromCurrencyCode;references:Code"`
-	ToCurrency       Currency `gorm:"foreignKey:ToCurrencyCode;references:Code"`
+	FromCurrencyCode string    `gorm:"size:3;not null"`
+	ToCurrencyCode   string    `gorm:"size:3;not null"`
+	Rate             float64   `gorm:"not null"`
+	Date             time.Time `gorm:"not null"`
+	FromCurrency     Currency  `gorm:"foreignKey:FromCurrencyCode;references:Code"`
+	ToCurrency       Currency  `gorm:"foreignKey:ToCurrencyCode;references:Code"`
 }

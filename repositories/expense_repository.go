@@ -10,6 +10,7 @@ import (
 type ExpenseRepository interface {
 	CreateExpense(expense *models.Expense) error
 	GetByID(id uint, preloads ...string) (*models.Expense, error)
+	GetExpensesWithFxRate() ([]ExpenseWithFxRate, error)
 	UpdateExpense(expense *models.Expense) error
 	GetAll() ([]models.Expense, error)
 	DeleteExpense(expense *models.Expense) error
@@ -32,6 +33,34 @@ func (r *expenseRepository) GetAll() ([]models.Expense, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
+	return expenses, nil
+}
+
+type ExpenseWithFxRate struct {
+	models.Expense
+	FxRate float64 `json:"fx_rate"`
+}
+
+func (r *expenseRepository) GetExpensesWithFxRate() ([]ExpenseWithFxRate, error) {
+	var expenses []ExpenseWithFxRate
+
+	subQuery := r.db.Table("fx_rates").
+		Select("rate").
+		Where("to_currency_code = expenses.currency_code AND from_currency_code = 'USD' AND DATE(date) = DATE(expenses.paid_date)").
+		Order("date DESC").
+		Limit(1)
+
+	result := r.db.Table("expenses").
+		Select("expenses.*, (?) AS fx_rate", subQuery).
+		Preload("ExpenseSplits.User").
+		Preload(clause.Associations).
+		Order("expenses.paid_date DESC").
+		Find(&expenses)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
 	return expenses, nil
 }
 
