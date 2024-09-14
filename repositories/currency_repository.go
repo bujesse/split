@@ -9,7 +9,7 @@ import (
 
 type CurrencyRepository interface {
 	Create(currency *models.Currency) error
-	GetByID(id uint) (*models.Currency, error)
+	GetByCode(code string) (*models.Currency, error)
 	Update(currency *models.Currency) error
 	GetAll() ([]models.Currency, error)
 	Delete(id uint) error
@@ -36,9 +36,9 @@ func (r *currencyRepository) Create(currency *models.Currency) error {
 	return r.db.Create(currency).Error
 }
 
-func (r *currencyRepository) GetByID(id uint) (*models.Currency, error) {
+func (r *currencyRepository) GetByCode(code string) (*models.Currency, error) {
 	var currency models.Currency
-	result := r.db.Preload(clause.Associations).First(&currency, id)
+	result := r.db.Preload(clause.Associations).First(&currency, code)
 	if result.Error != nil {
 		return nil, result.Error
 	}

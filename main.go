@@ -50,6 +50,7 @@ func main() {
 	currencyRepo := repositories.NewCurrencyRepository(db)
 	settlementRepo := repositories.NewSettlementRepository(db)
 	userRepo := repositories.NewUserRepository(db)
+	fxRateRepo := repositories.NewFxRateRepository(db)
 
 	mux := http.NewServeMux()
 
@@ -158,6 +159,18 @@ func main() {
 	mux.HandleFunc(
 		"POST /api/settle",
 		handlers.RequireLoginApi(categoryHandler.GetAllCategories),
+	)
+
+	// FX Rates
+
+	fxRateHandler := handlers.NewFxRateHandler(
+		fxRateRepo,
+		currencyRepo,
+	)
+
+	mux.HandleFunc(
+		"GET /api/fxrates/fetch",
+		handlers.RequireLoginApi(fxRateHandler.FetchAndStoreRates),
 	)
 
 	rootMux := NewMiddleware(mux)
