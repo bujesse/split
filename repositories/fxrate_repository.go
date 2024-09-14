@@ -9,8 +9,7 @@ import (
 
 type FxRateRepository interface {
 	Create(fxRate *models.FxRate) error
-	GetByID(id uint) (*models.FxRate, error)
-	// GetByName(name string) (*models.FxRate, error)
+	GetByCode(name string) (*models.FxRate, error)
 	Update(fxRate *models.FxRate) error
 	GetAll() ([]models.FxRate, error)
 	Delete(id uint) error
@@ -37,23 +36,14 @@ func (r *fxRateRepository) Create(fxRate *models.FxRate) error {
 	return r.db.Create(fxRate).Error
 }
 
-func (r *fxRateRepository) GetByID(id uint) (*models.FxRate, error) {
+func (r *fxRateRepository) GetByCode(code string) (*models.FxRate, error) {
 	var fxRate models.FxRate
-	result := r.db.Preload(clause.Associations).First(&fxRate, id)
+	result := r.db.Preload(clause.Associations).First(&fxRate, code)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return &fxRate, nil
 }
-
-// func (r *fxRateRepository) GetByName(id string) (*models.FxRate, error) {
-// 	var fxRate models.FxRate
-// 	result := r.db.Preload(clause.Associations).First(&fxRate)
-// 	if result.Error != nil {
-// 		return nil, result.Error
-// 	}
-// 	return &fxRate, nil
-// }
 
 func (r *fxRateRepository) Update(fxRate *models.FxRate) error {
 	return r.db.Save(fxRate).Error

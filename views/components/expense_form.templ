@@ -39,23 +39,43 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 				Edit Expense: "{ expense.Title }"
 			}
 		</h2>
-		<form hx-post={ getExpensePostTarget(expense) } @htmx:after-request="baseModal.close()" hx-swap="none" x-data="init">
+		<form
+			hx-post={ getExpensePostTarget(expense) }
+			@htmx:after-request="baseModal.close()"
+			hx-swap="none"
+			x-data="init"
+		>
 			<div class="mb-4">
 				<label class="input input-bordered flex items-center gap-2">
 					Name
 					<input x-model="Title" autofocus type="text" id="title" name="title" class="grow" required/>
 				</label>
 			</div>
-			<div class="mb-4 join w-full">
-				<label class="input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full">
-					Amount
-					<input x-model="Amount" type="number" id="amount" name="amount" class="grow" required/>
-				</label>
-				<select x-model="currencyCode" name="currencyCode" class="select select-bordered join-item w-5/12 sm:w-auto">
-					for _, currency := range currencies {
-						<option value={ currency.Code }>{ countryCodeToFlag(currency.TwoCharCountryCode) } { currency.Code }</option>
-					}
-				</select>
+			<div class="mb-4">
+				<div class="join w-full">
+					<label class="input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full">
+						Amount
+						<input x-model="Amount" type="number" id="amount" name="amount" class="grow" required/>
+					</label>
+					<select
+						x-model="currencyCode"
+						name="currencyCode"
+						class="select select-bordered join-item w-5/12 sm:w-auto"
+						@change="fxRateUSD = $el.options[$el.selectedIndex].getAttribute('data-fx-rate-usd')"
+					>
+						for _, currency := range currencies {
+							<option
+								value={ currency.Code }
+								data-fx-rate-usd={ templ.JSONString(currency.LatestFxRateUSD) }
+							>{ countryCodeToFlag(currency.TwoCharCountryCode) } { currency.Code }</option>
+						}
+					</select>
+				</div>
+				<div class="mt-2 flex">
+					<span x-show="currencyCode !== 'USD'" class="text-sm">
+						Equivalent to: <span x-text="FormatAsCurrency('USD', Amount / parseFloat(fxRateUSD))"></span>
+					</span>
+				</div>
 			</div>
 			<div class="mb-4">
 				<div class="join w-full">
@@ -67,7 +87,12 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					<input x-model="SplitType" value="amt" class="join-item btn w-2/12 sm:w-auto" type="radio" name="SplitType" aria-label="$"/>
 				</div>
 				<div class="mt-2 flex">
-					<span class="text-sm">Equivalent to: <strong x-text="calculateEquivalentAmount($data)"></strong></span>
+					<span class="text-sm">
+						Equivalent to: <strong x-text="FormatAsCurrency(currencyCode, calculateEquivalentAmount($data))"></strong>
+						<span x-show="currencyCode !== 'USD'" class="text-sm">
+							(<span x-text="FormatAsCurrency('USD', calculateEquivalentAmount($data) / parseFloat(fxRateUSD))"></span>)
+						</span>
+					</span>
 				</div>
 			</div>
 			<div class="mb-4 flex space-x-4">
@@ -162,11 +187,13 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 				}
 				const defaultCategoryDisplay = data?.Category ? `${data.Category.Type} > ${data.Category.Name}` : null
 				const defaultCurrency = data?.Currency.Code || 'USD'
+				const fxRateUSD = data?.Currency.LatestFxRateUSD || null
 				return {
 					Title: null,
 					Amount: null,
 					Notes: null,
 					currencyCode: defaultCurrency,
+					fxRateUSD: fxRateUSD,
 					defaultSearchDisplay: defaultCategoryDisplay,
 					CategoryID: null,
 					paidByID: defaultPaidByID,
@@ -176,9 +203,9 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					SplitTypeChecked: expenseSplit.SplitType === 'pct',
 					calculateEquivalentAmount($data) {
 						if ($data.SplitType === 'pct') {
-							return FormatAsCurrency($data.currencyCode, (($data.SplitValue / 100) * $data.Amount))
+							return ($data.SplitValue / 100) * $data.Amount
 						}
-						return FormatAsCurrency($data.currencyCode, $data.SplitValue)
+						return $data.SplitValue
 					},
 					...data,
 				}
