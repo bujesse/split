@@ -64,13 +64,19 @@ templ ExpensesTable(entries []interface{}, categories []models.Category) {
 												{ entry.PaidBy.Username } paid
 												<span x-text="FormatAsCurrency(Currency.Code, Amount)"></span>
 											</div>
+											if entry.FxRate != 0 && entry.FxRate != 1 {
+												<span
+													class="badge badge-accent badge-sm"
+													x-text="FormatAsCurrency('USD', Amount / parseFloat(fx_rate))"
+												></span>
+											}
 										</div>
 									</div>
 								</td>
 								if len(entry.ExpenseSplits) > 0 {
-									<td class="text-right">
-										{ entry.ExpenseSplits[0].User.Username } owes <strong x-html="FormatAsCurrency(Currency.Code, getExpenseSplitAmount(Amount, ExpenseSplits[0]))"></strong>
-										<div>
+									<td class="flex flex-col space-y-1 items-end text-right">
+										<span>{ entry.ExpenseSplits[0].User.Username } owes <strong x-html="FormatAsCurrency(Currency.Code, getExpenseSplitAmount(Amount, ExpenseSplits[0]))"></strong></span>
+										<span>
 											switch entry.ExpenseSplits[0].SplitType {
 												case models.Pct:
 													<span x-show="ExpenseSplits[0].SplitValue !== 50" class="badge badge-neutral badge-sm">{ fmt.Sprintf("%.0f", entry.ExpenseSplits[0].SplitValue) }%</span>
@@ -83,9 +89,8 @@ templ ExpensesTable(entries []interface{}, categories []models.Category) {
 													x-text="FormatAsCurrency('USD', getExpenseSplitAmount(Amount, ExpenseSplits[0]) / parseFloat(fx_rate))"
 												></span>
 											}
-											<br/>
-											<span class="badge badge-ghost badge-sm" x-text="LocalizeDate(PaidDate)"></span>
-										</div>
+										</span>
+										<span class="badge badge-ghost badge-sm" x-text="LocalizeDate(PaidDate)"></span>
 									</td>
 								}
 						}

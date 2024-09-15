@@ -9,18 +9,10 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "split/models"
-import "fmt"
 import "split/helpers"
+import "split/repositories"
 
-func getTotalSpent(expenses []models.Expense) string {
-	total := 0.0
-	for _, expense := range expenses {
-		total += expense.Amount
-	}
-	return fmt.Sprintf("%.2f", total)
-}
-
-func Stats(expenses []models.Expense, settlements []models.Settlement) templ.Component {
+func Stats(expenses []repositories.ExpenseWithFxRate, settlements []models.Settlement) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -38,20 +30,20 @@ func Stats(expenses []models.Expense, settlements []models.Settlement) templ.Com
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex mt-4 stats bg-primary text-primary-content w-full sm:w-1/4 mx-auto\" x-data=\"{ owedDetails: JSON.parse($el.getAttribute(&#39;data-owed-details&#39;)) }\" data-owed-details=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex mt-4 stats bg-primary text-primary-content w-full sm:w-1/4 mx-auto\" x-data=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(helpers.CalculateOwedDetails(expenses, settlements)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/stats.templ`, Line: 19, Col: 91}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/stats.templ`, Line: 10, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"stat px-3\"><div class=\"stat-title text-primary-content\">Total spent</div><div class=\"stat-value\" x-text=\"FormatAsCurrency(&#39;USD&#39;, owedDetails.totalSpent)\"></div><div class=\"stat-actions\"><button class=\"btn btn-sm btn-success\" onclick=\"baseModal.showModal()\" hx-get=\"/partials/expenses/new\" hx-trigger=\"click\" hx-target=\"#modal-container\">New Expense</button></div></div><div class=\"stat px-2 text-right\"><div class=\"stat-title text-primary-content\" x-text=\"owedDetails.whoOwesMostUsername ? owedDetails.whoOwesMostUsername + &#39; owes&#39; : &#39;Settled Up! 🎉&#39;\"></div><div class=\"stat-value\" x-text=\"FormatAsCurrency(&#39;USD&#39;, owedDetails.maxAmountOwed)\"></div><div class=\"stat-actions\"><button class=\"btn btn-sm\" onclick=\"baseModal.showModal()\" hx-get=\"/partials/settlements/new\" hx-trigger=\"click\" hx-target=\"#modal-container\">Settle Up</button></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"stat px-3\"><div class=\"stat-title text-primary-content\">Total spent</div><div class=\"stat-value\" x-text=\"FormatAsCurrency(&#39;USD&#39;, totalSpent)\"></div><div class=\"stat-desc text-secondary-content mt-2\"><span x-show=\"Object.keys(totalSpentByCurrency).length &gt; 1\"><template x-for=\"(amt, ccy) in totalSpentByCurrency\"><span class=\"badge badge-accent badge-sm\" x-text=\"FormatAsCurrency(ccy, amt)\"></span></template></span></div><div class=\"stat-actions\"><button class=\"btn btn-sm btn-success\" onclick=\"baseModal.showModal()\" hx-get=\"/partials/expenses/new\" hx-trigger=\"click\" hx-target=\"#modal-container\">New Expense</button></div></div><div class=\"stat px-2 text-right\"><div class=\"stat-title text-primary-content\" x-text=\"whoOwesMostUsername ? whoOwesMostUsername + &#39; owes&#39; : &#39;Settled Up! 🎉&#39;\"></div><div class=\"stat-value\" x-text=\"FormatAsCurrency(&#39;USD&#39;, maxAmountOwed)\"></div><div class=\"stat-desc text-secondary-content mt-2 flex space-x-1 justify-end\"><span class=\"badge badge-neutral badge-sm\" x-text=\"Math.round(pctOwed) + &#39;%&#39;\"></span><!--\n\t\t\t\t<span x-show=\"Object.keys(userOwesByCurrency[whoOwesMostUserID]).length > 1\">\n\t\t\t\t\t<template x-for=\"(amt, ccy) in userOwesByCurrency[whoOwesMostUserID]\">\n\t\t\t\t\t\t<span class=\"badge badge-accent badge-sm\" x-text=\"FormatAsCurrency(ccy, amt)\"></span>\n\t\t\t\t\t</template>\n\t\t\t\t</span>\n\t\t\t\t--></div><div class=\"stat-actions\"><button class=\"btn btn-sm\" onclick=\"baseModal.showModal()\" hx-get=\"/partials/settlements/new\" hx-trigger=\"click\" hx-target=\"#modal-container\">Settle Up</button></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

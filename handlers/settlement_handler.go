@@ -66,7 +66,7 @@ func (h *SettlementHandler) CreateNewSettlementPartial(
 ) {
 	currencies, _ := h.currencyRepo.GetAll()
 	users, _ := h.userRepo.GetAll()
-	expenses, _ := h.expenseRepo.GetAll()
+	expenses, _ := h.expenseRepo.GetExpensesWithFxRate()
 	settlements, _ := h.repo.GetAll()
 	owedDetails := helpers.CalculateOwedDetails(expenses, settlements)
 
@@ -109,7 +109,7 @@ func (h *SettlementHandler) EditSettlementByID(w http.ResponseWriter, request *h
 
 	currencies, _ := h.currencyRepo.GetAll()
 	users, _ := h.userRepo.GetAll()
-	expenses, _ := h.expenseRepo.GetAll()
+	expenses, _ := h.expenseRepo.GetExpensesWithFxRate()
 
 	settlements, _ := h.repo.GetAll()
 	owedDetails := helpers.CalculateOwedDetails(expenses, settlements)

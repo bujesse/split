@@ -140,7 +140,7 @@ func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *h
 }
 
 func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Request) {
-	expenses, err := h.expenseRepo.GetAll()
+	expenses, err := h.expenseRepo.GetExpensesWithFxRate()
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
