@@ -27,7 +27,16 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 				<div class="join w-full">
 					<label class="input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full">
 						Amount
-						<input x-model="Amount" type="number" id="Amount" name="Amount" class="grow" required/>
+						<input
+							x-model="Amount"
+							type="number"
+							step="any"
+							id="Amount"
+							name="Amount"
+							class="grow"
+							required
+							@change="Amount = parseFloat(Amount).toFixed(2); SettledToZero = Math.round((maxAmountOwed - Amount) * 100) === 0"
+						/>
 					</label>
 					<select x-model="CurrencyCode" name="CurrencyCode" class="select select-bordered join-item w-5/12 sm:w-auto">
 						for _, currency := range currencies {
@@ -47,6 +56,12 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 				x-model="SettledByID"
 				id="SettledByID"
 				name="SettledByID"
+			/>
+			<input
+				class="hidden"
+				x-model="SettledToZero"
+				id="SettledToZero"
+				name="SettledToZero"
 			/>
 			<div class="mb-4">
 				<textarea x-model="Notes" id="notes" name="notes" class="textarea textarea-bordered w-full" placeholder="Notes"></textarea>
@@ -79,11 +94,12 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 				const owedDetails = JSON.parse(document.getElementById('owedDetails').textContent)
 				const { maxAmountOwed, whoOwesMostUserID } = owedDetails
 				return {
-					Amount: maxAmountOwed,
+					Amount: maxAmountOwed.toFixed(2),
 					maxAmountOwed: maxAmountOwed,
 					Notes: null,
 					CurrencyCode: defaultCurrency,
 					SettledByID: whoOwesMostUserID,
+					SettledToZero: true,
 					...data,
 				}
 			})

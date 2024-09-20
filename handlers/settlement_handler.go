@@ -39,12 +39,14 @@ func (h *SettlementHandler) CreateSettlement(w http.ResponseWriter, r *http.Requ
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 64)
 	settledByID := r.FormValue("SettledByID")
 	parsedSettledByID, _ := helpers.StringToUint(settledByID)
+	settledToZero := r.FormValue("SettledToZero") == "true"
 
 	settlement := models.Settlement{
-		SettledByID:  parsedSettledByID,
-		Amount:       amount,
-		CurrencyCode: r.FormValue("CurrencyCode"),
-		Notes:        r.FormValue("Notes"),
+		SettledByID:   parsedSettledByID,
+		Amount:        amount,
+		CurrencyCode:  r.FormValue("CurrencyCode"),
+		Notes:         r.FormValue("Notes"),
+		SettledToZero: settledToZero,
 	}
 
 	if err := h.repo.Create(&settlement); err != nil {
@@ -132,6 +134,7 @@ func (h *SettlementHandler) UpdateSettlement(w http.ResponseWriter, r *http.Requ
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 64)
 	settledByID := r.FormValue("SettledByID")
 	parsedSettledByID, _ := helpers.StringToUint(settledByID)
+	settledToZero := r.FormValue("SettledToZero") == "true"
 
 	settlement, err := h.repo.GetByID(uint(id))
 
@@ -139,6 +142,7 @@ func (h *SettlementHandler) UpdateSettlement(w http.ResponseWriter, r *http.Requ
 	settlement.Amount = amount
 	settlement.CurrencyCode = r.FormValue("CurrencyCode")
 	settlement.Notes = r.FormValue("Notes")
+	settlement.SettledToZero = settledToZero
 
 	if err := h.repo.Update(settlement); err != nil {
 		http.Error(w, "Failed to update settlement", http.StatusInternalServerError)
