@@ -2,6 +2,7 @@ package components
 
 import "fmt"
 import "split/models"
+import "split/helpers"
 
 func getSettlementPostTarget(settlement *models.Settlement) string {
 	if settlement == nil {
@@ -14,7 +15,7 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 	<div class="w-full max-w-2xl">
 		@templ.JSONScript("settlement", settlement)
 		@templ.JSONScript("owedDetails", owedDetails)
-		<span id="current-user-id" class="hidden">{ GetContextUserID(ctx) }</span>
+		<span id="current-user-id" class="hidden">{ helpers.GetContextUserID(ctx) }</span>
 		<h2 class="mb-6 text-2xl font-bold">
 			if settlement == nil {
 				Settle Up!
@@ -25,7 +26,7 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 		<form hx-post={ getSettlementPostTarget(settlement) } @htmx:after-request="baseModal.close()" hx-swap="none" x-data="init">
 			<div class="mb-4">
 				<div class="join w-full">
-					<label class="input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full">
+					<label class="input join-item input-bordered flex w-7/12 items-center gap-2 sm:w-full">
 						Amount
 						<input
 							x-model="Amount"
@@ -38,18 +39,20 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 							@change="Amount = parseFloat(Amount).toFixed(2); SettledToZero = Math.round((maxAmountOwed - Amount) * 100) === 0"
 						/>
 					</label>
-					<select x-model="CurrencyCode" name="CurrencyCode" class="select select-bordered join-item w-5/12 sm:w-auto">
+					<select x-model="CurrencyCode" name="CurrencyCode" class="join-item select select-bordered w-5/12 sm:w-auto">
 						for _, currency := range currencies {
 							<option value={ currency.Code }>{ countryCodeToFlag(currency.TwoCharCountryCode) } { currency.Code }</option>
 						}
 					</select>
 				</div>
-				<div class="mt-2 flex">
-					<span class="text-sm">{ owedDetails["whoOwesMostUsername"].(string) } owes: <strong x-text="FormatAsCurrency('USD', maxAmountOwed)"></strong></span>
-				</div>
-				<div class="mt-2 flex">
-					<span class="text-sm">After this, { owedDetails["whoOwesMostUsername"].(string) } will owe: <strong x-text="FormatAsCurrency('USD', Math.max(maxAmountOwed - Amount, 0))"></strong></span>
-				</div>
+				if owedDetails["whoOwesMostUsername"] != nil {
+					<div class="mt-2 flex">
+						<span class="text-sm">{ owedDetails["whoOwesMostUsername"].(string) } owes: <strong x-text="FormatAsCurrency('USD', maxAmountOwed)"></strong></span>
+					</div>
+					<div class="mt-2 flex">
+						<span class="text-sm">After this, { owedDetails["whoOwesMostUsername"].(string) } will owe: <strong x-text="FormatAsCurrency('USD', Math.max(maxAmountOwed - Amount, 0))"></strong></span>
+					</div>
+				}
 			</div>
 			<input
 				class="hidden"
@@ -66,7 +69,7 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 			<div class="mb-4">
 				<textarea x-model="Notes" id="notes" name="notes" class="textarea textarea-bordered w-full" placeholder="Notes"></textarea>
 			</div>
-			<div class="flex justify-between items-center">
+			<div class="flex items-center justify-between">
 				<div>
 					if settlement != nil {
 						<button class="btn btn-error" type="button" hx-delete={ "/api/settlements/" + fmt.Sprintf("%d", settlement.ID) }>
@@ -88,14 +91,14 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 			Alpine.data('init', () => {
 				const data = JSON.parse(document.getElementById('settlement').textContent)
 				const currentUserID = document.getElementById('current-user-id').innerText
-				const defaultSettledByID = data?.SettledByID || currentUserID
 				const defaultCurrency = data?.Currency.Code || 'USD'
 
 				const owedDetails = JSON.parse(document.getElementById('owedDetails').textContent)
-				const { maxAmountOwed, whoOwesMostUserID } = owedDetails
+				const { maxAmountOwed, whoOwesMostUserID, maxAmountOwedBaseCcyTotal, userSettlements } = owedDetails
+				const actualMaxAmountOwed = !!data ? maxAmountOwedBaseCcyTotal : maxAmountOwed
 				return {
-					Amount: maxAmountOwed.toFixed(2),
-					maxAmountOwed: maxAmountOwed,
+					Amount: actualMaxAmountOwed.toFixed(2),
+					maxAmountOwed: actualMaxAmountOwed,
 					Notes: null,
 					CurrencyCode: defaultCurrency,
 					SettledByID: whoOwesMostUserID,

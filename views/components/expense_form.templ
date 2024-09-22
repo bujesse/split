@@ -2,20 +2,13 @@ package components
 
 import "split/models"
 import "fmt"
-import "context"
+import "split/helpers"
 
 func getExpensePostTarget(expense *models.Expense) string {
 	if expense == nil {
 		return "/api/expenses"
 	}
 	return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
-}
-
-func GetContextUserID(ctx context.Context) string {
-	if username, ok := ctx.Value("currentUserID").(string); ok {
-		return username
-	}
-	return ""
 }
 
 func countryCodeToFlag(code string) string {
@@ -31,7 +24,7 @@ func countryCodeToFlag(code string) string {
 templ ExpenseForm(expense *models.Expense, categories []models.Category, currencies []models.Currency, users []models.User) {
 	<div class="w-full max-w-2xl">
 		@templ.JSONScript("expense", expense)
-		<span id="current-user-id" class="hidden">{ GetContextUserID(ctx) }</span>
+		<span id="current-user-id" class="hidden">{ helpers.GetContextUserID(ctx) }</span>
 		<h2 class="mb-6 text-2xl font-bold">
 			if expense == nil {
 				Add New Expense
@@ -53,14 +46,14 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			</div>
 			<div class="mb-4">
 				<div class="join w-full">
-					<label class="input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full">
+					<label class="input join-item input-bordered flex w-7/12 items-center gap-2 sm:w-full">
 						Amount
 						<input x-model="Amount" type="number" id="amount" name="amount" class="grow" required/>
 					</label>
 					<select
 						x-model="currencyCode"
 						name="currencyCode"
-						class="select select-bordered join-item w-5/12 sm:w-auto"
+						class="join-item select select-bordered w-5/12 sm:w-auto"
 						@change="fxRateUSD = $el.options[$el.selectedIndex].getAttribute('data-fx-rate-usd')"
 					>
 						for _, currency := range currencies {
@@ -79,12 +72,12 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			</div>
 			<div class="mb-4">
 				<div class="join w-full">
-					<label class="input input-bordered flex items-center gap-2 join-item w-8/12 sm:w-full">
+					<label class="input join-item input-bordered flex w-8/12 items-center gap-2 sm:w-full">
 						<span>Split Amt</span>
 						<input x-model="SplitValue" type="number" id="splitValue" name="SplitValue" class="grow" required/>
 					</label>
-					<input x-model="SplitType" value="pct" class="join-item btn w-2/12 sm:w-auto" type="radio" name="SplitType" aria-label="%"/>
-					<input x-model="SplitType" value="amt" class="join-item btn w-2/12 sm:w-auto" type="radio" name="SplitType" aria-label="$"/>
+					<input x-model="SplitType" value="pct" class="btn join-item w-2/12 sm:w-auto" type="radio" name="SplitType" aria-label="%"/>
+					<input x-model="SplitType" value="amt" class="btn join-item w-2/12 sm:w-auto" type="radio" name="SplitType" aria-label="$"/>
 				</div>
 				<div class="mt-2 flex">
 					<span class="text-sm">
@@ -139,7 +132,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			<div class="mb-4">
 				<textarea x-model="Notes" id="notes" name="notes" class="textarea textarea-bordered w-full" placeholder="Notes"></textarea>
 			</div>
-			<div class="flex justify-between items-center">
+			<div class="flex items-center justify-between">
 				<div>
 					if expense != nil {
 						<button class="btn btn-error" type="button" hx-delete={ "/api/expenses/" + fmt.Sprintf("%d", expense.ID) }>

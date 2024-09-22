@@ -6,13 +6,13 @@ import "split/repositories"
 
 templ Stats(expenses []repositories.ExpenseWithFxRate, settlements []models.Settlement) {
 	<div
-		class="flex mt-4 stats bg-primary text-primary-content w-full mx-auto"
+		class="stats mx-auto mt-4 flex w-full bg-primary text-primary-content"
 		x-data={ templ.JSONString(helpers.CalculateOwedDetails(expenses, settlements)) }
 	>
 		<div class="stat px-3">
 			<div class="stat-title text-primary-content">Total spent</div>
 			<div class="stat-value" x-text="FormatAsCurrency('USD', totalSpent)"></div>
-			<div class="stat-desc text-secondary-content mt-2">
+			<div class="stat-desc mt-2 text-secondary-content">
 				<span x-show="Object.keys(totalSpentByCurrency).length > 1">
 					<template x-for="(amt, ccy) in totalSpentByCurrency">
 						<span class="badge badge-accent badge-sm" x-text="FormatAsCurrency(ccy, amt)"></span>
@@ -21,7 +21,7 @@ templ Stats(expenses []repositories.ExpenseWithFxRate, settlements []models.Sett
 			</div>
 			<div class="stat-actions">
 				<button
-					class="btn btn-sm btn-success"
+					class="btn btn-success btn-sm"
 					onclick="baseModal.showModal()"
 					hx-get="/partials/expenses/new"
 					hx-trigger="click"
@@ -35,8 +35,12 @@ templ Stats(expenses []repositories.ExpenseWithFxRate, settlements []models.Sett
 				x-text="whoOwesMostUsername ? whoOwesMostUsername + ' owes' : 'Settled Up! 🎉'"
 			></div>
 			<div class="stat-value" x-text="FormatAsCurrency('USD', maxAmountOwed)"></div>
-			<div class="stat-desc text-secondary-content mt-2 flex space-x-1 justify-end">
-				<span class="badge badge-neutral badge-sm" x-text="Math.round(pctOwed) + '%'"></span>
+			<div class="stat-desc mt-2 flex justify-end space-x-1 text-secondary-content">
+				<span
+					class="badge badge-neutral badge-sm"
+					x-show="Math.round(pctOwed) !== 0"
+					x-text="Math.round(pctOwed) + '%'"
+				></span>
 				<!--
 				<span x-show="Object.keys(userOwesByCurrency[whoOwesMostUserID]).length > 1">
 					<template x-for="(amt, ccy) in userOwesByCurrency[whoOwesMostUserID]">
@@ -48,6 +52,7 @@ templ Stats(expenses []repositories.ExpenseWithFxRate, settlements []models.Sett
 			<div class="stat-actions">
 				<button
 					class="btn btn-sm"
+					x-show="whoOwesMostUsername !== null"
 					onclick="baseModal.showModal()"
 					hx-get="/partials/settlements/new"
 					hx-trigger="click"

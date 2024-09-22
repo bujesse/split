@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"split/config/logger"
@@ -64,7 +63,7 @@ func (h *SettlementHandler) CreateSettlement(w http.ResponseWriter, r *http.Requ
 
 func (h *SettlementHandler) CreateNewSettlementPartial(
 	w http.ResponseWriter,
-	request *http.Request,
+	r *http.Request,
 ) {
 	currencies, _ := h.currencyRepo.GetAll()
 	users, _ := h.userRepo.GetAll()
@@ -77,7 +76,7 @@ func (h *SettlementHandler) CreateNewSettlementPartial(
 		owedDetails,
 		currencies,
 		users,
-	).Render(request.Context(), w)
+	).Render(r.Context(), w)
 }
 
 func (h *SettlementHandler) DeleteSettlement(response http.ResponseWriter, request *http.Request) {
@@ -96,8 +95,8 @@ func (h *SettlementHandler) DeleteSettlement(response http.ResponseWriter, reque
 	response.WriteHeader(http.StatusNoContent)
 }
 
-func (h *SettlementHandler) EditSettlementByID(w http.ResponseWriter, request *http.Request) {
-	idStr := request.PathValue("id")
+func (h *SettlementHandler) EditSettlementByID(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
@@ -116,7 +115,7 @@ func (h *SettlementHandler) EditSettlementByID(w http.ResponseWriter, request *h
 	settlements, _ := h.repo.GetAll()
 	owedDetails := helpers.CalculateOwedDetails(expenses, settlements)
 	components.SettlementsForm(settlement, owedDetails, currencies, users).
-		Render(context.Background(), w)
+		Render(r.Context(), w)
 }
 
 func (h *SettlementHandler) UpdateSettlement(w http.ResponseWriter, r *http.Request) {

@@ -163,8 +163,8 @@ func (h *ExpenseHandler) CreateNewExpensePartial(w http.ResponseWriter, request 
 	).Render(request.Context(), w)
 }
 
-func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Request) {
-	idStr := request.PathValue("id")
+func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
@@ -185,7 +185,7 @@ func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Re
 		categories,
 		currencies,
 		users,
-	).Render(context.Background(), w)
+	).Render(r.Context(), w)
 }
 
 func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
