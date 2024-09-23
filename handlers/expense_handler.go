@@ -98,7 +98,7 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 
 // GetAllExpenses returns all expenses and settlements together, sorted by date descending
 func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *http.Request) {
-	expenses, err := h.expenseRepo.GetExpensesWithFxRate()
+	expenses, err := h.expenseRepo.GetExpensesSinceLastSettlement()
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return

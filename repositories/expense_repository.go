@@ -11,6 +11,7 @@ type ExpenseRepository interface {
 	CreateExpense(expense *models.Expense) error
 	GetByID(id uint, preloads ...string) (*models.Expense, error)
 	GetExpensesWithFxRate() ([]ExpenseWithFxRate, error)
+	GetExpensesSinceLastSettlement() ([]ExpenseWithFxRate, error)
 	UpdateExpense(expense *models.Expense) error
 	GetAll() ([]models.Expense, error)
 	DeleteExpense(expense *models.Expense) error
@@ -61,6 +62,35 @@ func (r *expenseRepository) GetExpensesWithFxRate() ([]ExpenseWithFxRate, error)
 		return nil, result.Error
 	}
 
+	return expenses, nil
+}
+
+func (r *expenseRepository) GetExpensesSinceLastSettlement() ([]ExpenseWithFxRate, error) {
+	var expenses []ExpenseWithFxRate
+
+	latestZeroSettlementSubQuery := r.db.Table("settlements").
+		Select("settlement_date").
+		Where("settled_to_zero = ?", true).
+		Order("settlement_date DESC").
+		Limit(1)
+
+	fxRateSubQuery := r.db.Table("fx_rates").
+		Select("rate").
+		Where("to_currency_code = expenses.currency_code AND from_currency_code = 'USD' AND DATE(date) = DATE(expenses.paid_date)").
+		Order("date DESC").
+		Limit(1)
+
+	result := r.db.Table("expenses").
+		Select("expenses.*, (?) AS fx_rate", fxRateSubQuery).
+		Preload(clause.Associations).
+		Preload("ExpenseSplits.User").
+		Where("paid_date > (?)", latestZeroSettlementSubQuery).
+		Order("paid_date DESC").
+		Find(&expenses)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
 	return expenses, nil
 }
 
