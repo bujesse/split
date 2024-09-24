@@ -6,7 +6,7 @@ import "split/repositories"
 
 templ Stats(expenses []repositories.ExpenseWithFxRate, settlements []models.Settlement) {
 	<div
-		class="stats mx-auto mt-4 flex w-full bg-primary text-primary-content"
+		class="stats mx-auto mt-4 flex w-full overflow-x-hidden bg-primary text-primary-content"
 		x-data={ templ.JSONString(helpers.CalculateOwedDetails(expenses, settlements)) }
 	>
 		<div class="stat px-3">

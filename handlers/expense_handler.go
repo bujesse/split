@@ -110,7 +110,7 @@ func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *h
 		entries = append(entries, expense)
 	}
 
-	settlements, _ := h.settlementRepo.GetAll()
+	settlements, _ := h.settlementRepo.GetAllSinceLastSettlement()
 	for _, settlement := range settlements {
 		entries = append(entries, settlement)
 	}
@@ -140,13 +140,13 @@ func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *h
 }
 
 func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Request) {
-	expenses, err := h.expenseRepo.GetExpensesWithFxRate()
+	expenses, err := h.expenseRepo.GetExpensesSinceLastSettlement()
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	response.Header().Set("Content-Type", "text/html")
-	settlements, _ := h.settlementRepo.GetAll()
+	settlements, _ := h.settlementRepo.GetAllSinceLastSettlement()
 	components.Stats(expenses, settlements).Render(context.Background(), response)
 }
 

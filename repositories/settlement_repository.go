@@ -13,6 +13,7 @@ type SettlementRepository interface {
 	// GetByName(name string) (*models.Settlement, error)
 	Update(settlement *models.Settlement) error
 	GetAll() ([]models.Settlement, error)
+	GetAllSinceLastSettlement() ([]models.Settlement, error)
 	Delete(id uint) error
 }
 
@@ -44,6 +45,27 @@ func (r *settlementRepository) GetByID(id uint) (*models.Settlement, error) {
 		return nil, result.Error
 	}
 	return &settlement, nil
+}
+
+func (r *settlementRepository) GetAllSinceLastSettlement() ([]models.Settlement, error) {
+	var settlements []models.Settlement
+
+	subquery := r.db.Model(&models.Settlement{}).
+		Select("settlement_date").
+		Where("settled_to_zero = ?", true).
+		Order("settlement_date desc").
+		Limit(1)
+
+	result := r.db.Preload(clause.Associations).
+		Where("settlement_date > (?)", subquery).
+		Order("settlement_date desc").
+		Find(&settlements)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return settlements, nil
 }
 
 // func (r *settlementRepository) GetByName(id string) (*models.Settlement, error) {

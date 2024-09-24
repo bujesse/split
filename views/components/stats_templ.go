@@ -30,7 +30,7 @@ func Stats(expenses []repositories.ExpenseWithFxRate, settlements []models.Settl
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"stats mx-auto mt-4 flex w-full bg-primary text-primary-content\" x-data=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"stats mx-auto mt-4 flex w-full overflow-x-hidden bg-primary text-primary-content\" x-data=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
