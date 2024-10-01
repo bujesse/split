@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"split/models"
+	"time"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -14,6 +15,7 @@ type SettlementRepository interface {
 	Update(settlement *models.Settlement) error
 	GetAll() ([]models.Settlement, error)
 	GetAllSinceLastSettlement() ([]models.Settlement, error)
+	GetSettlementsBetweenZeros(offset int) ([]models.Settlement, error)
 	Delete(id uint) error
 }
 
@@ -57,7 +59,44 @@ func (r *settlementRepository) GetAllSinceLastSettlement() ([]models.Settlement,
 		Limit(1)
 
 	result := r.db.Preload(clause.Associations).
-		Where("settlement_date > (?)", subquery).
+		Where("settlement_date >= (?)", subquery).
+		Order("settlement_date desc").
+		Find(&settlements)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return settlements, nil
+}
+
+func (r *settlementRepository) GetSettlementsBetweenZeros(offset int) ([]models.Settlement, error) {
+	var settlements []models.Settlement
+	var latestZeroDate, previousZeroDate time.Time
+
+	// Subquery to get the nth latest settlement date where SettledToZero is true
+	subqueryNthZero := func(n int) *gorm.DB {
+		return r.db.Model(&models.Settlement{}).
+			Select("settlement_date").
+			Where("settled_to_zero = ?", true).
+			Order("settlement_date desc").
+			Offset(n).
+			Limit(1)
+	}
+
+	// Retrieve the nth zero settlement date
+	if err := subqueryNthZero(offset).Scan(&latestZeroDate).Error; err != nil {
+		return nil, err
+	}
+
+	// Retrieve the (n+1)th zero settlement date
+	if err := subqueryNthZero(offset + 1).Scan(&previousZeroDate).Error; err != nil {
+		return nil, err
+	}
+
+	// Main query to get all settlements between two consecutive zero-settled settlements
+	result := r.db.Preload(clause.Associations).
+		Where("settlement_date > ? AND settlement_date < ?", previousZeroDate, latestZeroDate).
 		Order("settlement_date desc").
 		Find(&settlements)
 

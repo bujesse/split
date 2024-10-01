@@ -96,9 +96,22 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 	response.WriteHeader(http.StatusCreated)
 }
 
-// GetAllExpenses returns all expenses and settlements together, sorted by date descending
-func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *http.Request) {
-	expenses, err := h.expenseRepo.GetExpensesSinceLastSettlement()
+// GetExpenses returns all expenses and settlements together, sorted by date descending
+func (h *ExpenseHandler) GetExpenses(response http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	offsetParam := query.Get("offset")
+	offset, err := strconv.Atoi(offsetParam)
+	if err != nil {
+		offset = 0
+	}
+
+	logger.Debug.Println("Getting expenses, offset:", offset)
+	var expenses []repositories.ExpenseWithFxRate
+	if offset == 0 {
+		expenses, err = h.expenseRepo.GetExpensesSinceLastSettlement()
+	} else {
+		expenses, err = h.expenseRepo.GetExpensesBetweenZeros(offset)
+	}
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
@@ -110,7 +123,12 @@ func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *h
 		entries = append(entries, expense)
 	}
 
-	settlements, _ := h.settlementRepo.GetAllSinceLastSettlement()
+	var settlements []models.Settlement
+	if offset == 0 {
+		settlements, _ = h.settlementRepo.GetAllSinceLastSettlement()
+	} else {
+		settlements, _ = h.settlementRepo.GetSettlementsBetweenZeros(offset)
+	}
 	for _, settlement := range settlements {
 		entries = append(entries, settlement)
 	}
