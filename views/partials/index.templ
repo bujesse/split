@@ -7,7 +7,8 @@ templ Index() {
 		hx-trigger="load, reloadExpenses from:body"
 	></div>
 	<div
-		class="mt-6 w-full flex justify-center items-center flex-col"
+		class="mt-6 flex w-full flex-col items-center justify-center"
+		x-data="{ offset: 0, isLastOffset: true }"
 	>
 		<!-- Expense Table -->
 		<div
@@ -15,11 +16,25 @@ templ Index() {
 			id="expenses-table"
 			hx-get="/api/expenses"
 			hx-trigger="load, reloadExpenses from:body"
+			@htmx:after-request="offset = 1; isLastOffset = JSON.parse([...document.querySelectorAll('#is-last-offset')].pop().innerText)"
 		></div>
+		<button
+			class="btn btn-primary mt-6 w-full"
+			hx-trigger="click"
+			hx-target="#expenses-table"
+			hx-get="/api/expenses"
+			:hx-vals="JSON.stringify({ offset: offset })"
+			hx-swap="beforeend"
+			x-cloak
+			@htmx:after-request="offset += 1; isLastOffset = JSON.parse([...document.querySelectorAll('#is-last-offset')].pop().innerText)"
+			:class="isLastOffset && 'hidden'"
+		>
+			Load More
+		</button>
 	</div>
 	<!-- Add Expense FAB -->
 	<button
-		class="md:hidden btn btn-circle btn-success btn-lg fixed bottom-6 right-6"
+		class="btn btn-circle btn-success btn-lg fixed bottom-6 right-6 md:hidden"
 		onclick="baseModal.showModal()"
 		hx-get="/partials/expenses/new"
 		hx-trigger="click"
@@ -47,4 +62,7 @@ templ Index() {
 			</g>
 		</svg>
 	</button>
+	<script>
+		
+	</script>
 }

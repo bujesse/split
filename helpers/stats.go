@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"math"
 	"split/models"
 	"split/repositories"
 )
@@ -26,7 +27,7 @@ func calculateTotalSpent(expenses []repositories.ExpenseWithFxRate) (float64, ma
 func calculateUserOwes(
 	expenses []repositories.ExpenseWithFxRate,
 	settlements []models.Settlement,
-) (map[uint]float64, map[uint]map[string]float64, map[uint]string) {
+) (map[uint]float64, map[uint]float64, map[uint]map[string]float64, map[uint]string, map[uint]float64) {
 
 	userOwesBaseCcy := make(map[uint]float64)
 	userOwesByCurrency := make(map[uint]map[string]float64)
@@ -59,11 +60,14 @@ func calculateUserOwes(
 		}
 	}
 
+	userSettlements := make(map[uint]float64)
+	userOwesBCWithSettlements := DeepCopyMap(userOwesBaseCcy)
 	for _, settlement := range settlements {
-		userOwesBaseCcy[settlement.SettledByID] -= settlement.Amount
+		userOwesBCWithSettlements[settlement.SettledByID] -= settlement.Amount
+		userSettlements[settlement.SettledByID] += settlement.Amount
 	}
 
-	return userOwesBaseCcy, userOwesByCurrency, userNames
+	return userOwesBCWithSettlements, userOwesBaseCcy, userOwesByCurrency, userNames, userSettlements
 }
 
 // Calculate the user who owes the most and their net amount owed
@@ -89,6 +93,8 @@ func calculateMaxOwed(userOwesBaseCcy map[uint]float64) (uint, float64) {
 		}
 	}
 
+	maxAmountOwedBaseCcy = math.Round(maxAmountOwedBaseCcy*100) / 100
+
 	return userIDWithMax, maxAmountOwedBaseCcy
 }
 
@@ -101,17 +107,37 @@ func CalculateOwedDetails(
 
 	totalSpentBaseCcy, totalSpentByCurrency := calculateTotalSpent(expenses)
 
-	userOwesBaseCcy, userOwesByCurrency, userNames := calculateUserOwes(expenses, settlements)
+	userOwesBaseCcyWithSettlements, userOwesBaseCcyTotal, userOwesByCurrency, userNames, userSettlements := calculateUserOwes(
+		expenses,
+		settlements,
+	)
 
-	userIDWithMax, maxAmountOwedBaseCcy := calculateMaxOwed(userOwesBaseCcy)
+	userIDWithMax, maxAmountOwedBaseCcy := calculateMaxOwed(userOwesBaseCcyWithSettlements)
 
-	result["whoOwesMostUserID"] = userIDWithMax
-	result["whoOwesMostUsername"] = userNames[userIDWithMax]
-	result["maxAmountOwed"] = maxAmountOwedBaseCcy
+	// Get total amount owed, not including settlements
+	// This is used for editing settlements
+	_, maxAmountOwedBaseCcyTotal := calculateMaxOwed(
+		userOwesBaseCcyTotal,
+	)
+
+	if maxAmountOwedBaseCcy == 0 {
+		result["whoOwesMostUserID"] = nil
+		result["whoOwesMostUsername"] = nil
+		result["maxAmountOwed"] = 0
+		result["pctOwed"] = 0
+	} else {
+		result["whoOwesMostUserID"] = userIDWithMax
+		result["whoOwesMostUsername"] = userNames[userIDWithMax]
+		result["maxAmountOwed"] = maxAmountOwedBaseCcy
+		result["pctOwed"] = (maxAmountOwedBaseCcy / totalSpentBaseCcy) * 100
+	}
+
 	result["totalSpent"] = totalSpentBaseCcy
-	result["pctOwed"] = (maxAmountOwedBaseCcy / totalSpentBaseCcy) * 100
 	result["totalSpentByCurrency"] = totalSpentByCurrency
 	result["userOwesByCurrency"] = userOwesByCurrency
+
+	result["maxAmountOwedBaseCcyTotal"] = maxAmountOwedBaseCcyTotal
+	result["userSettlements"] = userSettlements
 
 	return result
 }

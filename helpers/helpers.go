@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"context"
 	"strconv"
 	"time"
 )
@@ -33,4 +34,19 @@ func ConvertToServerTime(dateStr string) (time.Time, error) {
 	localTime := parsedTime.In(serverLocation)
 
 	return localTime, nil
+}
+
+func DeepCopyMap[K comparable, V any](original map[K]V) map[K]V {
+	copy := make(map[K]V)
+	for key, value := range original {
+		copy[key] = value
+	}
+	return copy
+}
+
+func GetContextUserID(ctx context.Context) string {
+	if username, ok := ctx.Value("currentUserID").(string); ok {
+		return username
+	}
+	return ""
 }

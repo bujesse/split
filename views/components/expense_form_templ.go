@@ -10,20 +10,13 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "split/models"
 import "fmt"
-import "context"
+import "split/helpers"
 
 func getExpensePostTarget(expense *models.Expense) string {
 	if expense == nil {
 		return "/api/expenses"
 	}
 	return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
-}
-
-func GetContextUserID(ctx context.Context) string {
-	if username, ok := ctx.Value("currentUserID").(string); ok {
-		return username
-	}
-	return ""
 }
 
 func countryCodeToFlag(code string) string {
@@ -67,9 +60,9 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(GetContextUserID(ctx))
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(helpers.GetContextUserID(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 34, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 27, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -92,7 +85,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(expense.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 39, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 32, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -110,13 +103,13 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(getExpensePostTarget(expense))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 43, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 36, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Name <input x-model=\"Title\" autofocus type=\"text\" id=\"title\" name=\"title\" class=\"grow\" required></label></div><div class=\"mb-4\"><div class=\"join w-full\"><label class=\"input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full\">Amount <input x-model=\"Amount\" type=\"number\" id=\"amount\" name=\"amount\" class=\"grow\" required></label> <select x-model=\"currencyCode\" name=\"currencyCode\" class=\"select select-bordered join-item w-5/12 sm:w-auto\" @change=\"fxRateUSD = $el.options[$el.selectedIndex].getAttribute(&#39;data-fx-rate-usd&#39;)\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Name <input x-model=\"Title\" autofocus type=\"text\" id=\"title\" name=\"title\" class=\"grow\" required></label></div><div class=\"mb-4\"><div class=\"join w-full\"><label class=\"input join-item input-bordered flex w-7/12 items-center gap-2 sm:w-full\">Amount <input x-model=\"Amount\" type=\"number\" id=\"amount\" name=\"amount\" class=\"grow\" required></label> <select x-model=\"currencyCode\" name=\"currencyCode\" class=\"join-item select select-bordered w-5/12 sm:w-auto\" @change=\"fxRateUSD = $el.options[$el.selectedIndex].getAttribute(&#39;data-fx-rate-usd&#39;)\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -128,7 +121,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Code)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 68, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 61, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -141,7 +134,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(currency.LatestFxRateUSD))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 69, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 62, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -154,7 +147,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(countryCodeToFlag(currency.TwoCharCountryCode))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 70, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 63, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -167,7 +160,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Code)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 70, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 63, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -178,7 +171,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mt-2 flex\"><span x-show=\"currencyCode !== &#39;USD&#39;\" class=\"text-sm\">Equivalent to: <span x-text=\"FormatAsCurrency(&#39;USD&#39;, Amount / parseFloat(fxRateUSD))\"></span></span></div></div><div class=\"mb-4\"><div class=\"join w-full\"><label class=\"input input-bordered flex items-center gap-2 join-item w-8/12 sm:w-full\"><span>Split Amt</span> <input x-model=\"SplitValue\" type=\"number\" id=\"splitValue\" name=\"SplitValue\" class=\"grow\" required></label> <input x-model=\"SplitType\" value=\"pct\" class=\"join-item btn w-2/12 sm:w-auto\" type=\"radio\" name=\"SplitType\" aria-label=\"%\"> <input x-model=\"SplitType\" value=\"amt\" class=\"join-item btn w-2/12 sm:w-auto\" type=\"radio\" name=\"SplitType\" aria-label=\"$\"></div><div class=\"mt-2 flex\"><span class=\"text-sm\">Equivalent to: <strong x-text=\"FormatAsCurrency(currencyCode, calculateEquivalentAmount($data))\"></strong> <span x-show=\"currencyCode !== &#39;USD&#39;\" class=\"text-sm\">(<span x-text=\"FormatAsCurrency(&#39;USD&#39;, calculateEquivalentAmount($data) / parseFloat(fxRateUSD))\"></span>)</span></span></div></div><div class=\"mb-4 flex space-x-4\"><div class=\"w-1/2\"><label class=\"form-control w-full max-w-xs\"><div class=\"label\"><span class=\"label-text\">Paid By</span></div><select x-model=\"paidByID\" id=\"paidByID\" name=\"paidByID\" @change=\"splitByID = selectNextOption(document.getElementById(&#39;splitByID&#39;), paidByID)\" class=\"select select-bordered\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mt-2 flex\"><span x-show=\"currencyCode !== &#39;USD&#39;\" class=\"text-sm\">Equivalent to: <span x-text=\"FormatAsCurrency(&#39;USD&#39;, Amount / parseFloat(fxRateUSD))\"></span></span></div></div><div class=\"mb-4\"><div class=\"join w-full\"><label class=\"input join-item input-bordered flex w-8/12 items-center gap-2 sm:w-full\"><span>Split Amt</span> <input x-model=\"SplitValue\" type=\"number\" id=\"splitValue\" name=\"SplitValue\" class=\"grow\" required></label> <input x-model=\"SplitType\" value=\"pct\" class=\"btn join-item w-2/12 sm:w-auto\" type=\"radio\" name=\"SplitType\" aria-label=\"%\"> <input x-model=\"SplitType\" value=\"amt\" class=\"btn join-item w-2/12 sm:w-auto\" type=\"radio\" name=\"SplitType\" aria-label=\"$\"></div><div class=\"mt-2 flex\"><span class=\"text-sm\">Equivalent to: <strong x-text=\"FormatAsCurrency(currencyCode, calculateEquivalentAmount($data))\"></strong> <span x-show=\"currencyCode !== &#39;USD&#39;\" class=\"text-sm\">(<span x-text=\"FormatAsCurrency(&#39;USD&#39;, calculateEquivalentAmount($data) / parseFloat(fxRateUSD))\"></span>)</span></span></div></div><div class=\"mb-4 flex space-x-4\"><div class=\"w-1/2\"><label class=\"form-control w-full max-w-xs\"><div class=\"label\"><span class=\"label-text\">Paid By</span></div><select x-model=\"paidByID\" id=\"paidByID\" name=\"paidByID\" @change=\"splitByID = selectNextOption(document.getElementById(&#39;splitByID&#39;), paidByID)\" class=\"select select-bordered\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -190,7 +183,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", user.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 112, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 105, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -203,7 +196,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(user.Username)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 112, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 105, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -226,7 +219,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", user.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 130, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 123, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -239,7 +232,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(user.Username)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 130, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 123, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -258,7 +251,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"mb-4\"><textarea x-model=\"Notes\" id=\"notes\" name=\"notes\" class=\"textarea textarea-bordered w-full\" placeholder=\"Notes\"></textarea></div><div class=\"flex justify-between items-center\"><div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"mb-4\"><textarea x-model=\"Notes\" id=\"notes\" name=\"notes\" class=\"textarea textarea-bordered w-full\" placeholder=\"Notes\"></textarea></div><div class=\"flex items-center justify-between\"><div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -270,7 +263,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("/api/expenses/" + fmt.Sprintf("%d", expense.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 145, Col: 110}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 138, Col: 110}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {

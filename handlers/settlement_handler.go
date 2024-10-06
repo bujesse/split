@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"split/config/logger"
@@ -39,12 +38,14 @@ func (h *SettlementHandler) CreateSettlement(w http.ResponseWriter, r *http.Requ
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 64)
 	settledByID := r.FormValue("SettledByID")
 	parsedSettledByID, _ := helpers.StringToUint(settledByID)
+	settledToZero := r.FormValue("SettledToZero") == "true"
 
 	settlement := models.Settlement{
-		SettledByID:  parsedSettledByID,
-		Amount:       amount,
-		CurrencyCode: r.FormValue("CurrencyCode"),
-		Notes:        r.FormValue("Notes"),
+		SettledByID:   parsedSettledByID,
+		Amount:        amount,
+		CurrencyCode:  r.FormValue("CurrencyCode"),
+		Notes:         r.FormValue("Notes"),
+		SettledToZero: settledToZero,
 	}
 
 	if err := h.repo.Create(&settlement); err != nil {
@@ -62,12 +63,12 @@ func (h *SettlementHandler) CreateSettlement(w http.ResponseWriter, r *http.Requ
 
 func (h *SettlementHandler) CreateNewSettlementPartial(
 	w http.ResponseWriter,
-	request *http.Request,
+	r *http.Request,
 ) {
 	currencies, _ := h.currencyRepo.GetAll()
 	users, _ := h.userRepo.GetAll()
-	expenses, _ := h.expenseRepo.GetExpensesWithFxRate()
-	settlements, _ := h.repo.GetAll()
+	expenses, _ := h.expenseRepo.GetExpensesSinceLastSettlement()
+	settlements, _ := h.repo.GetAllSinceLastZeroSettlement()
 	owedDetails := helpers.CalculateOwedDetails(expenses, settlements)
 
 	components.SettlementsForm(
@@ -75,7 +76,7 @@ func (h *SettlementHandler) CreateNewSettlementPartial(
 		owedDetails,
 		currencies,
 		users,
-	).Render(request.Context(), w)
+	).Render(r.Context(), w)
 }
 
 func (h *SettlementHandler) DeleteSettlement(response http.ResponseWriter, request *http.Request) {
@@ -94,8 +95,8 @@ func (h *SettlementHandler) DeleteSettlement(response http.ResponseWriter, reque
 	response.WriteHeader(http.StatusNoContent)
 }
 
-func (h *SettlementHandler) EditSettlementByID(w http.ResponseWriter, request *http.Request) {
-	idStr := request.PathValue("id")
+func (h *SettlementHandler) EditSettlementByID(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
@@ -109,12 +110,12 @@ func (h *SettlementHandler) EditSettlementByID(w http.ResponseWriter, request *h
 
 	currencies, _ := h.currencyRepo.GetAll()
 	users, _ := h.userRepo.GetAll()
-	expenses, _ := h.expenseRepo.GetExpensesWithFxRate()
+	expenses, _ := h.expenseRepo.GetExpensesSinceLastSettlement()
 
-	settlements, _ := h.repo.GetAll()
+	settlements, _ := h.repo.GetAllSinceLastZeroSettlement()
 	owedDetails := helpers.CalculateOwedDetails(expenses, settlements)
 	components.SettlementsForm(settlement, owedDetails, currencies, users).
-		Render(context.Background(), w)
+		Render(r.Context(), w)
 }
 
 func (h *SettlementHandler) UpdateSettlement(w http.ResponseWriter, r *http.Request) {
@@ -132,6 +133,7 @@ func (h *SettlementHandler) UpdateSettlement(w http.ResponseWriter, r *http.Requ
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 64)
 	settledByID := r.FormValue("SettledByID")
 	parsedSettledByID, _ := helpers.StringToUint(settledByID)
+	settledToZero := r.FormValue("SettledToZero") == "true"
 
 	settlement, err := h.repo.GetByID(uint(id))
 
@@ -139,6 +141,7 @@ func (h *SettlementHandler) UpdateSettlement(w http.ResponseWriter, r *http.Requ
 	settlement.Amount = amount
 	settlement.CurrencyCode = r.FormValue("CurrencyCode")
 	settlement.Notes = r.FormValue("Notes")
+	settlement.SettledToZero = settledToZero
 
 	if err := h.repo.Update(settlement); err != nil {
 		http.Error(w, "Failed to update settlement", http.StatusInternalServerError)

@@ -96,9 +96,22 @@ func (h *ExpenseHandler) CreateExpense(response http.ResponseWriter, r *http.Req
 	response.WriteHeader(http.StatusCreated)
 }
 
-// GetAllExpenses returns all expenses and settlements together, sorted by date descending
-func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *http.Request) {
-	expenses, err := h.expenseRepo.GetExpensesWithFxRate()
+// GetExpenses returns all expenses and settlements together, sorted by date descending
+func (h *ExpenseHandler) GetExpenses(response http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	offsetParam := query.Get("offset")
+	offset, err := strconv.Atoi(offsetParam)
+	if err != nil {
+		offset = 0
+	}
+
+	logger.Debug.Println("Getting expenses, offset:", offset)
+	var expenses []repositories.ExpenseWithFxRate
+	if offset == 0 {
+		expenses, err = h.expenseRepo.GetExpensesSinceLastSettlement()
+	} else {
+		expenses, err = h.expenseRepo.GetExpensesBetweenZeros(offset)
+	}
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
@@ -110,7 +123,12 @@ func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *h
 		entries = append(entries, expense)
 	}
 
-	settlements, _ := h.settlementRepo.GetAll()
+	var settlements []models.Settlement
+	if offset == 0 {
+		settlements, _ = h.settlementRepo.GetAllSinceLastZeroSettlement()
+	} else {
+		settlements, _ = h.settlementRepo.GetSettlementsBetweenZeros(offset)
+	}
 	for _, settlement := range settlements {
 		entries = append(entries, settlement)
 	}
@@ -135,18 +153,20 @@ func (h *ExpenseHandler) GetAllExpenses(response http.ResponseWriter, request *h
 		return dateI.After(dateJ)
 	})
 
+	numZeroSettlements, _ := h.settlementRepo.GetNumZeroSettlements()
+	isLastOffset := offset >= int(numZeroSettlements)
 	categories, _ := h.categoryRepo.GetAll()
-	partials.ExpensesTable(entries, categories).Render(context.Background(), response)
+	partials.ExpensesTable(entries, categories, isLastOffset).Render(context.Background(), response)
 }
 
 func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Request) {
-	expenses, err := h.expenseRepo.GetExpensesWithFxRate()
+	expenses, err := h.expenseRepo.GetExpensesSinceLastSettlement()
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	response.Header().Set("Content-Type", "text/html")
-	settlements, _ := h.settlementRepo.GetAll()
+	settlements, _ := h.settlementRepo.GetAllSinceLastZeroSettlement()
 	components.Stats(expenses, settlements).Render(context.Background(), response)
 }
 
@@ -163,8 +183,8 @@ func (h *ExpenseHandler) CreateNewExpensePartial(w http.ResponseWriter, request 
 	).Render(request.Context(), w)
 }
 
-func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Request) {
-	idStr := request.PathValue("id")
+func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
@@ -185,7 +205,7 @@ func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, request *http.Re
 		categories,
 		currencies,
 		users,
-	).Render(context.Background(), w)
+	).Render(r.Context(), w)
 }
 
 func (h *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {

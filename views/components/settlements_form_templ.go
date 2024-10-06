@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "fmt"
 import "split/models"
+import "split/helpers"
 
 func getSettlementPostTarget(settlement *models.Settlement) string {
 	if settlement == nil {
@@ -53,9 +54,9 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(GetContextUserID(ctx))
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(helpers.GetContextUserID(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 17, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 18, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -83,13 +84,13 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(getSettlementPostTarget(settlement))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 25, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 26, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><div class=\"join w-full\"><label class=\"input input-bordered flex items-center gap-2 join-item w-7/12 sm:w-full\">Amount <input x-model=\"Amount\" type=\"number\" id=\"Amount\" name=\"Amount\" class=\"grow\" required></label> <select x-model=\"CurrencyCode\" name=\"CurrencyCode\" class=\"select select-bordered join-item w-5/12 sm:w-auto\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><div class=\"join w-full\"><label class=\"input join-item input-bordered flex w-7/12 items-center gap-2 sm:w-full\">Amount <input x-model=\"Amount\" type=\"number\" step=\"any\" id=\"Amount\" name=\"Amount\" class=\"grow\" required @change=\"Amount = parseFloat(Amount).toFixed(2); SettledToZero = Math.round((maxAmountOwed - Amount) * 100) === 0\"></label> <select x-model=\"CurrencyCode\" name=\"CurrencyCode\" class=\"join-item select select-bordered w-5/12 sm:w-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -101,7 +102,7 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Code)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 34, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 44, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -114,7 +115,7 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(countryCodeToFlag(currency.TwoCharCountryCode))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 34, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 44, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -127,7 +128,7 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Code)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 34, Col: 105}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 44, Col: 105}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -138,33 +139,43 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div><div class=\"mt-2 flex\"><span class=\"text-sm\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(owedDetails["whoOwesMostUsername"].(string))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 39, Col: 72}
+		if owedDetails["whoOwesMostUsername"] != nil {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mt-2 flex\"><span class=\"text-sm\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(owedDetails["whoOwesMostUsername"].(string))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 50, Col: 73}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" owes: <strong x-text=\"FormatAsCurrency(&#39;USD&#39;, maxAmountOwed)\"></strong></span></div><div class=\"mt-2 flex\"><span class=\"text-sm\">After this, ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(owedDetails["whoOwesMostUsername"].(string))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 53, Col: 85}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" will owe: <strong x-text=\"FormatAsCurrency(&#39;USD&#39;, Math.max(maxAmountOwed - Amount, 0))\"></strong></span></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" owes: <strong x-text=\"FormatAsCurrency(&#39;USD&#39;, maxAmountOwed)\"></strong></span></div><div class=\"mt-2 flex\"><span class=\"text-sm\">After this, ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(owedDetails["whoOwesMostUsername"].(string))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 42, Col: 84}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" will owe: <strong x-text=\"FormatAsCurrency(&#39;USD&#39;, Math.max(maxAmountOwed - Amount, 0))\"></strong></span></div></div><input class=\"hidden\" x-model=\"SettledByID\" id=\"SettledByID\" name=\"SettledByID\"><div class=\"mb-4\"><textarea x-model=\"Notes\" id=\"notes\" name=\"notes\" class=\"textarea textarea-bordered w-full\" placeholder=\"Notes\"></textarea></div><div class=\"flex justify-between items-center\"><div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><input class=\"hidden\" x-model=\"SettledByID\" id=\"SettledByID\" name=\"SettledByID\"> <input class=\"hidden\" x-model=\"SettledToZero\" id=\"SettledToZero\" name=\"SettledToZero\"><div class=\"mb-4\"><textarea x-model=\"Notes\" id=\"notes\" name=\"notes\" class=\"textarea textarea-bordered w-full\" placeholder=\"Notes\"></textarea></div><div class=\"flex items-center justify-between\"><div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -176,7 +187,7 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("/api/settlements/" + fmt.Sprintf("%d", settlement.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 57, Col: 116}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 75, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -187,7 +198,7 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex space-x-2\"><button class=\"btn btn-neutral\" type=\"button\" onclick=\"baseModal.close()\">Cancel</button> <button type=\"submit\" class=\"btn btn-primary\">Submit</button></div></div></form><script>\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('settlement').textContent)\n\t\t\t\tconst currentUserID = document.getElementById('current-user-id').innerText\n\t\t\t\tconst defaultSettledByID = data?.SettledByID || currentUserID\n\t\t\t\tconst defaultCurrency = data?.Currency.Code || 'USD'\n\n\t\t\t\tconst owedDetails = JSON.parse(document.getElementById('owedDetails').textContent)\n\t\t\t\tconst { maxAmountOwed, whoOwesMostUserID } = owedDetails\n\t\t\t\treturn {\n\t\t\t\t\tAmount: maxAmountOwed,\n\t\t\t\t\tmaxAmountOwed: maxAmountOwed,\n\t\t\t\t\tNotes: null,\n\t\t\t\t\tCurrencyCode: defaultCurrency,\n\t\t\t\t\tSettledByID: whoOwesMostUserID,\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex space-x-2\"><button class=\"btn btn-neutral\" type=\"button\" onclick=\"baseModal.close()\">Cancel</button> <button type=\"submit\" class=\"btn btn-primary\">Submit</button></div></div></form><script>\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('settlement').textContent)\n\t\t\t\tconst currentUserID = document.getElementById('current-user-id').innerText\n\t\t\t\tconst defaultCurrency = data?.Currency.Code || 'USD'\n\n\t\t\t\tconst owedDetails = JSON.parse(document.getElementById('owedDetails').textContent)\n\t\t\t\tconst { maxAmountOwed, whoOwesMostUserID, maxAmountOwedBaseCcyTotal, userSettlements } = owedDetails\n\t\t\t\tconst actualMaxAmountOwed = !!data ? maxAmountOwedBaseCcyTotal : maxAmountOwed\n\t\t\t\treturn {\n\t\t\t\t\tAmount: actualMaxAmountOwed.toFixed(2),\n\t\t\t\t\tmaxAmountOwed: actualMaxAmountOwed,\n\t\t\t\t\tNotes: null,\n\t\t\t\t\tCurrencyCode: defaultCurrency,\n\t\t\t\t\tSettledByID: whoOwesMostUserID,\n\t\t\t\t\tSettledToZero: true,\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -45,6 +45,7 @@ type Settlement struct {
 	Currency       Currency  `gorm:"foreignKey:CurrencyCode;references:Code"`
 	SettlementDate time.Time `gorm:"autoCreateTime"`
 	Notes          string    `gorm:"size:255"`
+	SettledToZero  bool      `gorm:"default:false"`
 }
 
 type Expense struct {
