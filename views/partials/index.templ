@@ -8,7 +8,7 @@ templ Index() {
 	></div>
 	<div
 		class="mt-6 flex w-full flex-col items-center justify-center"
-		x-data="{ offset: 0 }"
+		x-data="{ offset: 0, isLastOffset: false }"
 	>
 		<!-- Expense Table -->
 		<div
@@ -16,15 +16,17 @@ templ Index() {
 			id="expenses-table"
 			hx-get="/api/expenses"
 			hx-trigger="load, reloadExpenses from:body"
+			@htmx:after-request="offset = 1; isLastOffset = false"
 		></div>
 		<button
+			class="btn btn-primary mt-6 w-full"
 			hx-trigger="click"
 			hx-target="#expenses-table"
 			hx-get="/api/expenses"
 			:hx-vals="JSON.stringify({ offset: offset })"
-			hx-swap="afterend"
-			@click="offset += 1; console.log(offset)"
-			class="btn btn-primary mt-6 w-full"
+			hx-swap="beforeend"
+			@htmx:after-request="offset += 1; isLastOffset = JSON.parse([...document.querySelectorAll('#is-last-offset')].pop().innerText)"
+			:class="isLastOffset && 'hidden'"
 		>
 			Load More
 		</button>

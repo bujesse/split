@@ -14,8 +14,9 @@ type SettlementRepository interface {
 	// GetByName(name string) (*models.Settlement, error)
 	Update(settlement *models.Settlement) error
 	GetAll() ([]models.Settlement, error)
-	GetAllSinceLastSettlement() ([]models.Settlement, error)
+	GetAllSinceLastZeroSettlement() ([]models.Settlement, error)
 	GetSettlementsBetweenZeros(offset int) ([]models.Settlement, error)
+	GetNumZeroSettlements() (int64, error)
 	Delete(id uint) error
 }
 
@@ -49,7 +50,7 @@ func (r *settlementRepository) GetByID(id uint) (*models.Settlement, error) {
 	return &settlement, nil
 }
 
-func (r *settlementRepository) GetAllSinceLastSettlement() ([]models.Settlement, error) {
+func (r *settlementRepository) GetAllSinceLastZeroSettlement() ([]models.Settlement, error) {
 	var settlements []models.Settlement
 
 	subquery := r.db.Model(&models.Settlement{}).
@@ -59,7 +60,7 @@ func (r *settlementRepository) GetAllSinceLastSettlement() ([]models.Settlement,
 		Limit(1)
 
 	result := r.db.Preload(clause.Associations).
-		Where("settlement_date >= (?)", subquery).
+		Where("settlement_date > (?)", subquery).
 		Order("settlement_date desc").
 		Find(&settlements)
 
@@ -70,11 +71,15 @@ func (r *settlementRepository) GetAllSinceLastSettlement() ([]models.Settlement,
 	return settlements, nil
 }
 
-func (r *settlementRepository) GetSettlementsBetweenZeros(offset int) ([]models.Settlement, error) {
+// Return all settlements between the n-1 and n zero-settled settlements.
+// If the offset is greater than the total number of zero-settled settlements,
+// return all settlements up until the earliest zero-settled settlement
+func (r *settlementRepository) GetSettlementsBetweenZeros(
+	offset int,
+) ([]models.Settlement, error) {
 	var settlements []models.Settlement
-	var latestZeroDate, previousZeroDate time.Time
+	var newerZeroDate, olderZeroDate time.Time
 
-	// Subquery to get the nth latest settlement date where SettledToZero is true
 	subqueryNthZero := func(n int) *gorm.DB {
 		return r.db.Model(&models.Settlement{}).
 			Select("settlement_date").
@@ -84,19 +89,36 @@ func (r *settlementRepository) GetSettlementsBetweenZeros(offset int) ([]models.
 			Limit(1)
 	}
 
-	// Retrieve the nth zero settlement date
-	if err := subqueryNthZero(offset).Scan(&latestZeroDate).Error; err != nil {
+	totalZeroSettlements, _ := r.GetNumZeroSettlements()
+
+	// If the offset is greater than or equal to the total number of zero-settled settlements,
+	// return all settlements up until the earliest zero-settled settlement
+	if int64(offset+1) > totalZeroSettlements {
+		if err := subqueryNthZero(int(totalZeroSettlements - 1)).Scan(&olderZeroDate).Error; err != nil {
+			return nil, err
+		}
+
+		result := r.db.Preload(clause.Associations).
+			Where("settlement_date <= ?", olderZeroDate).
+			Order("settlement_date desc").
+			Find(&settlements)
+
+		if result.Error != nil {
+			return nil, result.Error
+		}
+		return settlements, nil
+	}
+
+	if err := subqueryNthZero(offset - 1).Scan(&newerZeroDate).Error; err != nil {
 		return nil, err
 	}
 
-	// Retrieve the (n+1)th zero settlement date
-	if err := subqueryNthZero(offset + 1).Scan(&previousZeroDate).Error; err != nil {
+	if err := subqueryNthZero(offset).Scan(&olderZeroDate).Error; err != nil {
 		return nil, err
 	}
 
-	// Main query to get all settlements between two consecutive zero-settled settlements
 	result := r.db.Preload(clause.Associations).
-		Where("settlement_date > ? AND settlement_date < ?", previousZeroDate, latestZeroDate).
+		Where("settlement_date > ? AND settlement_date <= ?", olderZeroDate, newerZeroDate).
 		Order("settlement_date desc").
 		Find(&settlements)
 
@@ -105,6 +127,12 @@ func (r *settlementRepository) GetSettlementsBetweenZeros(offset int) ([]models.
 	}
 
 	return settlements, nil
+}
+
+func (r *settlementRepository) GetNumZeroSettlements() (int64, error) {
+	var totalZeroSettlements int64
+	r.db.Model(&models.Settlement{}).Where("settled_to_zero = ?", true).Count(&totalZeroSettlements)
+	return totalZeroSettlements, nil
 }
 
 // func (r *settlementRepository) GetByName(id string) (*models.Settlement, error) {

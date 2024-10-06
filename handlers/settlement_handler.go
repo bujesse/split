@@ -68,7 +68,7 @@ func (h *SettlementHandler) CreateNewSettlementPartial(
 	currencies, _ := h.currencyRepo.GetAll()
 	users, _ := h.userRepo.GetAll()
 	expenses, _ := h.expenseRepo.GetExpensesSinceLastSettlement()
-	settlements, _ := h.repo.GetAllSinceLastSettlement()
+	settlements, _ := h.repo.GetAllSinceLastZeroSettlement()
 	owedDetails := helpers.CalculateOwedDetails(expenses, settlements)
 
 	components.SettlementsForm(
@@ -112,7 +112,7 @@ func (h *SettlementHandler) EditSettlementByID(w http.ResponseWriter, r *http.Re
 	users, _ := h.userRepo.GetAll()
 	expenses, _ := h.expenseRepo.GetExpensesSinceLastSettlement()
 
-	settlements, _ := h.repo.GetAllSinceLastSettlement()
+	settlements, _ := h.repo.GetAllSinceLastZeroSettlement()
 	owedDetails := helpers.CalculateOwedDetails(expenses, settlements)
 	components.SettlementsForm(settlement, owedDetails, currencies, users).
 		Render(r.Context(), w)

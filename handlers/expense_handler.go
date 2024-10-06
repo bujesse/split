@@ -125,7 +125,7 @@ func (h *ExpenseHandler) GetExpenses(response http.ResponseWriter, r *http.Reque
 
 	var settlements []models.Settlement
 	if offset == 0 {
-		settlements, _ = h.settlementRepo.GetAllSinceLastSettlement()
+		settlements, _ = h.settlementRepo.GetAllSinceLastZeroSettlement()
 	} else {
 		settlements, _ = h.settlementRepo.GetSettlementsBetweenZeros(offset)
 	}
@@ -153,8 +153,10 @@ func (h *ExpenseHandler) GetExpenses(response http.ResponseWriter, r *http.Reque
 		return dateI.After(dateJ)
 	})
 
+	numZeroSettlements, _ := h.settlementRepo.GetNumZeroSettlements()
+	isLastOffset := offset >= int(numZeroSettlements)
 	categories, _ := h.categoryRepo.GetAll()
-	partials.ExpensesTable(entries, categories).Render(context.Background(), response)
+	partials.ExpensesTable(entries, categories, isLastOffset).Render(context.Background(), response)
 }
 
 func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Request) {
@@ -164,7 +166,7 @@ func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Re
 		return
 	}
 	response.Header().Set("Content-Type", "text/html")
-	settlements, _ := h.settlementRepo.GetAllSinceLastSettlement()
+	settlements, _ := h.settlementRepo.GetAllSinceLastZeroSettlement()
 	components.Stats(expenses, settlements).Render(context.Background(), response)
 }
 

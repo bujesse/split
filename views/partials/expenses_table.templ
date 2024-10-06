@@ -8,8 +8,9 @@ import (
 	"fmt"
 )
 
-templ ExpensesTable(entries []interface{}, categories []models.Category) {
+templ ExpensesTable(entries []interface{}, categories []models.Category, isLastOffset bool) {
 	@components.Icons(categories)
+	<div id="is-last-offset" class="hidden">{ strconv.FormatBool(isLastOffset) }</div>
 	<div class="overflow-x-auto">
 		<table class="table">
 			<thead>
@@ -24,19 +25,25 @@ templ ExpensesTable(entries []interface{}, categories []models.Category) {
 			<tbody>
 				for _, entry := range entries {
 					<tr
-						class="pb-2 border-b-2 border-base-200"
+						class="border-b-2 border-base-200 pb-2"
 						x-data={ templ.JSONString(entry) }
 					>
 						switch entry := entry.(type) {
 							case models.Settlement:
 								<td
-									class="rainbow-text-soft"
+									:class="SettledToZero && 'rainbow-text-soft'"
 									hx-get={ "/partials/settlements/edit/" + strconv.Itoa(int(entry.ID)) }
 									hx-trigger="click"
 									hx-target="#modal-container"
 									onclick="baseModal.showModal()"
 								>
-									<strong>Settlement 🎉</strong>
+									<strong>
+										if (entry.SettledToZero) {
+											<span>Settled up! 🎉</span>
+										} else {
+											<span>Settlement</span>
+										}
+									</strong>
 								</td>
 								<td class="text-right">
 									{ entry.SettledBy.Username } paid <strong x-text="FormatAsCurrency(CurrencyCode, Amount)"></strong>
@@ -51,7 +58,7 @@ templ ExpensesTable(entries []interface{}, categories []models.Category) {
 								<!-- </th> -->
 								<td>
 									<div
-										class="flex items-center gap-3 cursor-pointer"
+										class="flex cursor-pointer items-center gap-3"
 										hx-get={ "/partials/expenses/edit/" + strconv.Itoa(int(entry.ID)) }
 										hx-trigger="click"
 										hx-target="#modal-container"
@@ -74,7 +81,7 @@ templ ExpensesTable(entries []interface{}, categories []models.Category) {
 									</div>
 								</td>
 								if len(entry.ExpenseSplits) > 0 {
-									<td class="flex flex-col space-y-1 items-end text-right">
+									<td class="flex flex-col items-end space-y-1 text-right">
 										<span>{ entry.ExpenseSplits[0].User.Username } owes <strong x-html="FormatAsCurrency(Currency.Code, getExpenseSplitAmount(Amount, ExpenseSplits[0]))"></strong></span>
 										<span>
 											switch entry.ExpenseSplits[0].SplitType {
