@@ -88,13 +88,13 @@ func (h *FxRateHandler) FetchAndStoreRates(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		date, _ := helpers.ConvertToServerTime(apiResponse.Date)
+		date, _ := helpers.ParseDate(apiResponse.Date)
 
 		fxRate := models.FxRate{
 			FromCurrencyCode: apiResponse.Base,
 			ToCurrencyCode:   currencyCode,
 			Rate:             rate,
-			Date:             date,
+			Date:             *date,
 		}
 
 		if err := h.repo.Create(&fxRate); err != nil {

@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -24,16 +25,18 @@ func StringToUint(s string) (uint, error) {
 }
 
 // Convert example: 2024-09-14T13:53:00.000Z to server time
-func ConvertToServerTime(dateStr string) (time.Time, error) {
-	parsedTime, err := time.Parse(time.RFC3339, dateStr)
-	if err != nil {
-		return time.Time{}, err
+// Fallback to date-only format (YYYY-MM-DD)
+func ParseDate(dateStr string) (*time.Time, error) {
+	if parsedDate, err := time.Parse(time.RFC3339, dateStr); err == nil {
+		localTime := parsedDate.In(time.Local)
+		return &localTime, nil
 	}
 
-	serverLocation := time.Local
-	localTime := parsedTime.In(serverLocation)
+	if parsedDate, err := time.Parse("2006-01-02", dateStr); err == nil {
+		return &parsedDate, nil
+	}
 
-	return localTime, nil
+	return nil, fmt.Errorf("Invalid date format: %s", dateStr)
 }
 
 func DeepCopyMap[K comparable, V any](original map[K]V) map[K]V {

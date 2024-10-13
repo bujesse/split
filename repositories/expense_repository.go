@@ -16,6 +16,9 @@ type ExpenseRepository interface {
 	GetExpensesBetweenZeros(offset int) ([]ExpenseWithFxRate, error)
 	UpdateExpense(expense *models.Expense) error
 	GetAll() ([]models.Expense, error)
+	GetScheduledExpenses() ([]models.ScheduledExpense, error)
+	CreateScheduledExpense(scheduledExpense *models.ScheduledExpense) error
+	UpdateScheduledExpense(scheduledExpense *models.ScheduledExpense) error
 	DeleteExpense(expense *models.Expense) error
 }
 
@@ -37,6 +40,16 @@ func (r *expenseRepository) GetAll() ([]models.Expense, error) {
 		return nil, result.Error
 	}
 	return expenses, nil
+}
+
+// Fetch all scheduled expenses where the NextDueDate is today or in the past
+func (r *expenseRepository) GetScheduledExpenses() ([]models.ScheduledExpense, error) {
+	var scheduledExpenses []models.ScheduledExpense
+	result := r.db.Where("next_due_date <= ?", time.Now()).Find(&scheduledExpenses)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return scheduledExpenses, nil
 }
 
 type ExpenseWithFxRate struct {
@@ -209,6 +222,18 @@ func (r *expenseRepository) GetByID(id uint, preloads ...string) (*models.Expens
 
 func (r *expenseRepository) UpdateExpense(expense *models.Expense) error {
 	return r.db.Session(&gorm.Session{FullSaveAssociations: true}).Save(expense).Error
+}
+
+func (r *expenseRepository) CreateScheduledExpense(
+	scheduledExpense *models.ScheduledExpense,
+) error {
+	return r.db.Create(scheduledExpense).Error
+}
+
+func (r *expenseRepository) UpdateScheduledExpense(
+	scheduledExpense *models.ScheduledExpense,
+) error {
+	return r.db.Save(scheduledExpense).Error
 }
 
 func (r *expenseRepository) DeleteExpense(expense *models.Expense) error {

@@ -6,6 +6,7 @@ import (
 	"split/config"
 	"split/config/logger"
 	"split/handlers"
+	"split/jobs"
 	"split/repositories"
 	"split/views"
 	"split/views/components"
@@ -51,6 +52,8 @@ func main() {
 	settlementRepo := repositories.NewSettlementRepository(db)
 	userRepo := repositories.NewUserRepository(db)
 	fxRateRepo := repositories.NewFxRateRepository(db)
+
+	jobs.SchedulerInit(expenseRepo)
 
 	mux := http.NewServeMux()
 

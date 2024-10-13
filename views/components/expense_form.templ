@@ -132,11 +132,65 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			<div class="mb-4">
 				<textarea x-model="Notes" id="notes" name="notes" class="textarea textarea-bordered w-full" placeholder="Notes"></textarea>
 			</div>
+			<div
+				x-ref="recurrenceForm"
+				x-show="showRecurrenceForm"
+				x-transition
+				x-cloak
+			>
+				<h4 class="mb-6 text-2xl font-bold">
+					Schedule Expense
+				</h4>
+				<input type="hidden" x-model="showRecurrenceForm" name="IsScheduled"/>
+				<div class="mb-4 flex space-x-4">
+					<div class="w-1/2">
+						<label class="form-control w-full max-w-xs">
+							<div class="label">
+								<span class="label-text">Recurrence Type</span>
+							</div>
+							<select x-model="RecurrenceType" name="RecurrenceType" id="recurrenceType" class="select select-bordered grow" required>
+								<option value="monthly">Monthly</option>
+								<option value="daily">Daily</option>
+								<option value="weekly">Weekly</option>
+								<option value="yearly">Yearly</option>
+							</select>
+						</label>
+					</div>
+					<div class="w-1/2">
+						<label class="form-control w-full max-w-xs">
+							<div class="label">
+								<span class="label-text">Recurrence Interval</span>
+							</div>
+							<input type="number" x-model="RecurrenceInterval" name="RecurrenceInterval" id="recurrenceInterval" class="input input-bordered grow" required placeholder="e.g. 2 weeks"/>
+						</label>
+					</div>
+				</div>
+				<div class="mb-4">
+					<label class="input input-bordered flex items-center gap-2">
+						Start Date
+						<input x-model="StartDate" type="date" name="StartDate" id="startDate" class="grow" required/>
+					</label>
+				</div>
+				<div class="mb-4">
+					<label class="input input-bordered flex items-center gap-2">
+						End Date
+						<input x-model="EndDate" type="date" name="EndDate" id="endDate" class="grow"/>
+					</label>
+				</div>
+			</div>
 			<div class="flex items-center justify-between">
 				<div>
 					if expense != nil {
 						<button class="btn btn-error" type="button" hx-delete={ "/api/expenses/" + fmt.Sprintf("%d", expense.ID) }>
 							Delete
+						</button>
+					} else {
+						<button
+							class="btn btn-secondary w-full "
+							type="button"
+							@click="showRecurrenceForm = !showRecurrenceForm; $nextTick(() => { $refs.recurrenceForm.scrollIntoView({ behavior: 'smooth' }); })"
+						>
+							<span x-text="showRecurrenceForm ? 'Hide Scheduler' : 'Schedule'"></span>
 						</button>
 					}
 				</div>
@@ -149,6 +203,17 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					</button>
 				</div>
 			</div>
+			if expense != nil {
+				<div class="mt-4 w-full">
+					<button
+						class="btn btn-secondary w-full"
+						type="button"
+						@click="showRecurrenceForm = !showRecurrenceForm; $nextTick(() => { $refs.recurrenceForm.scrollIntoView({ behavior: 'smooth' }); })"
+					>
+						<span x-text="showRecurrenceForm ? 'Hide Scheduler' : 'Schedule'"></span>
+					</button>
+				</div>
+			}
 		</form>
 		<script>
 			function selectNextOption(selectElement, targetValue) {
@@ -182,6 +247,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 				const defaultCurrency = data?.Currency.Code || 'USD'
 				const fxRateUSD = data?.Currency.LatestFxRateUSD || null
 				return {
+					expenseID: data?.ID || null,
 					Title: null,
 					Amount: null,
 					Notes: null,
@@ -194,6 +260,12 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					SplitType: expenseSplit.SplitType,
 					SplitValue: expenseSplit.SplitValue,
 					SplitTypeChecked: expenseSplit.SplitType === 'pct',
+					showRecurrenceForm: false,
+					isEdit: data !== null,
+					RecurrenceInterval: 1,
+					RecurrenceType: 'monthly',
+					StartDate: new Date().toISOString().split('T')[0],
+					EndDate: null,
 					calculateEquivalentAmount($data) {
 						if ($data.SplitType === 'pct') {
 							return ($data.SplitValue / 100) * $data.Amount

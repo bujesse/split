@@ -50,25 +50,62 @@ type Settlement struct {
 
 type Expense struct {
 	BaseModel
-	Title         string         `gorm:"size:200"`
-	Description   string         `gorm:"size:255"`
-	Amount        float64        `gorm:"type:decimal(10,2);not null"`
-	CurrencyCode  string         `gorm:"size:3;not null;default:'USD'"`
-	Currency      Currency       `gorm:"foreignKey:CurrencyCode;references:Code"`
-	Notes         string         `gorm:"size:255"`
-	CategoryID    *uint          `gorm:"index";default:19`
-	Category      Category       `gorm:"foreignKey:CategoryID"`
-	SettlementID  *uint          `gorm:"index"`
-	Settlement    Settlement     `gorm:"foreignKey:SettlementID"`
-	PaidByID      uint           `gorm:"index;not null"`
-	PaidBy        User           `gorm:"foreignKey:PaidByID"`
-	PaidDate      time.Time      `gorm:"autoCreateTime"`
-	CreatedByTask bool           `gorm:"default:false"`
-	CreatedByID   uint           `gorm:"index;not null"`
-	CreatedBy     User           `gorm:"foreignKey:CreatedByID"`
-	UpdatedByID   *uint          `gorm:"index"`
-	UpdatedBy     User           `gorm:"foreignKey:UpdatedByID"`
-	ExpenseSplits []ExpenseSplit `gorm:"foreignKey:ExpenseID"`
+	Title              string           `gorm:"size:200"`
+	Description        string           `gorm:"size:255"`
+	Amount             float64          `gorm:"type:decimal(10,2);not null"`
+	CurrencyCode       string           `gorm:"size:3;not null;default:'USD'"`
+	Currency           Currency         `gorm:"foreignKey:CurrencyCode;references:Code"`
+	Notes              string           `gorm:"size:255"`
+	CategoryID         *uint            `gorm:"index"`
+	Category           Category         `gorm:"foreignKey:CategoryID"`
+	PaidByID           uint             `gorm:"index;not null"`
+	PaidBy             User             `gorm:"foreignKey:PaidByID"`
+	PaidDate           time.Time        `gorm:"autoCreateTime"`
+	CreatedByID        uint             `gorm:"index;not null"`
+	CreatedBy          User             `gorm:"foreignKey:CreatedByID"`
+	UpdatedByID        *uint            `gorm:"index"`
+	UpdatedBy          User             `gorm:"foreignKey:UpdatedByID"`
+	ExpenseSplits      []ExpenseSplit   `gorm:"foreignKey:ExpenseID"`
+	ScheduledExpenseID *uint            `gorm:"index"`
+	ScheduledExpense   ScheduledExpense `gorm:"foreignKey:ScheduledExpenseID"`
+}
+
+type RecurrenceTypes string
+
+const (
+	Daily   RecurrenceTypes = "daily"
+	Weekly  RecurrenceTypes = "weekly"
+	Monthly RecurrenceTypes = "monthly"
+	Yearly  RecurrenceTypes = "yearly"
+)
+
+type ScheduledExpense struct {
+	BaseModel
+	Title        string   `gorm:"size:200"`
+	Description  string   `gorm:"size:255"`
+	Amount       float64  `gorm:"type:decimal(10,2);not null"`
+	CurrencyCode string   `gorm:"size:3;not null;default:'USD'"`
+	Currency     Currency `gorm:"foreignKey:CurrencyCode;references:Code"`
+	Notes        string   `gorm:"size:255"`
+	CategoryID   *uint    `gorm:"index"`
+	Category     Category `gorm:"foreignKey:CategoryID"`
+	PaidByID     uint     `gorm:"index;not null"`
+	PaidBy       User     `gorm:"foreignKey:PaidByID"`
+	CreatedByID  uint     `gorm:"index;not null"`
+	CreatedBy    User     `gorm:"foreignKey:CreatedByID"`
+	UpdatedByID  *uint    `gorm:"index"`
+	UpdatedBy    User     `gorm:"foreignKey:UpdatedByID"`
+
+	SplitByID  uint      `gorm:"index"`
+	SplitBy    User      `gorm:"foreignKey:SplitByID"`
+	SplitType  SplitType `gorm:"size:3"`
+	SplitValue float64   `gorm:"type:decimal(10,2);not null"`
+
+	RecurrenceType     RecurrenceTypes `gorm:"size:20;not null"`
+	RecurrenceInterval int             `gorm:"not null;default:1"`
+	StartDate          time.Time       `gorm:"not null"`
+	NextDueDate        *time.Time      `gorm:"index"`
+	EndDate            *time.Time      `gorm:"index"`
 }
 
 type SplitType string

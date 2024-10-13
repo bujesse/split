@@ -37,6 +37,7 @@ func MakeMigrations() error {
 		&models.Settlement{},
 		&models.Expense{},
 		&models.ExpenseSplit{},
+		&models.ScheduledExpense{},
 		&models.User{},
 		&models.FxRate{},
 	)
