@@ -53,15 +53,29 @@ func main() {
 	userRepo := repositories.NewUserRepository(db)
 	fxRateRepo := repositories.NewFxRateRepository(db)
 
-	jobs.SchedulerInit(expenseRepo)
+	jobs.SchedulerInit(
+		expenseRepo,
+		currencyRepo,
+		fxRateRepo,
+	)
 
 	mux := http.NewServeMux()
 
 	// Views
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	mux.Handle("/", handlers.RequireLogin(templ.Handler(views.Index())))
-	mux.Handle("GET /categories", handlers.RequireLogin(templ.Handler(views.CategoriesView())))
-
+	mux.Handle(
+		"GET /categories",
+		handlers.RequireLogin(templ.Handler(views.BaseView(partials.CategoriesView()))),
+	)
+	mux.Handle(
+		"GET /currencies",
+		handlers.RequireLogin(templ.Handler(views.BaseView(partials.CurrenciesView()))),
+	)
+	mux.Handle(
+		"GET /scheduled-expenses",
+		handlers.RequireLogin(templ.Handler(views.BaseView(partials.ScheduledExpensesView()))),
+	)
 	mux.Handle(
 		"GET /register",
 		handlers.AlreadyLoggedInMiddleware(templ.Handler(views.RegisterPage())),
@@ -70,7 +84,18 @@ func main() {
 
 	// Partials
 	mux.Handle("/partials/index", handlers.RequireLogin(templ.Handler(partials.Index())))
-	mux.Handle("/partials/categories", handlers.RequireLogin(templ.Handler(partials.Categories())))
+	mux.Handle(
+		"/partials/categories",
+		handlers.RequireLogin(templ.Handler(partials.CategoriesView())),
+	)
+	mux.Handle(
+		"/partials/currencies",
+		handlers.RequireLogin(templ.Handler(partials.CurrenciesView())),
+	)
+	mux.Handle(
+		"/partials/scheduled-expenses",
+		handlers.RequireLogin(templ.Handler(partials.CategoriesView())),
+	)
 
 	// User
 	mux.HandleFunc("POST /register", userHandler.RegisterUser)
@@ -171,9 +196,25 @@ func main() {
 		currencyRepo,
 	)
 
+	currencyHandler := handlers.NewCurrencyHandler(
+		currencyRepo,
+	)
+
 	mux.HandleFunc(
 		"GET /api/fxrates/fetch",
 		handlers.RequireLoginApi(fxRateHandler.FetchAndStoreRates),
+	)
+	mux.HandleFunc(
+		"GET /api/currencies",
+		handlers.RequireLoginApi(currencyHandler.GetAllCurrencies),
+	)
+	mux.HandleFunc(
+		"POST /api/currencies",
+		handlers.RequireLoginApi(currencyHandler.CreateCurrency),
+	)
+	mux.HandleFunc(
+		"DELETE /api/currencies/{id}",
+		handlers.RequireLoginApi(currencyHandler.DeleteCurrency),
 	)
 
 	rootMux := NewMiddleware(mux)

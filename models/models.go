@@ -29,11 +29,12 @@ type Category struct {
 }
 
 type Currency struct {
-	Code               string  `gorm:"size:3;primaryKey"`
-	Name               string  `gorm:"size:100"`
-	LatestFxRateUSD    float64 `gorm:"default:1.0"`
-	IsBaseCurrency     bool    `gorm:"default:false"`
-	TwoCharCountryCode string  `gorm:"size:2"`
+	Code               string    `gorm:"size:3;primaryKey"`
+	Name               string    `gorm:"size:100"`
+	LatestFxRateUSD    float64   `gorm:"default:1.0"`
+	IsBaseCurrency     bool      `gorm:"default:false"`
+	TwoCharCountryCode string    `gorm:"size:2"`
+	FxRateUpdatedAt    time.Time `gorm:"autoUpdateTime"`
 }
 
 type Settlement struct {

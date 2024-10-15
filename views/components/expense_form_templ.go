@@ -19,7 +19,7 @@ func getExpensePostTarget(expense *models.Expense) string {
 	return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
 }
 
-func countryCodeToFlag(code string) string {
+func CountryCodeToFlag(code string) string {
 	// Generate the flag emoji
 	flag := ""
 	for _, char := range code {
@@ -145,7 +145,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(countryCodeToFlag(currency.TwoCharCountryCode))
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(CountryCodeToFlag(currency.TwoCharCountryCode))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 63, Col: 56}
 			}

@@ -41,7 +41,7 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 					</label>
 					<select x-model="CurrencyCode" name="CurrencyCode" class="join-item select select-bordered w-5/12 sm:w-auto">
 						for _, currency := range currencies {
-							<option value={ currency.Code }>{ countryCodeToFlag(currency.TwoCharCountryCode) } { currency.Code }</option>
+							<option value={ currency.Code }>{ CountryCodeToFlag(currency.TwoCharCountryCode) } { currency.Code }</option>
 						}
 					</select>
 				</div>

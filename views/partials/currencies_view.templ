@@ -1,0 +1,15 @@
+package partials
+
+templ CurrenciesView() {
+	<div class="mt-6 flex w-full flex-col items-center justify-center">
+		<button
+			hx-get="/api/fxrates/fetch"
+			hx-trigger="click"
+			hx-swap="none"
+			class="btn btn-primary"
+		>
+			Update FX Rates
+		</button>
+	</div>
+	<div id="currencies-table" hx-get="/api/currencies" hx-trigger="load, reloadCurrencies from:body"></div>
+}

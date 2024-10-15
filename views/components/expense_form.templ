@@ -11,7 +11,7 @@ func getExpensePostTarget(expense *models.Expense) string {
 	return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
 }
 
-func countryCodeToFlag(code string) string {
+func CountryCodeToFlag(code string) string {
 	// Generate the flag emoji
 	flag := ""
 	for _, char := range code {
@@ -60,7 +60,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 							<option
 								value={ currency.Code }
 								data-fx-rate-usd={ templ.JSONString(currency.LatestFxRateUSD) }
-							>{ countryCodeToFlag(currency.TwoCharCountryCode) } { currency.Code }</option>
+							>{ CountryCodeToFlag(currency.TwoCharCountryCode) } { currency.Code }</option>
 						}
 					</select>
 				</div>

@@ -1,0 +1,61 @@
+package partials
+
+import (
+	"split/models"
+	"fmt"
+	"split/views/components"
+)
+
+templ CurrenciesTable(currencies []models.Currency) {
+	<div class="badge badge-outline my-4 w-full">
+		Last updated: { currencies[0].FxRateUpdatedAt.Format("2006-01-02 15:04:05") }
+	</div>
+	<div class="overflow-x-auto">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Code</th>
+					<th>Name</th>
+					<th>Latest FX rate (to USD)</th>
+					<th>10 in USD</th>
+					<th>$10 equivalent</th>
+					<th>Base Currency?</th>
+					<th>Two-char Code</th>
+					<th>Emoji (uses 2char code)</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, currency := range currencies {
+					<tr
+						x-data={ templ.JSONString(currency) }
+					>
+						// <td
+						// 	class="flex cursor-pointer items-center gap-3"
+						// 	hx-get={ "/partials/currencies/edit/" + strconv.Itoa(int(currency.ID)) }
+						// 	hx-trigger="click"
+						// 	hx-target="#modal-container"
+						// 	onclick="baseModal.showModal()"
+						// >
+						// 	@components.Icon(currency.Icon)
+						// 	<div class="font-bold">{ currency.Name }</div>
+						// </td>
+						<td>{ currency.Code }</td>
+						<td>{ currency.Name }</td>
+						<td>{ fmt.Sprintf("%.4f", currency.LatestFxRateUSD) }</td>
+						<td x-text="FormatAsCurrency('USD', 10 / LatestFxRateUSD)"></td>
+						<td x-text="FormatAsCurrency(Code, LatestFxRateUSD * 10)"></td>
+						<td>
+							if currency.IsBaseCurrency {
+								yes
+							} else {
+								no
+							}
+						</td>
+						<td>{ currency.TwoCharCountryCode }</td>
+						<th>{ components.CountryCodeToFlag(currency.TwoCharCountryCode) }</th>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}

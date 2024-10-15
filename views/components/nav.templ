@@ -9,6 +9,53 @@ func getContextIsAuthenticated(ctx context.Context) bool {
 	return false
 }
 
+templ links() {
+	<li>
+		<a
+			hx-get="/partials/index"
+			hx-target="#main-content"
+			hx-replace-url="/"
+			x-data
+			@click="document.activeElement?.blur()"
+		>
+			Expenses
+		</a>
+	</li>
+	<li>
+		<a
+			hx-get="/partials/currencies"
+			hx-target="#main-content"
+			hx-replace-url="/currencies"
+			x-data
+			@click="document.activeElement?.blur()"
+		>
+			Currencies
+		</a>
+	</li>
+	<li>
+		<a
+			hx-get="/partials/scheduled-expenses"
+			hx-target="#main-content"
+			hx-replace-url="/scheduled-expenses"
+			x-data
+			@click="document.activeElement?.blur()"
+		>
+			Scheduled Expenses
+		</a>
+	</li>
+	<li>
+		<a
+			hx-get="/partials/categories"
+			hx-target="#main-content"
+			hx-replace-url="/categories"
+			x-data
+			@click="document.activeElement?.blur()"
+		>
+			Categories
+		</a>
+	</li>
+}
+
 templ Nav() {
 	<nav class="navbar bg-neutral text-neutral-content">
 		if !getContextIsAuthenticated(ctx) {
@@ -62,30 +109,9 @@ templ Nav() {
 					</div>
 					<ul
 						tabindex="0"
-						class="menu dropdown-content bg-base-300 text-base-content rounded-box z-[1] mt-3 w-52 p-2 shadow"
+						class="dropdown-content menu z-[1] mt-3 w-52 rounded-box bg-base-300 p-2 text-base-content shadow"
 					>
-						<li>
-							<a
-								hx-get="/partials/index"
-								hx-target="#main-content"
-								hx-replace-url="/"
-								x-data
-								@click="document.activeElement?.blur()"
-							>
-								Expenses
-							</a>
-						</li>
-						<li>
-							<a
-								hx-get="/partials/categories"
-								hx-target="#main-content"
-								hx-replace-url="/categories"
-								x-data
-								@click="document.activeElement?.blur()"
-							>
-								Categories
-							</a>
-						</li>
+						@links()
 					</ul>
 				</div>
 				<div>
@@ -93,9 +119,7 @@ templ Nav() {
 				</div>
 				<div class="hidden lg:flex">
 					<ul class="menu menu-horizontal px-1">
-						<li>
-							<a hx-get="/partials/categories" hx-target="#main-content" hx-replace-url="/categories">Categories</a>
-						</li>
+						@links()
 					</ul>
 				</div>
 			</div>
