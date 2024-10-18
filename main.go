@@ -147,6 +147,10 @@ func main() {
 		handlers.RequireLoginApi(categoryHandler.GetAllCategories),
 	)
 	mux.HandleFunc(
+		"GET /partials/currencies/new",
+		handlers.RequireLogin(templ.Handler(components.CurrenciesForm(nil))),
+	)
+	mux.HandleFunc(
 		"POST /api/categories",
 		handlers.RequireLoginApi(categoryHandler.CreateCategory),
 	)
@@ -198,6 +202,7 @@ func main() {
 
 	currencyHandler := handlers.NewCurrencyHandler(
 		currencyRepo,
+		fxRateRepo,
 	)
 
 	mux.HandleFunc(
@@ -213,7 +218,7 @@ func main() {
 		handlers.RequireLoginApi(currencyHandler.CreateCurrency),
 	)
 	mux.HandleFunc(
-		"DELETE /api/currencies/{id}",
+		"DELETE /api/currencies/{code}",
 		handlers.RequireLoginApi(currencyHandler.DeleteCurrency),
 	)
 

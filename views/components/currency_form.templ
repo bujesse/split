@@ -1,0 +1,78 @@
+package components
+
+import "split/models"
+
+func getCurrenciesPostTarget(currency *models.Currency) string {
+	if currency == nil {
+		return "/api/currencies"
+	}
+	return "/api/currencies/" + currency.Code
+}
+
+templ CurrenciesForm(currency *models.Currency) {
+	<div class="w-full max-w-2xl">
+		@templ.JSONScript("currency", currency)
+		<h2 class="mb-6 text-2xl font-bold">
+			if currency == nil {
+				Add New Currency
+			} else {
+				Edit Currency: "{ currency.Name }"
+			}
+		</h2>
+		<form hx-post={ getCurrenciesPostTarget(currency) } @htmx:after-request="baseModal.close()" hx-swap="none" x-data="init">
+			<div class="mb-4">
+				<label class="input input-bordered flex items-center gap-2">
+					Code
+					<input x-model="Code" autofocus required type="text" name="Code" class="grow"/>
+				</label>
+			</div>
+			<div class="mb-4">
+				<label class="input input-bordered flex items-center gap-2">
+					Name
+					<input x-model="Name" required name="Name" class="grow"/>
+				</label>
+			</div>
+			<div class="mb-4">
+				<label class="label cursor-pointer">
+					Base Currency?
+					<input x-model="IsBaseCurrency" type="checkbox" name="IsBaseCurrency" class="toggle"/>
+				</label>
+			</div>
+			<div class="mb-4">
+				<label class="input input-bordered flex items-center gap-2">
+					<span class="text-xs">Two-Char Country Code</span>
+					<input x-model="TwoCharCountryCode" required type="text" id="twoCharCountryCode" name="TwoCharCountryCode" class="grow" placeholder="For emoji (ISO 3166)"/>
+				</label>
+			</div>
+			<div class="flex items-center justify-between">
+				<div>
+					if currency != nil {
+						<button class="btn btn-error" type="button">
+							Delete
+						</button>
+					}
+				</div>
+				<div class="flex space-x-2">
+					<button class="btn btn-neutral" type="button" onclick="baseModal.close()">
+						Cancel
+					</button>
+					<button type="submit" class="btn btn-primary">
+						Submit
+					</button>
+				</div>
+			</div>
+		</form>
+		<script>
+			Alpine.data('init', () => {
+				const data = JSON.parse(document.getElementById('currency').textContent)
+				return {
+					Code:               null,
+					Name:               null,
+					IsBaseCurrency:     null,
+					TwoCharCountryCode: null,
+					...data,
+				}
+			})
+		</script>
+	</div>
+}

@@ -39,7 +39,8 @@ func FetchAndStoreFxRates(
 	joinedCodes := strings.Join(currencyCodes, ",")
 
 	url := fmt.Sprintf(
-		"https://api.fxratesapi.com/latest?api_key=%s&currencies=%s",
+		"https://api.fxratesapi.com/latest?base=%s&api_key=%s&currencies=%s",
+		"USD",
 		apiKey,
 		joinedCodes,
 	)

@@ -26,7 +26,7 @@ func CurrenciesView() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mt-6 flex w-full flex-col items-center justify-center\"><button hx-get=\"/api/fxrates/fetch\" hx-trigger=\"click\" hx-swap=\"none\" class=\"btn btn-primary\">Update FX Rates</button></div><div id=\"currencies-table\" hx-get=\"/api/currencies\" hx-trigger=\"load, reloadCurrencies from:body\"></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mt-6 flex w-full flex-row items-center justify-between\"><button hx-get=\"/api/fxrates/fetch\" hx-trigger=\"click\" hx-swap=\"none\" class=\"btn btn-primary\">Update FX Rates</button> <button onclick=\"baseModal.showModal()\" hx-get=\"/partials/currencies/new\" hx-trigger=\"click\" hx-target=\"#modal-container\" class=\"btn btn-primary\">Add Currency</button></div><div id=\"currencies-table\" hx-get=\"/api/currencies\" hx-trigger=\"load, reloadCurrencies from:body\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

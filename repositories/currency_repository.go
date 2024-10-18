@@ -12,7 +12,7 @@ type CurrencyRepository interface {
 	GetByCode(code string) (*models.Currency, error)
 	Update(currency *models.Currency) error
 	GetAll() ([]models.Currency, error)
-	Delete(id uint) error
+	Delete(code string) error
 }
 
 type currencyRepository struct {
@@ -49,6 +49,6 @@ func (r *currencyRepository) Update(currency *models.Currency) error {
 	return r.db.Save(currency).Error
 }
 
-func (r *currencyRepository) Delete(id uint) error {
-	return r.db.Delete(&models.Currency{}, id).Error
+func (r *currencyRepository) Delete(code string) error {
+	return r.db.Delete(&models.Currency{}, code).Error
 }
