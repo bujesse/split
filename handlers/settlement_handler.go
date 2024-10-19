@@ -95,7 +95,7 @@ func (h *SettlementHandler) DeleteSettlement(response http.ResponseWriter, reque
 	response.WriteHeader(http.StatusNoContent)
 }
 
-func (h *SettlementHandler) EditSettlementByID(w http.ResponseWriter, r *http.Request) {
+func (h *SettlementHandler) EditSettlementByIDPartial(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

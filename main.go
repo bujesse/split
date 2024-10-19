@@ -92,10 +92,10 @@ func main() {
 		"/partials/currencies",
 		handlers.RequireLogin(templ.Handler(partials.CurrenciesView())),
 	)
-	mux.Handle(
-		"/partials/scheduled-expenses",
-		handlers.RequireLogin(templ.Handler(partials.CategoriesView())),
-	)
+	// mux.Handle(
+	// 	"/partials/scheduled-expenses",
+	// 	handlers.RequireLogin(templ.Handler(partials.CategoriesView())),
+	// )
 
 	// User
 	mux.HandleFunc("POST /register", userHandler.RegisterUser)
@@ -117,7 +117,7 @@ func main() {
 	)
 	mux.HandleFunc(
 		"GET /partials/expenses/edit/{id}",
-		handlers.RequireLoginApi(expenseHandler.EditExpenseByID),
+		handlers.RequireLoginApi(expenseHandler.EditExpenseByIDPartial),
 	)
 	mux.HandleFunc("GET /api/expenses", handlers.RequireLoginApi(expenseHandler.GetExpenses))
 	mux.HandleFunc("GET /api/expenses/stats", handlers.RequireLoginApi(expenseHandler.GetStats))
@@ -140,15 +140,11 @@ func main() {
 	)
 	mux.HandleFunc(
 		"GET /partials/categories/edit/{id}",
-		handlers.RequireLoginApi(categoryHandler.EditCategoryByID),
+		handlers.RequireLoginApi(categoryHandler.EditCategoryByIDPartial),
 	)
 	mux.HandleFunc(
 		"GET /api/categories",
 		handlers.RequireLoginApi(categoryHandler.GetAllCategories),
-	)
-	mux.HandleFunc(
-		"GET /partials/currencies/new",
-		handlers.RequireLogin(templ.Handler(components.CurrenciesForm(nil))),
 	)
 	mux.HandleFunc(
 		"POST /api/categories",
@@ -174,7 +170,7 @@ func main() {
 	)
 	mux.HandleFunc(
 		"GET /partials/settlements/edit/{id}",
-		handlers.RequireLoginApi(settlementHandler.EditSettlementByID),
+		handlers.RequireLoginApi(settlementHandler.EditSettlementByIDPartial),
 	)
 	mux.HandleFunc(
 		"POST /api/settlements",
@@ -214,8 +210,20 @@ func main() {
 		handlers.RequireLoginApi(currencyHandler.GetAllCurrencies),
 	)
 	mux.HandleFunc(
+		"GET /partials/currencies/new",
+		handlers.RequireLogin(templ.Handler(components.CurrenciesForm(nil))),
+	)
+	mux.HandleFunc(
+		"GET /partials/currencies/edit/{code}",
+		handlers.RequireLoginApi(currencyHandler.EditCurrencyByIDPartial),
+	)
+	mux.HandleFunc(
 		"POST /api/currencies",
 		handlers.RequireLoginApi(currencyHandler.CreateCurrency),
+	)
+	mux.HandleFunc(
+		"POST /api/currencies/{code}",
+		handlers.RequireLoginApi(currencyHandler.UpdateCurrency),
 	)
 	mux.HandleFunc(
 		"POST /api/currencies/{code}/toggle",

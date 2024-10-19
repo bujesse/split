@@ -47,7 +47,11 @@ templ CurrenciesForm(currency *models.Currency) {
 			<div class="flex items-center justify-between">
 				<div>
 					if currency != nil {
-						<button class="btn btn-error" type="button">
+						<button
+							class="btn btn-error"
+							type="button"
+							hx-delete={ "/api/currencies/" + currency.Code }
+						>
 							Delete
 						</button>
 					}

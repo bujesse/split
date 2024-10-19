@@ -193,7 +193,7 @@ func (h *ExpenseHandler) CreateNewExpensePartial(w http.ResponseWriter, request 
 	).Render(request.Context(), w)
 }
 
-func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, r *http.Request) {
+func (h *ExpenseHandler) EditExpenseByIDPartial(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

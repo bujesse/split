@@ -67,7 +67,7 @@ func (h *CategoryHandler) DeleteCategory(response http.ResponseWriter, request *
 	response.WriteHeader(http.StatusNoContent)
 }
 
-func (h *CategoryHandler) EditCategoryByID(w http.ResponseWriter, request *http.Request) {
+func (h *CategoryHandler) EditCategoryByIDPartial(w http.ResponseWriter, request *http.Request) {
 	idStr := request.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

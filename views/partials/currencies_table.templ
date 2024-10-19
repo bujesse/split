@@ -30,16 +30,6 @@ templ CurrenciesTable(currencies []models.Currency) {
 					<tr
 						x-data={ templ.JSONString(currency) }
 					>
-						// <td
-						// 	class="flex cursor-pointer items-center gap-3"
-						// 	hx-get={ "/partials/currencies/edit/" + strconv.Itoa(int(currency.ID)) }
-						// 	hx-trigger="click"
-						// 	hx-target="#modal-container"
-						// 	onclick="baseModal.showModal()"
-						// >
-						// 	@components.Icon(currency.Icon)
-						// 	<div class="font-bold">{ currency.Name }</div>
-						// </td>
 						<th>
 							<label>
 								<input
@@ -52,7 +42,13 @@ templ CurrenciesTable(currencies []models.Currency) {
 								/>
 							</label>
 						</th>
-						<td>{ currency.Code }</td>
+						<td
+							class="flex cursor-pointer items-center gap-3"
+							hx-get={ "/partials/currencies/edit/" + currency.Code }
+							hx-trigger="click"
+							hx-target="#modal-container"
+							onclick="baseModal.showModal()"
+						>{ currency.Code }</td>
 						<td>{ currency.Name }</td>
 						<td>{ fmt.Sprintf("%.4f", currency.LatestFxRateUSD) }</td>
 						<td x-text="FormatAsCurrency('USD', 10 / LatestFxRateUSD)"></td>
