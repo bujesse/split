@@ -113,7 +113,7 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(countryCodeToFlag(currency.TwoCharCountryCode))
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(CountryCodeToFlag(currency.TwoCharCountryCode))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/settlements_form.templ`, Line: 44, Col: 87}
 			}

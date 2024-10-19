@@ -8,7 +8,7 @@ templ Base() {
 	<!DOCTYPE html>
 	<html lang="en">
 		@components.Header()
-		<body class="root">
+		<body class="root" x-data>
 			<div class="flex h-screen">
 				<main class="min-h-screen w-full">
 					@components.Nav()
@@ -20,10 +20,33 @@ templ Base() {
 					</div>
 				</main>
 				@components.Modal()
+				<div
+					class="toast toast-top"
+					x-show="$store.global.toasts.length > 0"
+					x-transition:enter.delay.50ms
+					x-cloak
+				>
+					<template x-for="toast in $store.global.toasts">
+						<div
+							id="error-toast"
+							class="alert max-w-xs overflow-auto p-4"
+							:class="{
+								'alert-error': toast.toastType === 'error',
+								'alert-success': toast.toastType === 'success'
+							}"
+							x-text="toast.toastText"
+						></div>
+					</template>
+				</div>
 			</div>
 		</body>
 		<script>
 			const MAX_DIGITS = 5
+			const ERROR_TOAST_TIMEOUT = 5000 // milliseconds
+			const TOAST_TYPES = {
+				ERROR: 'error',
+				SUCCESS: 'success',
+			}
 
 			function FormatAsCurrency(currency, amount) {
 				if (!currency) {
@@ -42,10 +65,58 @@ templ Base() {
 
 			function LocalizeDate(isoString) {
 				return new Date(isoString).toLocaleDateString(undefined, {
-					month: 'short', // "Jan", "Feb", etc.
-					day: '2-digit'  // "01", "02", etc.
+					month: 'short',
+					day: '2-digit'
 				});
 			}
+
+			document.addEventListener('alpine:init', () => {
+				Alpine.store('global', {
+					toasts: [],
+
+					showErrorToast(message) {
+						newToast = {
+							toastText: message,
+							toastType: TOAST_TYPES.ERROR,
+						}
+						this.pushToast(newToast)
+					},
+
+					showSuccessToast(message) {
+						newToast = {
+							toastText: message,
+							toastType: TOAST_TYPES.SUCCESS,
+						}
+						this.pushToast(newToast)
+					},
+
+					pushToast(toast) {
+						this.toasts.push(toast)
+						setTimeout(() => {
+							this.toasts.shift()
+						}, ERROR_TOAST_TIMEOUT)
+					},
+				})
+			})
+
+			document.body.addEventListener('htmx:responseError', function(event) {
+				if (!event.detail.xhr.status.toString().startsWith('2')) {
+					Alpine.store('global').showErrorToast(event.detail.xhr.responseText)
+				}
+			});
+
+			document.body.addEventListener('htmx:afterRequest', function(event) {
+				if (event.detail.xhr.status === 200 && event.detail.requestConfig.verb !== 'get') {
+					switch (event.detail.requestConfig.verb) {
+						case 'post':
+							Alpine.store('global').showSuccessToast('Successful Update')
+							break
+						case 'delete':
+							Alpine.store('global').showSuccessToast('Successful Delete')
+							break
+					}
+				}
+			});
 		</script>
 	</html>
 }

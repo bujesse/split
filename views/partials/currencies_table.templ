@@ -1,0 +1,70 @@
+package partials
+
+import (
+	"split/models"
+	"fmt"
+	"split/views/components"
+)
+
+templ CurrenciesTable(currencies []models.Currency) {
+	<div class="badge badge-outline my-4 w-full">
+		Last updated: { currencies[0].FxRateUpdatedAt.Format("Jan 02, 2006 03:04 PM") }
+	</div>
+	<div class="overflow-x-auto">
+		<table class="table">
+			<thead>
+				<tr class="whitespace-normal">
+					<th>Active</th>
+					<th>Code</th>
+					<th>Name</th>
+					<th class="max-w-4">Latest FX rate (to USD)</th>
+					<th>10 in USD</th>
+					<th>$10 equivalent</th>
+					<th>Base Currency?</th>
+					<th>Two-char Code</th>
+					<th>Emoji (uses 2char code)</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, currency := range currencies {
+					<tr
+						x-data={ templ.JSONString(currency) }
+					>
+						<th>
+							<label>
+								<input
+									x-model="IsActive"
+									hx-post={ "/api/currencies/" + currency.Code + "/toggle" }
+									hx-trigger="change"
+									hx-swap="none"
+									type="checkbox"
+									class="checkbox"
+								/>
+							</label>
+						</th>
+						<td
+							class="flex cursor-pointer items-center gap-3"
+							hx-get={ "/partials/currencies/edit/" + currency.Code }
+							hx-trigger="click"
+							hx-target="#modal-container"
+							onclick="baseModal.showModal()"
+						>{ currency.Code }</td>
+						<td>{ currency.Name }</td>
+						<td>{ fmt.Sprintf("%.4f", currency.LatestFxRateUSD) }</td>
+						<td x-text="FormatAsCurrency('USD', 10 / LatestFxRateUSD)"></td>
+						<td x-text="FormatAsCurrency(Code, LatestFxRateUSD * 10)"></td>
+						<td>
+							if currency.IsBaseCurrency {
+								yes
+							} else {
+								no
+							}
+						</td>
+						<td>{ currency.TwoCharCountryCode }</td>
+						<th>{ components.CountryCodeToFlag(currency.TwoCharCountryCode) }</th>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
