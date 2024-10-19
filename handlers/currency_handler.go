@@ -36,6 +36,25 @@ func (h *CurrencyHandler) GetAllCurrencies(w http.ResponseWriter, r *http.Reques
 	partials.CurrenciesTable(currencies).Render(context.Background(), w)
 }
 
+func (h *CurrencyHandler) ToggleCurrency(w http.ResponseWriter, r *http.Request) {
+	code := r.PathValue("code")
+
+	currency, err := h.repo.GetByCode(code)
+	if err != nil {
+		http.Error(w, "Failed to find currency with code: "+code, http.StatusNotFound)
+		return
+	}
+
+	currency.IsActive = !currency.IsActive
+
+	if err := h.repo.Update(currency); err != nil {
+		http.Error(w, "Failed to update currency", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
 func (h *CurrencyHandler) CreateCurrency(w http.ResponseWriter, r *http.Request) {
 	logger.Debug.Println("Creating currency...")
 
@@ -52,15 +71,19 @@ func (h *CurrencyHandler) CreateCurrency(w http.ResponseWriter, r *http.Request)
 	}
 
 	if err := h.repo.Create(&newCurrency); err != nil {
+		logger.Error.Println("Failed to save currency: ", err)
 		http.Error(w, "Failed to save currency", http.StatusInternalServerError)
 		return
 	}
 
+	// If the new currency is not able to be fetched, delete it
 	_, err := services.FetchAndStoreFxRates(h.repo, h.fxRateRepo)
 	if err != nil {
+		logger.Error.Println("Error when fetching and storing fx rates: ", err)
+		h.repo.Delete(&newCurrency)
 		http.Error(
 			w,
-			"Failed to fetch and store fx rates for: "+newCurrency.Code,
+			"Failed to fetch and store fx rates: "+err.Error(),
 			http.StatusInternalServerError,
 		)
 		return
@@ -77,7 +100,13 @@ func (h *CurrencyHandler) CreateCurrency(w http.ResponseWriter, r *http.Request)
 func (h *CurrencyHandler) DeleteCurrency(w http.ResponseWriter, r *http.Request) {
 	code := r.PathValue("code")
 
-	if err := h.repo.Delete(code); err != nil {
+	currency, err := h.repo.GetByCode(code)
+	if err != nil {
+		http.Error(w, "Failed to find currency", http.StatusNotFound)
+		return
+	}
+
+	if err := h.repo.Delete(currency); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -206,7 +206,7 @@ func main() {
 	)
 
 	mux.HandleFunc(
-		"GET /api/fxrates/fetch",
+		"POST /api/fxrates/fetch",
 		handlers.RequireLoginApi(fxRateHandler.FetchAndStoreRates),
 	)
 	mux.HandleFunc(
@@ -216,6 +216,10 @@ func main() {
 	mux.HandleFunc(
 		"POST /api/currencies",
 		handlers.RequireLoginApi(currencyHandler.CreateCurrency),
+	)
+	mux.HandleFunc(
+		"POST /api/currencies/{code}/toggle",
+		handlers.RequireLoginApi(currencyHandler.ToggleCurrency),
 	)
 	mux.HandleFunc(
 		"DELETE /api/currencies/{code}",

@@ -15,7 +15,6 @@ templ links() {
 			hx-get="/partials/index"
 			hx-target="#main-content"
 			hx-replace-url="/"
-			x-data
 			@click="document.activeElement?.blur()"
 		>
 			Expenses
@@ -26,29 +25,26 @@ templ links() {
 			hx-get="/partials/currencies"
 			hx-target="#main-content"
 			hx-replace-url="/currencies"
-			x-data
 			@click="document.activeElement?.blur()"
 		>
 			Currencies
 		</a>
 	</li>
-	<li>
-		<a
-			hx-get="/partials/scheduled-expenses"
-			hx-target="#main-content"
-			hx-replace-url="/scheduled-expenses"
-			x-data
-			@click="document.activeElement?.blur()"
-		>
-			Scheduled Expenses
-		</a>
-	</li>
+	<!-- <li> -->
+	<!-- 	<a -->
+	<!-- 		hx-get="/partials/scheduled-expenses" -->
+	<!-- 		hx-target="#main-content" -->
+	<!-- 		hx-replace-url="/scheduled-expenses" -->
+	<!-- 		@click="document.activeElement?.blur()" -->
+	<!-- 	> -->
+	<!-- 		Scheduled Expenses -->
+	<!-- 	</a> -->
+	<!-- </li> -->
 	<li>
 		<a
 			hx-get="/partials/categories"
 			hx-target="#main-content"
 			hx-replace-url="/categories"
-			x-data
 			@click="document.activeElement?.blur()"
 		>
 			Categories

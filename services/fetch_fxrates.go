@@ -5,20 +5,24 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"split/config/logger"
 	"split/helpers"
 	"split/models"
 	"split/repositories"
 	"strings"
+	"time"
 )
 
 type ApiResponse struct {
-	Success   bool               `json:"success"`
-	Terms     string             `json:"terms"`
-	Privacy   string             `json:"privacy"`
-	Timestamp int64              `json:"timestamp"`
-	Date      string             `json:"date"`
-	Base      string             `json:"base"`
-	Rates     map[string]float64 `json:"rates"`
+	Success     bool               `json:"success"`
+	Terms       string             `json:"terms"`
+	Privacy     string             `json:"privacy"`
+	Timestamp   int64              `json:"timestamp"`
+	Date        string             `json:"date"`
+	Base        string             `json:"base"`
+	Rates       map[string]float64 `json:"rates"`
+	Error       string             `json:"error"`
+	Description string             `json:"description"`
 }
 
 func FetchAndStoreFxRates(
@@ -45,6 +49,7 @@ func FetchAndStoreFxRates(
 		joinedCodes,
 	)
 
+	logger.Info.Printf("Fetching fx rates from %s", url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch fx rates: %w", err)
@@ -55,6 +60,14 @@ func FetchAndStoreFxRates(
 	err = json.NewDecoder(resp.Body).Decode(&apiResponse)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode fx rate response: %w", err)
+	}
+
+	if !apiResponse.Success {
+		return nil, fmt.Errorf(
+			"failed to fetch fx rates: %s - %s",
+			apiResponse.Error,
+			apiResponse.Description,
+		)
 	}
 
 	currencyMap := make(map[string]*models.Currency)
@@ -70,6 +83,7 @@ func FetchAndStoreFxRates(
 		}
 
 		currency.LatestFxRateUSD = rate
+		currency.FxRateUpdatedAt = time.Now()
 		if err := currencyRepo.Update(currency); err != nil {
 			return nil, fmt.Errorf("failed to update currency rate: %w", err)
 		}

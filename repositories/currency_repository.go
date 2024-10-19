@@ -12,7 +12,8 @@ type CurrencyRepository interface {
 	GetByCode(code string) (*models.Currency, error)
 	Update(currency *models.Currency) error
 	GetAll() ([]models.Currency, error)
-	Delete(code string) error
+	GetAllActive() ([]models.Currency, error)
+	Delete(currency *models.Currency) error
 }
 
 type currencyRepository struct {
@@ -32,13 +33,25 @@ func (r *currencyRepository) GetAll() ([]models.Currency, error) {
 	return currencies, nil
 }
 
+func (r *currencyRepository) GetAllActive() ([]models.Currency, error) {
+	var currencies []models.Currency
+	result := r.db.Preload(clause.Associations).
+		Where("is_active = ?", true).
+		Order("Name asc").
+		Find(&currencies)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return currencies, nil
+}
+
 func (r *currencyRepository) Create(currency *models.Currency) error {
 	return r.db.Create(currency).Error
 }
 
 func (r *currencyRepository) GetByCode(code string) (*models.Currency, error) {
 	var currency models.Currency
-	result := r.db.Preload(clause.Associations).First(&currency, code)
+	result := r.db.Preload(clause.Associations).First(&currency, "code = ?", code)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -49,6 +62,6 @@ func (r *currencyRepository) Update(currency *models.Currency) error {
 	return r.db.Save(currency).Error
 }
 
-func (r *currencyRepository) Delete(code string) error {
-	return r.db.Delete(&models.Currency{}, code).Error
+func (r *currencyRepository) Delete(currency *models.Currency) error {
+	return r.db.Delete(currency).Error
 }

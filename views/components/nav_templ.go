@@ -35,7 +35,7 @@ func links() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li><a hx-get=\"/partials/index\" hx-target=\"#main-content\" hx-replace-url=\"/\" x-data @click=\"document.activeElement?.blur()\">Expenses</a></li><li><a hx-get=\"/partials/currencies\" hx-target=\"#main-content\" hx-replace-url=\"/currencies\" x-data @click=\"document.activeElement?.blur()\">Currencies</a></li><li><a hx-get=\"/partials/scheduled-expenses\" hx-target=\"#main-content\" hx-replace-url=\"/scheduled-expenses\" x-data @click=\"document.activeElement?.blur()\">Scheduled Expenses</a></li><li><a hx-get=\"/partials/categories\" hx-target=\"#main-content\" hx-replace-url=\"/categories\" x-data @click=\"document.activeElement?.blur()\">Categories</a></li>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li><a hx-get=\"/partials/index\" hx-target=\"#main-content\" hx-replace-url=\"/\" @click=\"document.activeElement?.blur()\">Expenses</a></li><li><a hx-get=\"/partials/currencies\" hx-target=\"#main-content\" hx-replace-url=\"/currencies\" @click=\"document.activeElement?.blur()\">Currencies</a></li><!-- <li> --><!-- \t<a --><!-- \t\thx-get=\"/partials/scheduled-expenses\" --><!-- \t\thx-target=\"#main-content\" --><!-- \t\thx-replace-url=\"/scheduled-expenses\" --><!-- \t\t@click=\"document.activeElement?.blur()\" --><!-- \t> --><!-- \t\tScheduled Expenses --><!-- \t</a> --><!-- </li> --><li><a hx-get=\"/partials/categories\" hx-target=\"#main-content\" hx-replace-url=\"/categories\" @click=\"document.activeElement?.blur()\">Categories</a></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

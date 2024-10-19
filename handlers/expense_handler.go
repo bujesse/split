@@ -182,7 +182,7 @@ func (h *ExpenseHandler) GetStats(response http.ResponseWriter, request *http.Re
 
 func (h *ExpenseHandler) CreateNewExpensePartial(w http.ResponseWriter, request *http.Request) {
 	categories, _ := h.categoryRepo.GetAll()
-	currencies, _ := h.currencyRepo.GetAll()
+	currencies, _ := h.currencyRepo.GetAllActive()
 	users, _ := h.userRepo.GetAll()
 
 	components.ExpenseForm(
@@ -207,7 +207,7 @@ func (h *ExpenseHandler) EditExpenseByID(w http.ResponseWriter, r *http.Request)
 	}
 
 	categories, _ := h.categoryRepo.GetAll()
-	currencies, _ := h.currencyRepo.GetAll()
+	currencies, _ := h.currencyRepo.GetAllActive()
 	users, _ := h.userRepo.GetAll()
 
 	components.ExpenseForm(

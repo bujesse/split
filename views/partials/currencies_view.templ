@@ -3,7 +3,7 @@ package partials
 templ CurrenciesView() {
 	<div class="mt-6 flex w-full flex-row items-center justify-between">
 		<button
-			hx-get="/api/fxrates/fetch"
+			hx-post="/api/fxrates/fetch"
 			hx-trigger="click"
 			hx-swap="none"
 			class="btn btn-primary"
