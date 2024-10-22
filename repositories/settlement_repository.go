@@ -55,7 +55,13 @@ func (r *settlementRepository) GetAllSinceLastZeroSettlement() ([]models.Settlem
 
 	totalZeroSettlements, _ := r.GetNumZeroSettlements()
 	if totalZeroSettlements == 0 {
-		return nil, nil
+		result := r.db.Preload(clause.Associations).
+			Order("settlement_date desc").
+			Find(&settlements)
+		if result.Error != nil {
+			return nil, result.Error
+		}
+		return settlements, result.Error
 	}
 
 	subquery := r.db.Model(&models.Settlement{}).

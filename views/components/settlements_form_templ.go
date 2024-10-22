@@ -157,7 +157,7 @@ func SettlementsForm(settlement *models.Settlement, owedDetails map[string]inter
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" owes: <strong x-text=\"FormatAsCurrency(&#39;USD&#39;, maxAmountOwed)\"></strong></span></div><div class=\"mt-2 flex\"><span class=\"text-sm\">After this, ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" owes: <strong x-text=\"FormatAsCurrency(&#39;USD&#39;, maxAmountOwed, false)\"></strong></span></div><div class=\"mt-2 flex\"><span class=\"text-sm\">After this, ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

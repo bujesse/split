@@ -48,7 +48,7 @@ templ Base() {
 				SUCCESS: 'success',
 			}
 
-			function FormatAsCurrency(currency, amount) {
+			function FormatAsCurrency(currency, amount, truncate = true) {
 				if (!currency) {
 					currency = 'USD';
 				}
@@ -58,7 +58,7 @@ templ Base() {
 				let formatter = new Intl.NumberFormat('en-US', {
 					style: 'currency',
 					currency: currency,
-					maximumFractionDigits: totalDigitsWithCents > MAX_DIGITS ? 0 : 2,
+					maximumFractionDigits: truncate && totalDigitsWithCents > MAX_DIGITS ? 0 : 2,
 				});
 				return formatter.format(amount);
 			}

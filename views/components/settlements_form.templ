@@ -47,7 +47,7 @@ templ SettlementsForm(settlement *models.Settlement, owedDetails map[string]inte
 				</div>
 				if owedDetails["whoOwesMostUsername"] != nil {
 					<div class="mt-2 flex">
-						<span class="text-sm">{ owedDetails["whoOwesMostUsername"].(string) } owes: <strong x-text="FormatAsCurrency('USD', maxAmountOwed)"></strong></span>
+						<span class="text-sm">{ owedDetails["whoOwesMostUsername"].(string) } owes: <strong x-text="FormatAsCurrency('USD', maxAmountOwed, false)"></strong></span>
 					</div>
 					<div class="mt-2 flex">
 						<span class="text-sm">After this, { owedDetails["whoOwesMostUsername"].(string) } will owe: <strong x-text="FormatAsCurrency('USD', Math.max(maxAmountOwed - Amount, 0))"></strong></span>
