@@ -12,11 +12,22 @@ import "split/models"
 import "fmt"
 import "split/helpers"
 
-func getExpensePostTarget(expense *models.Expense) string {
-	if expense == nil {
+func getExpensePostTarget(expense *models.Expense, scheduledExpense *models.ScheduledExpense) string {
+	if scheduledExpense != nil {
+		return "/api/scheduled-expenses/" + fmt.Sprintf("%d", scheduledExpense.ID)
+	} else if expense != nil {
+		return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
+	} else {
 		return "/api/expenses"
 	}
-	return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
+}
+
+func getExpenseDeleteTarget(expense *models.Expense, scheduledExpense *models.ScheduledExpense) string {
+	if scheduledExpense != nil {
+		return "/api/scheduled-expenses/" + fmt.Sprintf("%d", scheduledExpense.ID)
+	} else {
+		return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
+	}
 }
 
 func CountryCodeToFlag(code string) string {
@@ -29,7 +40,13 @@ func CountryCodeToFlag(code string) string {
 	return flag
 }
 
-func ExpenseForm(expense *models.Expense, categories []models.Category, currencies []models.Currency, users []models.User) templ.Component {
+func ExpenseForm(
+	expense *models.Expense,
+	categories []models.Category,
+	currencies []models.Currency,
+	users []models.User,
+	scheduledExpense *models.ScheduledExpense,
+) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -47,69 +64,41 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full max-w-2xl\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		templ_7745c5c3_Err = templ.JSONScript("expense", expense).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span id=\"current-user-id\" class=\"hidden\">")
+		templ_7745c5c3_Err = templ.JSONScript("scheduledExpense", scheduledExpense).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full max-w-2xl\" x-data=\"init\"><span id=\"current-user-id\" class=\"hidden\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(helpers.GetContextUserID(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 27, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 48, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h2 class=\"mb-6 text-2xl font-bold\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h2 class=\"mb-6 text-2xl font-bold\" x-text=\"isEdit ? `Edit Expense: ${Title}` : &#39;Add New Expense&#39;\"></h2><form hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if expense == nil {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Add New Expense")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Edit Expense: \"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(expense.Title)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 32, Col: 34}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(getExpensePostTarget(expense, scheduledExpense))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 51, Col: 60}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2><form hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(getExpensePostTarget(expense))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 36, Col: 42}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"baseModal.close()\" hx-swap=\"none\" x-data=\"init\"><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Name <input x-model=\"Title\" autofocus type=\"text\" id=\"title\" name=\"title\" class=\"grow\" required></label></div><div class=\"mb-4\"><div class=\"join w-full\"><label class=\"input join-item input-bordered flex w-7/12 items-center gap-2 sm:w-full\">Amount <input x-model=\"Amount\" type=\"number\" id=\"amount\" name=\"amount\" class=\"grow\" required></label> <select x-model=\"currencyCode\" name=\"currencyCode\" class=\"join-item select select-bordered w-5/12 sm:w-auto\" @change=\"fxRateUSD = $el.options[$el.selectedIndex].getAttribute(&#39;data-fx-rate-usd&#39;)\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" @htmx:after-request=\"baseModal.close()\" hx-swap=\"none\"><div class=\"mb-4\"><label class=\"input input-bordered flex items-center gap-2\">Name <input x-model=\"Title\" autofocus type=\"text\" id=\"title\" name=\"title\" class=\"grow\" required></label></div><div class=\"mb-4\"><div class=\"join w-full\"><label class=\"input join-item input-bordered flex w-7/12 items-center gap-2 sm:w-full\">Amount <input x-model=\"Amount\" type=\"number\" id=\"amount\" name=\"amount\" class=\"grow\" required></label> <select x-model=\"currencyCode\" name=\"currencyCode\" class=\"join-item select select-bordered w-5/12 sm:w-auto\" @change=\"fxRateUSD = $el.options[$el.selectedIndex].getAttribute(&#39;data-fx-rate-usd&#39;)\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -118,12 +107,12 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Code)
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Code)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 61, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 75, Col: 29}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -131,12 +120,12 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(currency.LatestFxRateUSD))
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(currency.LatestFxRateUSD))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 62, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 76, Col: 69}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -144,12 +133,12 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(CountryCodeToFlag(currency.TwoCharCountryCode))
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(CountryCodeToFlag(currency.TwoCharCountryCode))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 63, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 77, Col: 56}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -157,12 +146,12 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Code)
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(currency.Code)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 63, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 77, Col: 74}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -180,12 +169,12 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", user.ID))
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", user.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 105, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 119, Col: 50}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -193,12 +182,12 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(user.Username)
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(user.Username)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 105, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 119, Col: 68}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -216,12 +205,12 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", user.ID))
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", user.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 123, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 137, Col: 50}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -229,12 +218,12 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var12 string
-			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(user.Username)
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(user.Username)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 123, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 137, Col: 68}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -260,12 +249,12 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var13 string
-			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("/api/expenses/" + fmt.Sprintf("%d", expense.ID))
+			var templ_7745c5c3_Var12 string
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(getExpenseDeleteTarget(expense, scheduledExpense))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 184, Col: 110}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/expense_form.templ`, Line: 201, Col: 68}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -279,17 +268,7 @@ func ExpenseForm(expense *models.Expense, categories []models.Category, currenci
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex space-x-2\"><button class=\"btn btn-neutral\" type=\"button\" onclick=\"baseModal.close()\">Cancel</button> <button type=\"submit\" class=\"btn btn-primary\">Submit</button></div></div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if expense != nil {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mt-4 w-full\"><button class=\"btn btn-secondary w-full\" type=\"button\" @click=\"showRecurrenceForm = !showRecurrenceForm; $nextTick(() =&gt; { $refs.recurrenceForm.scrollIntoView({ behavior: &#39;smooth&#39; }); })\"><span x-text=\"showRecurrenceForm ? &#39;Hide Scheduler&#39; : &#39;Schedule&#39;\"></span></button></div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</form><script>\n\t\t\tfunction selectNextOption(selectElement, targetValue) {\n\t\t\t\tconst options = selectElement.options;\n\t\t\t\tlet foundTarget = false;\n\n\t\t\t\tfor (let i = 0; i < options.length; i++) {\n\t\t\t\t\tif (foundTarget) {\n\t\t\t\t\t\tselectElement.selectedIndex = i;\n\t\t\t\t\t\treturn options[i].value;\n\t\t\t\t\t}\n\n\t\t\t\t\tif (options[i].value === targetValue) {\n\t\t\t\t\t\tfoundTarget = true;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\treturn null\n\t\t\t}\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst data = JSON.parse(document.getElementById('expense').textContent)\n\t\t\t\tconst currentUserID = document.getElementById('current-user-id').innerText\n\t\t\t\tconst defaultPaidByID = data?.PaidByID || currentUserID\n\t\t\t\tconst otherUserID = selectNextOption(document.getElementById('paidByID'), currentUserID)\n\t\t\t\tconst expenseSplit = data?.ExpenseSplits.length ? data.ExpenseSplits[0] : {\n\t\t\t\t\tUserID: otherUserID,\n\t\t\t\t\tSplitType: 'pct',\n\t\t\t\t\tSplitValue: 50,\n\t\t\t\t}\n\t\t\t\tconst defaultCategoryDisplay = data?.Category ? `${data.Category.Type} > ${data.Category.Name}` : null\n\t\t\t\tconst defaultCurrency = data?.Currency.Code || 'USD'\n\t\t\t\tconst fxRateUSD = data?.Currency.LatestFxRateUSD || null\n\t\t\t\treturn {\n\t\t\t\t\texpenseID: data?.ID || null,\n\t\t\t\t\tTitle: null,\n\t\t\t\t\tAmount: null,\n\t\t\t\t\tNotes: null,\n\t\t\t\t\tcurrencyCode: defaultCurrency,\n\t\t\t\t\tfxRateUSD: fxRateUSD,\n\t\t\t\t\tdefaultSearchDisplay: defaultCategoryDisplay,\n\t\t\t\t\tCategoryID: null,\n\t\t\t\t\tpaidByID: defaultPaidByID,\n\t\t\t\t\tsplitByID: expenseSplit.UserID,\n\t\t\t\t\tSplitType: expenseSplit.SplitType,\n\t\t\t\t\tSplitValue: expenseSplit.SplitValue,\n\t\t\t\t\tSplitTypeChecked: expenseSplit.SplitType === 'pct',\n\t\t\t\t\tshowRecurrenceForm: false,\n\t\t\t\t\tisEdit: data !== null,\n\t\t\t\t\tRecurrenceInterval: 1,\n\t\t\t\t\tRecurrenceType: 'monthly',\n\t\t\t\t\tStartDate: new Date().toISOString().split('T')[0],\n\t\t\t\t\tEndDate: null,\n\t\t\t\t\tcalculateEquivalentAmount($data) {\n\t\t\t\t\t\tif ($data.SplitType === 'pct') {\n\t\t\t\t\t\t\treturn ($data.SplitValue / 100) * $data.Amount\n\t\t\t\t\t\t}\n\t\t\t\t\t\treturn $data.SplitValue\n\t\t\t\t\t},\n\t\t\t\t\t...data,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex space-x-2\"><button class=\"btn btn-neutral\" type=\"button\" onclick=\"baseModal.close()\">Cancel</button> <button type=\"submit\" class=\"btn btn-primary\">Submit</button></div></div><template x-if=\"isEdit &amp;&amp; !isScheduledExpenseEdit\"><div class=\"mt-4 w-full\"><button class=\"btn btn-secondary w-full\" type=\"button\" @click=\"showRecurrenceForm = !showRecurrenceForm; $nextTick(() =&gt; { $refs.recurrenceForm.scrollIntoView({ behavior: &#39;smooth&#39; }); })\"><span x-text=\"showRecurrenceForm ? &#39;Hide Scheduler&#39; : &#39;Schedule&#39;\"></span></button></div></template></form><script>\n\t\t\tfunction selectNextOption(selectElement, targetValue) {\n\t\t\t\tconst options = selectElement.options;\n\t\t\t\tlet foundTarget = false;\n\n\t\t\t\tfor (let i = 0; i < options.length; i++) {\n\t\t\t\t\tif (foundTarget) {\n\t\t\t\t\t\tselectElement.selectedIndex = i;\n\t\t\t\t\t\treturn options[i].value;\n\t\t\t\t\t}\n\n\t\t\t\t\tif (options[i].value === targetValue) {\n\t\t\t\t\t\tfoundTarget = true;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\treturn null\n\t\t\t}\n\t\t\tAlpine.data('init', () => {\n\t\t\t\tconst expense = JSON.parse(document.getElementById('expense').textContent)\n\t\t\t\tconst scheduledExpense = JSON.parse(document.getElementById('scheduledExpense').textContent)\n\t\t\t\tconst currentUserID = document.getElementById('current-user-id').innerText\n\t\t\t\tconst defaultPaidByID = expense?.PaidByID || currentUserID\n\t\t\t\tconst otherUserID = selectNextOption(document.getElementById('paidByID'), currentUserID)\n\t\t\t\tconst expenseSplit = expense?.ExpenseSplits.length ? expense.ExpenseSplits[0] : {\n\t\t\t\t\tUserID: otherUserID,\n\t\t\t\t\tSplitType: 'pct',\n\t\t\t\t\tSplitValue: 50,\n\t\t\t\t}\n\t\t\t\tconst defaultCategoryDisplay = expense?.Category ? `${expense.Category.Type} > ${expense.Category.Name}` : null\n\t\t\t\tconst defaultCurrency = expense?.Currency.Code || 'USD'\n\t\t\t\tconst fxRateUSD = expense?.Currency.LatestFxRateUSD || null\n\t\t\t\treturn {\n\t\t\t\t\texpenseID: expense?.ID || null,\n\t\t\t\t\tTitle: null,\n\t\t\t\t\tAmount: null,\n\t\t\t\t\tNotes: null,\n\t\t\t\t\tcurrencyCode: defaultCurrency,\n\t\t\t\t\tfxRateUSD: fxRateUSD,\n\t\t\t\t\tdefaultSearchDisplay: defaultCategoryDisplay,\n\t\t\t\t\tCategoryID: null,\n\t\t\t\t\tpaidByID: defaultPaidByID,\n\t\t\t\t\tsplitByID: expenseSplit.UserID,\n\t\t\t\t\tSplitType: expenseSplit.SplitType,\n\t\t\t\t\tSplitValue: expenseSplit.SplitValue,\n\t\t\t\t\tSplitTypeChecked: expenseSplit.SplitType === 'pct',\n\t\t\t\t\tshowRecurrenceForm: scheduledExpense !== null,\n\t\t\t\t\tisEdit: expense !== null,\n\t\t\t\t\tisScheduledExpenseEdit: scheduledExpense !== null,\n\t\t\t\t\tRecurrenceInterval: scheduledExpense?.RecurrenceInterval || 1,\n\t\t\t\t\tRecurrenceType: scheduledExpense?.RecurrenceType || 'monthly',\n\t\t\t\t\tStartDate: scheduledExpense?.StartDate ? new Date(scheduledExpense.StartDate).toLocaleDateString('sv-SE') : new Date().toLocaleDateString('sv-SE'),\n\t\t\t\t\tEndDate: scheduledExpense?.EndDate ? new Date(scheduledExpense.EndDate).toISOString().split('T')[0] : null,\n\t\t\t\t\tcalculateEquivalentAmount($data) {\n\t\t\t\t\t\tif ($data.SplitType === 'pct') {\n\t\t\t\t\t\t\treturn ($data.SplitValue / 100) * $data.Amount\n\t\t\t\t\t\t}\n\t\t\t\t\t\treturn $data.SplitValue\n\t\t\t\t\t},\n\t\t\t\t\t...expense,\n\t\t\t\t}\n\t\t\t})\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

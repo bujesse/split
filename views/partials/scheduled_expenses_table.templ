@@ -1,0 +1,51 @@
+package partials
+
+import (
+	"split/models"
+	"strconv"
+)
+
+templ ScheduledExpensesTable(expenses []models.ScheduledExpense) {
+	if len(expenses) == 0 {
+		<div class="text-center text-gray-500">
+			No scheduled expenses found.
+			<br/>
+			Create a new Expense, and hit Schedule.
+		</div>
+	} else {
+		<div class="overflow-x-auto">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Title</th>
+						<th>Amount</th>
+						<th>Schedule</th>
+						<th>Next Occurence</th>
+						<th>Paid by</th>
+						<th>Split by</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, expense := range expenses {
+						<tr
+							x-data={ templ.JSONString(expense) }
+						>
+							<td
+								class="font-bold cursor-pointer"
+								hx-get={ "/partials/scheduled-expenses/edit/" + strconv.Itoa(int(expense.ID)) }
+								hx-trigger="click"
+								hx-target="#modal-container"
+								onclick="baseModal.showModal()"
+							>{ expense.TemplateExpense.Title }</td>
+							<td x-text="FormatAsCurrency(TemplateExpense.CurrencyCode, TemplateExpense.Amount)"></td>
+							<td x-text="`${RecurrenceInterval} ${RecurrenceType}`"></td>
+							<td>{ expense.NextDueDate.Format("Jan 02, 2006") }</td>
+							<td>{ expense.TemplateExpense.PaidBy.Username }</td>
+							<td>{ expense.TemplateExpense.ExpenseSplits[0].User.Username }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+}

@@ -28,12 +28,19 @@ func StringToUint(s string) (uint, error) {
 // Fallback to date-only format (YYYY-MM-DD)
 func ParseDate(dateStr string) (*time.Time, error) {
 	if parsedDate, err := time.Parse(time.RFC3339, dateStr); err == nil {
-		localTime := parsedDate.In(time.Local)
-		return &localTime, nil
+		localMidnight := time.Date(
+			parsedDate.Year(), parsedDate.Month(), parsedDate.Day(),
+			0, 0, 0, 0, time.Local,
+		)
+		return &localMidnight, nil
 	}
 
 	if parsedDate, err := time.Parse("2006-01-02", dateStr); err == nil {
-		return &parsedDate, nil
+		localMidnight := time.Date(
+			parsedDate.Year(), parsedDate.Month(), parsedDate.Day(),
+			0, 0, 0, 0, time.Local,
+		)
+		return &localMidnight, nil
 	}
 
 	return nil, fmt.Errorf("Invalid date format: %s", dateStr)

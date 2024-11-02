@@ -4,11 +4,22 @@ import "split/models"
 import "fmt"
 import "split/helpers"
 
-func getExpensePostTarget(expense *models.Expense) string {
-	if expense == nil {
+func getExpensePostTarget(expense *models.Expense, scheduledExpense *models.ScheduledExpense) string {
+	if scheduledExpense != nil {
+		return "/api/scheduled-expenses/" + fmt.Sprintf("%d", scheduledExpense.ID)
+	} else if expense != nil {
+		return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
+	} else {
 		return "/api/expenses"
 	}
-	return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
+}
+
+func getExpenseDeleteTarget(expense *models.Expense, scheduledExpense *models.ScheduledExpense) string {
+	if scheduledExpense != nil {
+		return "/api/scheduled-expenses/" + fmt.Sprintf("%d", scheduledExpense.ID)
+	} else {
+		return "/api/expenses/" + fmt.Sprintf("%d", expense.ID)
+	}
 }
 
 func CountryCodeToFlag(code string) string {
@@ -21,22 +32,25 @@ func CountryCodeToFlag(code string) string {
 	return flag
 }
 
-templ ExpenseForm(expense *models.Expense, categories []models.Category, currencies []models.Currency, users []models.User) {
-	<div class="w-full max-w-2xl">
-		@templ.JSONScript("expense", expense)
+templ ExpenseForm(
+	expense *models.Expense,
+	categories []models.Category,
+	currencies []models.Currency,
+	users []models.User,
+	scheduledExpense *models.ScheduledExpense,
+) {
+	@templ.JSONScript("expense", expense)
+	@templ.JSONScript("scheduledExpense", scheduledExpense)
+	<div
+		class="w-full max-w-2xl"
+		x-data="init"
+	>
 		<span id="current-user-id" class="hidden">{ helpers.GetContextUserID(ctx) }</span>
-		<h2 class="mb-6 text-2xl font-bold">
-			if expense == nil {
-				Add New Expense
-			} else {
-				Edit Expense: "{ expense.Title }"
-			}
-		</h2>
+		<h2 class="mb-6 text-2xl font-bold" x-text="isEdit ? `Edit Expense: ${Title}` : 'Add New Expense'"></h2>
 		<form
-			hx-post={ getExpensePostTarget(expense) }
+			hx-post={ getExpensePostTarget(expense, scheduledExpense) }
 			@htmx:after-request="baseModal.close()"
 			hx-swap="none"
-			x-data="init"
 		>
 			<div class="mb-4">
 				<label class="input input-bordered flex items-center gap-2">
@@ -181,7 +195,11 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 			<div class="flex items-center justify-between">
 				<div>
 					if expense != nil {
-						<button class="btn btn-error" type="button" hx-delete={ "/api/expenses/" + fmt.Sprintf("%d", expense.ID) }>
+						<button
+							class="btn btn-error"
+							type="button"
+							hx-delete={ getExpenseDeleteTarget(expense, scheduledExpense) }
+						>
 							Delete
 						</button>
 					} else {
@@ -203,7 +221,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					</button>
 				</div>
 			</div>
-			if expense != nil {
+			<template x-if="isEdit && !isScheduledExpenseEdit">
 				<div class="mt-4 w-full">
 					<button
 						class="btn btn-secondary w-full"
@@ -213,7 +231,7 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 						<span x-text="showRecurrenceForm ? 'Hide Scheduler' : 'Schedule'"></span>
 					</button>
 				</div>
-			}
+			</template>
 		</form>
 		<script>
 			function selectNextOption(selectElement, targetValue) {
@@ -234,20 +252,21 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 				return null
 			}
 			Alpine.data('init', () => {
-				const data = JSON.parse(document.getElementById('expense').textContent)
+				const expense = JSON.parse(document.getElementById('expense').textContent)
+				const scheduledExpense = JSON.parse(document.getElementById('scheduledExpense').textContent)
 				const currentUserID = document.getElementById('current-user-id').innerText
-				const defaultPaidByID = data?.PaidByID || currentUserID
+				const defaultPaidByID = expense?.PaidByID || currentUserID
 				const otherUserID = selectNextOption(document.getElementById('paidByID'), currentUserID)
-				const expenseSplit = data?.ExpenseSplits.length ? data.ExpenseSplits[0] : {
+				const expenseSplit = expense?.ExpenseSplits.length ? expense.ExpenseSplits[0] : {
 					UserID: otherUserID,
 					SplitType: 'pct',
 					SplitValue: 50,
 				}
-				const defaultCategoryDisplay = data?.Category ? `${data.Category.Type} > ${data.Category.Name}` : null
-				const defaultCurrency = data?.Currency.Code || 'USD'
-				const fxRateUSD = data?.Currency.LatestFxRateUSD || null
+				const defaultCategoryDisplay = expense?.Category ? `${expense.Category.Type} > ${expense.Category.Name}` : null
+				const defaultCurrency = expense?.Currency.Code || 'USD'
+				const fxRateUSD = expense?.Currency.LatestFxRateUSD || null
 				return {
-					expenseID: data?.ID || null,
+					expenseID: expense?.ID || null,
 					Title: null,
 					Amount: null,
 					Notes: null,
@@ -260,19 +279,20 @@ templ ExpenseForm(expense *models.Expense, categories []models.Category, currenc
 					SplitType: expenseSplit.SplitType,
 					SplitValue: expenseSplit.SplitValue,
 					SplitTypeChecked: expenseSplit.SplitType === 'pct',
-					showRecurrenceForm: false,
-					isEdit: data !== null,
-					RecurrenceInterval: 1,
-					RecurrenceType: 'monthly',
-					StartDate: new Date().toISOString().split('T')[0],
-					EndDate: null,
+					showRecurrenceForm: scheduledExpense !== null,
+					isEdit: expense !== null,
+					isScheduledExpenseEdit: scheduledExpense !== null,
+					RecurrenceInterval: scheduledExpense?.RecurrenceInterval || 1,
+					RecurrenceType: scheduledExpense?.RecurrenceType || 'monthly',
+					StartDate: scheduledExpense?.StartDate ? new Date(scheduledExpense.StartDate).toLocaleDateString('sv-SE') : new Date().toLocaleDateString('sv-SE'),
+					EndDate: scheduledExpense?.EndDate ? new Date(scheduledExpense.EndDate).toISOString().split('T')[0] : null,
 					calculateEquivalentAmount($data) {
 						if ($data.SplitType === 'pct') {
 							return ($data.SplitValue / 100) * $data.Amount
 						}
 						return $data.SplitValue
 					},
-					...data,
+					...expense,
 				}
 			})
 		</script>

@@ -92,10 +92,6 @@ func main() {
 		"/partials/currencies",
 		handlers.RequireLogin(templ.Handler(partials.CurrenciesView())),
 	)
-	// mux.Handle(
-	// 	"/partials/scheduled-expenses",
-	// 	handlers.RequireLogin(templ.Handler(partials.CategoriesView())),
-	// )
 
 	// User
 	mux.HandleFunc("POST /register", userHandler.RegisterUser)
@@ -129,6 +125,28 @@ func main() {
 	mux.HandleFunc(
 		"DELETE /api/expenses/{id}",
 		handlers.RequireLoginApi(expenseHandler.DeleteExpense),
+	)
+
+	// Scheduled Expenses
+	mux.Handle(
+		"/partials/scheduled-expenses",
+		handlers.RequireLogin(templ.Handler(partials.ScheduledExpensesView())),
+	)
+	mux.Handle(
+		"GET /partials/scheduled-expenses/edit/{id}",
+		handlers.RequireLoginApi(expenseHandler.EditScheduledExpenseByIDPartial),
+	)
+	mux.Handle(
+		"GET /api/scheduled-expenses",
+		handlers.RequireLoginApi(expenseHandler.GetScheduledExpenses),
+	)
+	mux.HandleFunc(
+		"POST /api/scheduled-expenses/{id}",
+		handlers.RequireLoginApi(expenseHandler.UpdateScheduledExpense),
+	)
+	mux.HandleFunc(
+		"DELETE /api/scheduled-expenses/{id}",
+		handlers.RequireLoginApi(expenseHandler.DeleteScheduledExpense),
 	)
 
 	// Categories

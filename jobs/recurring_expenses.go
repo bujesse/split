@@ -12,24 +12,25 @@ import (
 
 func ProcessRecurringExpenses(expenseRepo repositories.ExpenseRepository) {
 	logger.Info.Println("Checking for recurring expenses...")
-	scheduledExpenses, err := expenseRepo.GetScheduledExpenses()
+	scheduledExpenses, err := expenseRepo.GetDueScheduledExpenses()
 
 	for _, scheduledExpense := range scheduledExpenses {
-		logger.Info.Println("Processing scheduled expense:", scheduledExpense.Title)
-		expense := models.Expense{
-			Title:              scheduledExpense.Title,
-			Description:        scheduledExpense.Description,
-			Amount:             scheduledExpense.Amount,
-			Notes:              scheduledExpense.Notes,
-			CurrencyCode:       scheduledExpense.CurrencyCode,
-			CategoryID:         scheduledExpense.CategoryID,
-			PaidByID:           scheduledExpense.PaidByID,
+		templateExpense := scheduledExpense.TemplateExpense
+		logger.Info.Println("Processing scheduled expense:", templateExpense.Title)
+		newExpense := models.Expense{
+			Title:              templateExpense.Title,
+			Description:        templateExpense.Description,
+			Amount:             templateExpense.Amount,
+			Notes:              templateExpense.Notes,
+			CurrencyCode:       templateExpense.CurrencyCode,
+			CategoryID:         templateExpense.CategoryID,
+			PaidByID:           templateExpense.PaidByID,
 			PaidDate:           time.Now(),
 			ScheduledExpenseID: &scheduledExpense.ID,
-			CreatedByID:        scheduledExpense.CreatedByID,
+			CreatedByID:        templateExpense.CreatedByID,
 		}
 
-		err = expenseRepo.CreateExpense(&expense)
+		err = expenseRepo.CreateExpense(&newExpense)
 		if err != nil {
 			fmt.Println("Error creating expense:", err)
 			continue
@@ -44,7 +45,7 @@ func ProcessRecurringExpenses(expenseRepo repositories.ExpenseRepository) {
 
 		logger.Info.Printf(
 			"Created recurring expense: %s, next due: %s\n",
-			expense.Title,
+			newExpense.Title,
 			nextDueDate,
 		)
 	}
@@ -69,6 +70,7 @@ func CalculateNextDueDate(scheduledExpense *models.ScheduledExpense) *time.Time 
 	}
 
 	if scheduledExpense.StartDate.After(time.Now()) {
+		scheduledExpense.NextDueDate = &scheduledExpense.StartDate
 		return scheduledExpense.NextDueDate
 	}
 

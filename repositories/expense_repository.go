@@ -15,11 +15,14 @@ type ExpenseRepository interface {
 	GetExpensesSinceLastSettlement() ([]ExpenseWithFxRate, error)
 	GetExpensesBetweenZeros(offset int) ([]ExpenseWithFxRate, error)
 	UpdateExpense(expense *models.Expense) error
-	GetAll() ([]models.Expense, error)
-	GetScheduledExpenses() ([]models.ScheduledExpense, error)
+	DeleteExpense(expense *models.Expense) error
+
+	GetScheduledExpenseByID(id uint) (*models.ScheduledExpense, error)
+	GetAllScheduledExpenses() ([]models.ScheduledExpense, error)
+	GetDueScheduledExpenses() ([]models.ScheduledExpense, error)
 	CreateScheduledExpense(scheduledExpense *models.ScheduledExpense) error
 	UpdateScheduledExpense(scheduledExpense *models.ScheduledExpense) error
-	DeleteExpense(expense *models.Expense) error
+	DeleteScheduledExpense(scheduledExpense *models.ScheduledExpense) error
 }
 
 type expenseRepository struct {
@@ -30,22 +33,46 @@ func NewExpenseRepository(db *gorm.DB) ExpenseRepository {
 	return &expenseRepository{db}
 }
 
-func (r *expenseRepository) GetAll() ([]models.Expense, error) {
-	var expenses []models.Expense
-	result := r.db.Preload(clause.Associations).
-		Preload("ExpenseSplits.User").
-		Order("paid_date desc").
-		Find(&expenses)
+func (r *expenseRepository) GetScheduledExpenseByID(
+	id uint,
+) (*models.ScheduledExpense, error) {
+	var scheduledExpense models.ScheduledExpense
+	result := r.db.
+		Preload("TemplateExpense.PaidBy").
+		Preload("TemplateExpense.ExpenseSplits").
+		Preload("TemplateExpense.Category").
+		Preload("TemplateExpense.ExpenseSplits.User").
+		Preload(clause.Associations).
+		First(&scheduledExpense, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return expenses, nil
+	return &scheduledExpense, nil
+}
+
+func (r *expenseRepository) GetAllScheduledExpenses() ([]models.ScheduledExpense, error) {
+	var scheduledExpenses []models.ScheduledExpense
+	result := r.db.
+		Preload("TemplateExpense.PaidBy").
+		Preload("TemplateExpense.ExpenseSplits").
+		Preload("TemplateExpense.ExpenseSplits.User").
+		Preload(clause.Associations).
+		Find(&scheduledExpenses)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return scheduledExpenses, nil
 }
 
 // Fetch all scheduled expenses where the NextDueDate is today or in the past
-func (r *expenseRepository) GetScheduledExpenses() ([]models.ScheduledExpense, error) {
+func (r *expenseRepository) GetDueScheduledExpenses() ([]models.ScheduledExpense, error) {
 	var scheduledExpenses []models.ScheduledExpense
-	result := r.db.Where("next_due_date <= ?", time.Now()).Find(&scheduledExpenses)
+	result := r.db.Where("next_due_date <= ?", time.Now()).
+		Preload("TemplateExpense.PaidBy").
+		Preload("TemplateExpense.ExpenseSplits").
+		Preload("TemplateExpense.ExpenseSplits.User").
+		Preload(clause.Associations).
+		Find(&scheduledExpenses)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -68,6 +95,7 @@ func (r *expenseRepository) GetExpensesWithFxRate() ([]ExpenseWithFxRate, error)
 
 	result := r.db.Table("expenses").
 		Select("expenses.*, (?) AS fx_rate", subQuery).
+		Where("is_template = 0").
 		Preload("ExpenseSplits.User").
 		Preload(clause.Associations).
 		Order("expenses.paid_date DESC").
@@ -100,6 +128,7 @@ func (r *expenseRepository) GetExpensesSinceLastSettlement() ([]ExpenseWithFxRat
 
 	query := r.db.Table("expenses").
 		Select("expenses.*, (?) AS fx_rate", fxRateSubQuery).
+		Where("is_template = 0").
 		Preload(clause.Associations).
 		Preload("ExpenseSplits.User").
 		Order("paid_date DESC")
@@ -152,7 +181,7 @@ func (r *expenseRepository) GetExpensesBetweenZeros(offset int) ([]ExpenseWithFx
 			Select("expenses.*, (?) AS fx_rate", fxRateSubQuery).
 			Preload(clause.Associations).
 			Preload("ExpenseSplits.User").
-			Where("paid_date < ?", earliestZeroDate).
+			Where("is_template = 0 AND paid_date < ?", earliestZeroDate).
 			Order("paid_date desc").
 			Find(&expenses)
 
@@ -175,7 +204,7 @@ func (r *expenseRepository) GetExpensesBetweenZeros(offset int) ([]ExpenseWithFx
 			Select("expenses.*, (?) AS fx_rate", fxRateSubQuery).
 			Preload(clause.Associations).
 			Preload("ExpenseSplits.User").
-			Where("paid_date > (?)", subqueryLatestZero).
+			Where("is_template = 0 AND paid_date > (?)", subqueryLatestZero).
 			Order("paid_date DESC").
 			Find(&expenses)
 
@@ -192,7 +221,7 @@ func (r *expenseRepository) GetExpensesBetweenZeros(offset int) ([]ExpenseWithFx
 		Select("expenses.*, (?) AS fx_rate", fxRateSubQuery).
 		Preload(clause.Associations).
 		Preload("ExpenseSplits.User").
-		Where("paid_date > (?) AND paid_date < (?)", subqueryPreviousZero, subqueryLatestZero).
+		Where("is_template = 0 AND paid_date > (?) AND paid_date < (?)", subqueryPreviousZero, subqueryLatestZero).
 		Order("paid_date DESC").
 		Find(&expenses)
 
@@ -234,6 +263,14 @@ func (r *expenseRepository) UpdateScheduledExpense(
 	scheduledExpense *models.ScheduledExpense,
 ) error {
 	return r.db.Save(scheduledExpense).Error
+}
+
+func (r *expenseRepository) DeleteScheduledExpense(
+	scheduledExpense *models.ScheduledExpense,
+) error {
+	err := r.db.Delete(scheduledExpense.TemplateExpense).Error
+	err = r.db.Delete(scheduledExpense).Error
+	return err
 }
 
 func (r *expenseRepository) DeleteExpense(expense *models.Expense) error {
