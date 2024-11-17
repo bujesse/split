@@ -16,7 +16,9 @@ func ProcessRecurringExpenses(expenseRepo repositories.ExpenseRepository) {
 
 	for _, scheduledExpense := range scheduledExpenses {
 		templateExpense := scheduledExpense.TemplateExpense
+
 		logger.Info.Println("Processing scheduled expense:", templateExpense.Title)
+
 		newExpense := models.Expense{
 			Title:              templateExpense.Title,
 			Description:        templateExpense.Description,
@@ -28,6 +30,16 @@ func ProcessRecurringExpenses(expenseRepo repositories.ExpenseRepository) {
 			PaidDate:           time.Now(),
 			ScheduledExpenseID: &scheduledExpense.ID,
 			CreatedByID:        templateExpense.CreatedByID,
+		}
+
+		for _, split := range templateExpense.ExpenseSplits {
+			newSplit := models.ExpenseSplit{
+				UserID:       split.UserID,
+				SplitType:    models.SplitType(split.SplitType),
+				SplitValue:   split.SplitValue,
+				CurrencyCode: split.CurrencyCode,
+			}
+			newExpense.ExpenseSplits = append(newExpense.ExpenseSplits, newSplit)
 		}
 
 		err = expenseRepo.CreateExpense(&newExpense)
