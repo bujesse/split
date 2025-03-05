@@ -3,6 +3,19 @@
 Track spending/splitting when cost-sharing between 1 or more people.
 Acts as a replacement for apps like Splitwise.
 
+![image](https://github.com/user-attachments/assets/ed2c1c81-053d-46b3-9321-b7f5b21f96c1)
+
+## Features
+
+- FX Rate support
+  - Pulls FX rates on a schedule from [fxratesapi](https://fxratesapi.com/)
+  - Configure what FX rates you want to track
+  - Simply select what currency you're paying in and it will convert to your configured base currency
+- Category management
+  - Change icons (fontawesome)
+- Scheduled expenses
+  - Set up recurring expenses such as rent, internet, etc which will be automatically added on the configured schedule
+
 ## Stack
 
 ### Backend
